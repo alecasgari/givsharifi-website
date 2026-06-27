@@ -1,0 +1,27 @@
+name: Content automation (n8n)
+
+on:
+  repository_dispatch:
+    types: [process-gallery]
+
+permissions:
+  contents: write
+
+jobs:
+  process-gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pillow
+        run: pip install Pillow
+
+      - name: Process gallery images
+        run: python scripts/process-gallery.py
+
+      - name: Commit processed gallery
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: process gallery images from n8n"
+          file_pattern: "assets/images/gallery/** assets/data/gallery.json"

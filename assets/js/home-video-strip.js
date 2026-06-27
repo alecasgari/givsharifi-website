@@ -2,6 +2,7 @@
  * Homepage video poster strip — reverse auto-scroll below photo gallery.
  */
 (function () {
+  const STRIP_LIMIT = 6;
   const track = document.getElementById("home-video-strip-track");
   if (!track) return;
 
@@ -22,7 +23,7 @@
 
   function showSkeleton() {
     if (window.GivSkeleton) {
-      track.innerHTML = window.GivSkeleton.homeGalleryStrip(6)
+      track.innerHTML = window.GivSkeleton.homeGalleryStrip(STRIP_LIMIT)
         .replace(/skeleton-strip-item/g, "skeleton-strip-item skeleton-strip-item--video");
     }
     const section = document.getElementById("home-video-strip-section");
@@ -35,7 +36,7 @@
       const res = await fetch(u("assets/data/video-library.json"));
       if (!res.ok) throw new Error("Failed to load");
       const config = await res.json();
-      const videos = config.videos || [];
+      const videos = (config.videos || []).slice(0, STRIP_LIMIT);
       if (!videos.length) {
         track.closest(".hp-media-strip")?.remove();
         return;
@@ -47,7 +48,10 @@
           const alt = v.title || "Patient feedback video";
           return `
         <a class="hp-media-strip__item hp-media-strip__item--video" href="${escapeAttr(u("videos/"))}" title="${escapeAttr(v.title || alt)}">
-          <img src="${escapeAttr(poster)}" alt="${escapeAttr(alt)}" loading="lazy" width="360" height="640">
+          <img src="${escapeAttr(poster)}" alt="${escapeAttr(alt)}"
+            width="360" height="640"
+            sizes="(max-width: 768px) 18vw, 9.5rem"
+            decoding="async" fetchpriority="low" loading="eager">
         </a>
       `;
         })

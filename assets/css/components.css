@@ -1211,7 +1211,7 @@ main.has-header-offset { padding-top: var(--header-height); }
   position: relative;
   width: 100%;
   max-width: 28rem;
-  padding: 1.25rem 1.25rem 1.5rem;
+  padding: 1rem 1rem 1.25rem;
   background: #fff;
   border-radius: 1.25rem 1.25rem 0 0;
   animation: givSheetUp 0.32s ease;
@@ -1251,16 +1251,16 @@ main.has-header-offset { padding-top: var(--header-height); }
 .giv-sheet__head {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  margin-bottom: 1rem;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
 }
 
 .giv-sheet__wa-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   flex-shrink: 0;
   border-radius: 50%;
   background: #25d366;
@@ -1283,8 +1283,8 @@ main.has-header-offset { padding-top: var(--header-height); }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   flex-shrink: 0;
   border-radius: 50%;
   background: rgba(37, 211, 102, 0.14);
@@ -1294,9 +1294,9 @@ main.has-header-offset { padding-top: var(--header-height); }
 .giv-sheet__option {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  padding: 0.875rem 1rem;
-  margin-bottom: 0.5rem;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 0.375rem;
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-md);
   text-decoration: none;
@@ -1312,31 +1312,63 @@ main.has-header-offset { padding-top: var(--header-height); }
 
 .giv-sheet__option strong {
   display: block;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
 }
 
 .giv-sheet__option small {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
 }
 
 .giv-sheet__divider {
   font-family: var(--hp-sans, inherit);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin: 0.75rem 0 0.5rem;
+  margin: 0.5rem 0 0.375rem;
   text-align: center;
+}
+
+.giv-sheet__social-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.giv-sheet__option--compact {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.375rem;
+  margin-bottom: 0;
+}
+
+.giv-sheet__option--compact strong {
+  font-size: 0.75rem;
+}
+
+.giv-sheet__option--compact small {
+  font-size: 0.625rem;
+  line-height: 1.2;
+}
+
+.giv-sheet__option--span {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  justify-content: center;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
 }
 
 .giv-sheet__social-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 0.5rem;
   flex-shrink: 0;
   color: #fff;

@@ -1,0 +1,501 @@
+{
+  "name": "GivSharifi — 00 Telegram Router",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ]
+      },
+      "id": "80d4ab9c-25cd-4d27-af7e-d095945bd12d",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "79391d09-8a84-4c35-9efb-b4159ce06595",
+              "leftValue": "={{ String($json.message?.chat?.id || $json.callback_query?.message?.chat?.id) }}",
+              "rightValue": "={{ $env.GIV_TELEGRAM_ALLOWED_CHAT_ID }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "e225ea59-3eec-4707-b1d5-0bd12bccd69e",
+      "name": "Authorized chat?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text || '' }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.photo ? 'yes' : 'no' }}",
+                    "rightValue": "yes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "photo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text || '' }}",
+                    "rightValue": "instagram.com",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "video"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text || '' }}",
+                    "rightValue": "/blog",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "blog"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "353bad42-b8fe-475b-bab8-de9ef93070b0",
+      "name": "Route message type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Prof. Giv Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel URL → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            [
+              {
+                "text": "📷 Photo help",
+                "callback_data": "help_photo"
+              }
+            ],
+            [
+              {
+                "text": "🎬 Video help",
+                "callback_data": "help_video"
+              }
+            ],
+            [
+              {
+                "text": "📝 Blog help",
+                "callback_data": "help_blog"
+              }
+            ]
+          ]
+        }
+      },
+      "id": "38e197fe-6f84-4134-a22b-10847c4ae84a",
+      "name": "Send menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17d72af6-3893-4479-83bd-973298aabb17",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "e0258554-6e14-42d5-8365-a1af9402be38",
+              "name": "photo_file_id",
+              "value": "={{ $json.message.photo.slice(-1)[0].file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f10255c1-c007-4f12-aa05-ff6ceeb8d4ca",
+              "name": "caption",
+              "value": "={{ $json.message.caption || '' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f8fa3bd7-328a-4089-bc03-6a430043077f",
+      "name": "Prepare photo payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "={{ $env.GIV_WF_PHOTO_ID }}",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "5d53c1f9-1f1e-4c46-9fc1-6fb5fbf446c0",
+      "name": "Run publish photo",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        0
+      ],
+      "notes": "After import: set GIV_WF_PHOTO_ID to workflow ID of 01-publish-photo"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "410192aa-afe4-4cfc-832a-07cd3b553c79",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "f323aee5-170d-49fa-9635-c1b62f2b1cd4",
+              "name": "reel_url",
+              "value": "={{ $json.message.text.trim() }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "52ebbc8a-fa10-4f67-b501-095510d61550",
+      "name": "Prepare video payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "={{ $env.GIV_WF_VIDEO_ID }}",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "e29a5a23-bf7c-44cb-a1da-8df63b36909e",
+      "name": "Run publish video",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        160
+      ],
+      "notes": "Set GIV_WF_VIDEO_ID after import"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ffe3419e-d70c-40e8-bbad-fe775f48261d",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c60b2808-408c-4083-8c74-6ca68e7301b5",
+              "name": "draft_text",
+              "value": "={{ $json.message.text.replace(/^\\/blog\\s*/i, '').trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "ff07477f-5947-406c-b355-b437759574bc",
+              "name": "photo_file_id",
+              "value": "={{ $json.message.photo ? $json.message.photo.slice(-1)[0].file_id : '' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "c493100e-4980-411e-9766-aab4e1d3f375",
+      "name": "Prepare blog payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "={{ $env.GIV_WF_BLOG_ID }}",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "375005e7-1a7e-4173-a926-34680983bb7f",
+      "name": "Run publish blog",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        320
+      ],
+      "notes": "Set GIV_WF_BLOG_ID after import"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Send:\n• Photo (with optional caption)\n• Instagram reel link\n• /blog Your article draft…"
+      },
+      "id": "9b5afbca-5c66-4d97-a0d2-0bebd69e9469",
+      "name": "Send help",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message?.chat?.id || $json.callback_query?.message?.chat?.id }}",
+        "text": "Unauthorized."
+      },
+      "id": "e9118331-b572-4ab3-a80a-8b3ee36b6744",
+      "name": "Unauthorized",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Telegram router\nImport sub-workflows first. Copy their workflow IDs into env vars:\n`GIV_WF_PHOTO_ID`, `GIV_WF_VIDEO_ID`, `GIV_WF_BLOG_ID`\n\nOr replace Execute Workflow nodes with manual workflow picker after import."
+      },
+      "id": "b7aed2b0-eda7-4ba7-af2b-cc70ef27eebe",
+      "name": "Note: Router",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -220
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Authorized chat?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorized chat?": {
+      "main": [
+        [
+          {
+            "node": "Route message type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route message type": {
+      "main": [
+        [
+          {
+            "node": "Send menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare photo payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare video payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare blog payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send help",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare photo payload": {
+      "main": [
+        [
+          {
+            "node": "Run publish photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare video payload": {
+      "main": [
+        [
+          {
+            "node": "Run publish video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare blog payload": {
+      "main": [
+        [
+          {
+            "node": "Run publish blog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "48aabe38-f703-46ba-a60b-5cd5201e2eb5",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    {
+      "name": "givsharifi"
+    }
+  ]
+}

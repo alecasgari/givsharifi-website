@@ -30,6 +30,7 @@ MANIFEST = INCOMING / "manifest.json"
 RASTER = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_WIDTH = 1400
 THUMB_WIDTH = 640
+STRIP_WIDTH = 400
 WEBP_QUALITY = 82
 
 
@@ -79,10 +80,51 @@ def unique_slug(base: str, existing: set[str]) -> str:
     return slug
 
 
+def regenerate_strips(gallery: dict) -> int:
+    count = 0
+    for img in gallery.get("images", []):
+        slug = img.get("slug")
+        if not slug:
+            continue
+        rel = img.get("file") or f"assets/images/gallery/{slug}.webp"
+        src_path = ROOT / rel
+        if not src_path.is_file():
+            src_path = OUT_DIR / f"{slug}.webp"
+        if not src_path.is_file():
+            print(f"  skip {slug}: source not found")
+            continue
+        out_strip = OUT_DIR / f"{slug}-strip.webp"
+        print(f"  strip -> {out_strip.name}")
+        with Image.open(src_path) as im:
+            im.load()
+            strip_im = resize(im, STRIP_WIDTH)
+            out_strip.write_bytes(save_webp(strip_im, quality=72))
+        img["strip"] = f"assets/images/gallery/{slug}-strip.webp"
+        count += 1
+    return count
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--regenerate-strips",
+        action="store_true",
+        help="Create 400px strip WebP from existing gallery images",
+    )
     args = parser.parse_args()
+
+    if args.regenerate_strips:
+        gallery = load_gallery()
+        if args.dry_run:
+            print(f"Dry run: would regenerate strips for {len(gallery.get('images', []))} image(s)")
+            return 0
+        count = regenerate_strips(gallery)
+        if count:
+            gallery["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            DATA.write_text(json.dumps(gallery, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(f"\nRegenerated {count} strip image(s). Updated {DATA.relative_to(ROOT)}")
+        return 0
 
     manifest = load_manifest()
     gallery = load_gallery()
@@ -113,6 +155,7 @@ def main() -> int:
 
         out_main = OUT_DIR / f"{slug}.webp"
         out_thumb = OUT_DIR / f"{slug}-thumb.webp"
+        out_strip = OUT_DIR / f"{slug}-strip.webp"
 
         print(f"  {src.name} -> {slug}.webp")
 
@@ -123,8 +166,10 @@ def main() -> int:
             im.load()
             main_im = resize(im, MAX_WIDTH)
             thumb_im = resize(im, THUMB_WIDTH)
+            strip_im = resize(im, STRIP_WIDTH)
             out_main.write_bytes(save_webp(main_im))
             out_thumb.write_bytes(save_webp(thumb_im, quality=78))
+            out_strip.write_bytes(save_webp(strip_im, quality=72))
 
         w, h = main_im.size
         tw, th = thumb_im.size
@@ -134,6 +179,7 @@ def main() -> int:
                 "slug": slug,
                 "file": f"assets/images/gallery/{slug}.webp",
                 "thumb": f"assets/images/gallery/{slug}-thumb.webp",
+                "strip": f"assets/images/gallery/{slug}-strip.webp",
                 "alt": alt,
                 "title": title,
                 "category": meta.get("category") or "Gallery",

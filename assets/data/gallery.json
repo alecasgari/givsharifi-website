@@ -10,7 +10,8 @@
       "category": "Surgery",
       "featured": true,
       "width": 897,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/prof-giv-sharifi-neurosurgery-microscope-operating-room-strip.webp"
     },
     {
       "slug": "surgical-team-endoscopic-procedure",
@@ -21,7 +22,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/surgical-team-endoscopic-procedure-strip.webp"
     },
     {
       "slug": "neurosurgery-team-skull-base-procedure",
@@ -32,7 +34,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/neurosurgery-team-skull-base-procedure-strip.webp"
     },
     {
       "slug": "prof-giv-sharifi-tandis-hospital-consultation",
@@ -43,7 +46,8 @@
       "category": "Clinic",
       "featured": true,
       "width": 1280,
-      "height": 718
+      "height": 718,
+      "strip": "assets/images/gallery/prof-giv-sharifi-tandis-hospital-consultation-strip.webp"
     },
     {
       "slug": "prof-giv-sharifi-patient-mri-review-hospital",
@@ -54,7 +58,8 @@
       "category": "Patient Care",
       "featured": true,
       "width": 930,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/prof-giv-sharifi-patient-mri-review-hospital-strip.webp"
     },
     {
       "slug": "surgical-team-procedure-operating-theatre",
@@ -65,7 +70,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 943,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/surgical-team-procedure-operating-theatre-strip.webp"
     },
     {
       "slug": "prof-giv-sharifi-brain-mri-scan-operating-room",
@@ -76,7 +82,8 @@
       "category": "Diagnostics",
       "featured": true,
       "width": 871,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/prof-giv-sharifi-brain-mri-scan-operating-room-strip.webp"
     },
     {
       "slug": "prof-giv-sharifi-clinic-consultation-office",
@@ -87,7 +94,8 @@
       "category": "Clinic",
       "featured": false,
       "width": 927,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/prof-giv-sharifi-clinic-consultation-office-strip.webp"
     },
     {
       "slug": "prof-giv-sharifi-reviewing-brain-mri-scans",
@@ -98,7 +106,8 @@
       "category": "Diagnostics",
       "featured": true,
       "width": 972,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/prof-giv-sharifi-reviewing-brain-mri-scans-strip.webp"
     },
     {
       "slug": "prof-giv-sharifi-spine-xray-farda-hospital",
@@ -109,7 +118,8 @@
       "category": "Diagnostics",
       "featured": false,
       "width": 973,
-      "height": 1280
+      "height": 1280,
+      "strip": "assets/images/gallery/prof-giv-sharifi-spine-xray-farda-hospital-strip.webp"
     },
     {
       "slug": "neurosurgical-team-precision-surgery-operating-room",
@@ -120,7 +130,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/neurosurgical-team-precision-surgery-operating-room-strip.webp"
     },
     {
       "slug": "surgeons-close-up-neurosurgery-operating-room",
@@ -131,7 +142,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/surgeons-close-up-neurosurgery-operating-room-strip.webp"
     },
     {
       "slug": "neurosurgery-team-surgical-procedure-operating-room",
@@ -142,7 +154,8 @@
       "category": "Surgery",
       "featured": true,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/neurosurgery-team-surgical-procedure-operating-room-strip.webp"
     },
     {
       "slug": "expert-surgical-team-operating-theatre",
@@ -153,7 +166,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/expert-surgical-team-operating-theatre-strip.webp"
     },
     {
       "slug": "giv-sharifi-medical-team-clinic-group-photo",
@@ -164,7 +178,8 @@
       "category": "Team",
       "featured": true,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/giv-sharifi-medical-team-clinic-group-photo-strip.webp"
     },
     {
       "slug": "giv-sharifi-surgical-team-operating-room-group",
@@ -175,7 +190,8 @@
       "category": "Team",
       "featured": true,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/giv-sharifi-surgical-team-operating-room-group-strip.webp"
     },
     {
       "slug": "minimally-invasive-surgery-team-monitor",
@@ -186,7 +202,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/minimally-invasive-surgery-team-monitor-strip.webp"
     },
     {
       "slug": "neurosurgeon-laparoscopic-instruments-operating-room",
@@ -197,7 +214,8 @@
       "category": "Surgery",
       "featured": false,
       "width": 1280,
-      "height": 853
+      "height": 853,
+      "strip": "assets/images/gallery/neurosurgeon-laparoscopic-instruments-operating-room-strip.webp"
     }
   ]
 }

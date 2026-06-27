@@ -39,6 +39,14 @@ function setActiveNav() {
   });
 }
 
+function setNavScrollLock(locked) {
+  if (typeof window.givSetScrollLock === 'function') {
+    window.givSetScrollLock(locked);
+  } else {
+    document.body.style.overflow = locked ? 'hidden' : '';
+  }
+}
+
 function closeMobileNav() {
   const toggle = document.getElementById('nav-toggle');
   const nav = document.getElementById('mobile-nav');
@@ -49,6 +57,7 @@ function closeMobileNav() {
   toggle.setAttribute('aria-expanded', 'false');
   toggle.setAttribute('aria-label', 'Open menu');
   document.body.classList.remove('nav-open');
+  setNavScrollLock(false);
 }
 
 function initMobileNav() {
@@ -64,7 +73,7 @@ function initMobileNav() {
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     document.body.classList.toggle('nav-open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
+    setNavScrollLock(open);
   });
 
   nav.querySelector('[data-close-nav]')?.addEventListener('click', closeMobileNav);

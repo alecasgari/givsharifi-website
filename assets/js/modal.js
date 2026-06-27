@@ -1,5 +1,7 @@
 (function () {
   let lastFocus = null;
+  let scrollLockCount = 0;
+  let savedScrollY = 0;
 
   function getModal() {
     return document.getElementById('consultation-modal');
@@ -9,9 +11,38 @@
     return document.getElementById('whatsapp-sheet');
   }
 
-  function lockScroll(on) {
-    document.body.classList.toggle('giv-scroll-lock', on);
+  function setScrollLock(on) {
+    if (on) {
+      if (scrollLockCount === 0) {
+        savedScrollY = window.scrollY || document.documentElement.scrollTop;
+        document.body.classList.add('giv-scroll-lock');
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${savedScrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+        document.documentElement.style.overflow = 'hidden';
+      }
+      scrollLockCount += 1;
+      return;
+    }
+
+    if (scrollLockCount === 0) return;
+    scrollLockCount -= 1;
+    if (scrollLockCount !== 0) return;
+
+    document.body.classList.remove('giv-scroll-lock');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    window.scrollTo(0, savedScrollY);
   }
+
+  window.givSetScrollLock = setScrollLock;
 
   function openConsultationModal() {
     const modal = getModal();
@@ -19,7 +50,7 @@
     lastFocus = document.activeElement;
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
-    lockScroll(true);
+    setScrollLock(true);
     const closeBtn = modal.querySelector('[data-close-modal].giv-modal__close');
     if (closeBtn) closeBtn.focus();
   }
@@ -29,7 +60,7 @@
     if (!modal || modal.hidden) return;
     modal.hidden = true;
     modal.setAttribute('aria-hidden', 'true');
-    if (!getSheet() || getSheet().hidden) lockScroll(false);
+    setScrollLock(false);
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
 
@@ -39,7 +70,7 @@
     lastFocus = document.activeElement;
     sheet.hidden = false;
     sheet.setAttribute('aria-hidden', 'false');
-    lockScroll(true);
+    setScrollLock(true);
     const closeBtn = sheet.querySelector('[data-close-sheet]');
     if (closeBtn) closeBtn.focus();
   }
@@ -49,7 +80,7 @@
     if (!sheet || sheet.hidden) return;
     sheet.hidden = true;
     sheet.setAttribute('aria-hidden', 'true');
-    if (!getModal() || getModal().hidden) lockScroll(false);
+    setScrollLock(false);
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
 
@@ -84,10 +115,10 @@
         return;
       }
 
-      if (e.target.matches('[data-close-modal]')) {
+      if (e.target.closest('[data-close-modal]')) {
         closeConsultationModal();
       }
-      if (e.target.matches('[data-close-sheet]')) {
+      if (e.target.closest('[data-close-sheet]')) {
         closeWhatsAppSheet();
       }
     });
@@ -113,10 +144,6 @@
   }
 
   document.addEventListener('giv:layout-ready', bindTriggers);
-
-  if (document.readyState !== 'loading') {
-    bindTriggers();
-  }
 
   if (window.location.hash === '#consultation') {
     setTimeout(openConsultationModal, 300);

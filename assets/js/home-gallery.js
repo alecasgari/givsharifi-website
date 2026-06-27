@@ -2,6 +2,7 @@
  * Homepage featured gallery strip — auto-scroll below hero stats.
  */
 (function () {
+  const STRIP_LIMIT = 6;
   const track = document.getElementById("home-gallery-track");
   if (!track) return;
 
@@ -11,7 +12,7 @@
 
   function showSkeleton() {
     if (window.GivSkeleton) {
-      track.innerHTML = window.GivSkeleton.homeGalleryStrip(6);
+      track.innerHTML = window.GivSkeleton.homeGalleryStrip(STRIP_LIMIT);
     }
     const section = document.getElementById("home-gallery-section");
     if (section) section.hidden = false;
@@ -23,7 +24,7 @@
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
-      const featured = (data.images || []).filter((img) => img.featured);
+      const featured = (data.images || []).filter((img) => img.featured).slice(0, STRIP_LIMIT);
       if (!featured.length) {
         track.closest(".hp-media-strip")?.remove();
         return;
@@ -33,8 +34,10 @@
         .map(
           (img) => `
         <a class="hp-media-strip__item" href="gallery/" title="${escapeAttr(img.title || img.alt)}">
-          <img src="${escapeAttr(u(img.thumb || img.file))}" alt="${escapeAttr(img.alt)}"
-            width="${img.width || 400}" height="${img.height || 300}" loading="lazy">
+          <img src="${escapeAttr(u(img.strip || img.thumb || img.file))}" alt="${escapeAttr(img.alt)}"
+            width="${img.width || 400}" height="${img.height || 300}"
+            sizes="(max-width: 768px) 28vw, 16rem"
+            decoding="async" fetchpriority="low" loading="eager">
         </a>
       `
         )

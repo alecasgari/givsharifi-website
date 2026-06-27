@@ -1,0 +1,424 @@
+{
+  "name": "GivSharifi — 02 Publish Video",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "cd37db9e-e21a-4d2b-9f45-7769ec570341",
+      "name": "When called by router",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c4d825c-02d8-47fa-8569-132a0021b98b",
+              "name": "reel_url",
+              "value": "={{ $json.reel_url }}",
+              "type": "string"
+            },
+            {
+              "id": "f8bd1251-b845-42e1-86f2-706c57deb785",
+              "name": "chat_id",
+              "value": "={{ $json.chat_id }}",
+              "type": "number"
+            },
+            {
+              "id": "30ccb829-533f-4504-a41b-c32662e68dc4",
+              "name": "work_dir",
+              "value": "=/tmp/giv-video-{{ $execution.id }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "c71381c7-626f-442c-9f5d-fb265450abb6",
+      "name": "Set reel URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=mkdir -p {{ $json.work_dir }} && yt-dlp --no-playlist -f 'mp4/best' -o '{{ $json.work_dir }}/%(id)s.%(ext)s' --write-info-json --write-thumbnail --convert-thumbnails jpg '{{ $json.reel_url }}'"
+      },
+      "id": "f97c3893-8ed9-4160-b29f-4bbd0e43541f",
+      "name": "yt-dlp download",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ],
+      "notes": "Self-hosted n8n only. Installs: pip install yt-dlp"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "={{ $json.work_dir + '/*.info.json' }}",
+        "options": {}
+      },
+      "id": "0d28e539-2367-4549-9318-e55fc3e52458",
+      "name": "Read info JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0c127714-f9dc-4945-a63f-cc2649ecb361",
+              "name": "reel_meta",
+              "value": "={{ JSON.parse($json.data) }}",
+              "type": "object"
+            },
+            {
+              "id": "f14eda25-a089-434b-889a-91e526a322e1",
+              "name": "video_id",
+              "value": "={{ JSON.parse($json.data).id }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f9d16a62-a146-4054-8787-46ea9fa25c2f",
+      "name": "Parse reel metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "10083be3-fe16-48c4-814d-fffd94954d0d",
+      "name": "Gemini video model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"title\": \"English video title max 80 chars\",\n  \"description\": \"English description max 160 chars\",\n  \"category\": \"Patient Stories\"\n}"
+      },
+      "id": "6e6c944c-0a76-46c3-8e5d-ffa170381f7e",
+      "name": "Video copy parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1100,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Original Instagram description:\n{{ $json.reel_meta.description || $json.reel_meta.title }}\n\nWrite English title and description for a neurosurgery patient-education video page. No Persian. Professional tone. category: Patient Stories.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
+        }
+      },
+      "id": "bb7b46a7-c3c1-4e4c-9099-d48499757d2d",
+      "name": "Gemini video copy",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1100,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "={{ $env.GIV_R2_BUCKET }}",
+        "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.mp4",
+        "additionalFields": {},
+        "binaryPropertyName": "data"
+      },
+      "id": "06a81d75-a1d8-4fa9-8b12-d5bd83162a03",
+      "name": "Upload MP4 to R2",
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        -80
+      ],
+      "notes": "AWS credential → R2 endpoint. Read MP4 via Read/Write File node before this if needed."
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "={{ $env.GIV_R2_BUCKET }}",
+        "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.jpg",
+        "additionalFields": {}
+      },
+      "id": "5ffa9015-aa72-4fdf-a1b9-b4f7c83e0bf7",
+      "name": "Upload poster to R2",
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
+        "repository": "={{ $env.GIV_GITHUB_REPO }}",
+        "filePath": "assets/data/video-library.json",
+        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+      },
+      "id": "7fa4313e-8ae5-4931-8673-5ddd2a051274",
+      "name": "Get video-library.json",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d597dad-6406-4ed1-afd5-212dc6e468f1",
+              "name": "library_json",
+              "value": "={{ (() => { const lib = JSON.parse($json.content); const id = $('Parse reel metadata').item.json.video_id; const meta = $('Gemini video copy').item.json.output; const m = $('Parse reel metadata').item.json.reel_meta; const d = m.upload_date || ''; const date = d.length===8 ? d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8) : new Date().toISOString().slice(0,10); const entry = { id, file: id+'.mp4', poster: id+'.jpg', title: meta.title, description: meta.description, date, duration: m.duration_string || '', instagram: m.webpage_url || $('Set reel URL').item.json.reel_url, category: meta.category || 'Patient Stories' }; lib.videos = [entry, ...(lib.videos||[])]; lib.updated = new Date().toISOString().slice(0,10); return JSON.stringify(lib, null, 2); })() }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "5d7f727b-1673-49e5-ba92-ce3ec4936214",
+      "name": "Prepend new video entry",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
+        "repository": "={{ $env.GIV_GITHUB_REPO }}",
+        "filePath": "assets/data/video-library.json",
+        "fileContent": "={{ $json.library_json }}",
+        "commitMessage": "content: add video via Telegram bot",
+        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+      },
+      "id": "e9e98b7b-0d30-452e-9029-c09c892f0caf",
+      "name": "Update video-library.json",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1980,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When called by router').item.json.chat_id }}",
+        "text": "=Video published.\n\n{{ $('Gemini video copy').item.json.output.title }}\n\n{{ $env.GIV_SITE_URL }}/videos/"
+      },
+      "id": "6f4b7cc1-c2dc-4196-baa2-a1e29f553f44",
+      "name": "Telegram success",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Video publish\nInstagram URL → yt-dlp → Gemini English copy → R2 `library/` (S3 node) → `video-library.json` on GitHub.\n\nAdd **Read/Write File** nodes for MP4/JPG binaries before S3 uploads if Execute Command output needs wiring."
+      },
+      "id": "daf0e5d6-1e28-49a4-bf2a-47a6cdbe9cf2",
+      "name": "Note: Video flow",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -180
+      ]
+    }
+  ],
+  "connections": {
+    "When called by router": {
+      "main": [
+        [
+          {
+            "node": "Set reel URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set reel URL": {
+      "main": [
+        [
+          {
+            "node": "yt-dlp download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "yt-dlp download": {
+      "main": [
+        [
+          {
+            "node": "Read info JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read info JSON": {
+      "main": [
+        [
+          {
+            "node": "Parse reel metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse reel metadata": {
+      "main": [
+        [
+          {
+            "node": "Gemini video copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini video model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gemini video copy",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video copy parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Gemini video copy",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini video copy": {
+      "main": [
+        [
+          {
+            "node": "Get video-library.json",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload MP4 to R2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload poster to R2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get video-library.json": {
+      "main": [
+        [
+          {
+            "node": "Prepend new video entry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepend new video entry": {
+      "main": [
+        [
+          {
+            "node": "Update video-library.json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update video-library.json": {
+      "main": [
+        [
+          {
+            "node": "Telegram success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "169cf2b9-0db9-4711-8c9e-a285a44d13db",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    {
+      "name": "givsharifi"
+    }
+  ]
+}
