@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "5d24ff83-d26e-4ba3-81fb-e6c0d51f52f1",
+      "id": "8c940302-40bf-4fba-8a34-3056c3507dc2",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -22,7 +22,7 @@
           },
           "conditions": [
             {
-              "id": "058f2248-84b6-4a27-8f65-0702d668ca1e",
+              "id": "c473f486-a4bb-4bde-9c00-d80f8c0a2343",
               "leftValue": "={{ $json.photo_file_id }}",
               "rightValue": "",
               "operator": {
@@ -34,7 +34,7 @@
           "combinator": "and"
         }
       },
-      "id": "5b64fcf3-dcc3-4830-afb2-842a4c0436f1",
+      "id": "d19b935c-4d12-4a35-b6fc-5db79bc2a665",
       "name": "Has featured image?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -48,7 +48,7 @@
         "resource": "file",
         "fileId": "={{ $('When called by router').item.json.photo_file_id }}"
       },
-      "id": "84990e7b-ac93-4355-99ab-c043386f5f51",
+      "id": "c46b4f61-2086-4b41-a20d-b1313ff6f7b4",
       "name": "Download featured image",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -63,7 +63,7 @@
           "temperature": 0.3
         }
       },
-      "id": "0102b9ae-c8c2-411c-b1e7-5cfff9551815",
+      "id": "1adfbfe5-6176-4cb8-9ac7-75dad3b0cb1a",
       "name": "Gemini blog model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -76,7 +76,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"slug\": \"example-blog-slug\",\n  \"title\": \"Article title\",\n  \"metaDescription\": \"SEO meta description max 155 chars\",\n  \"excerpt\": \"Card excerpt 2 sentences\",\n  \"date\": \"2026-06-27\",\n  \"category\": \"Neurosurgery\",\n  \"tags\": [\n    \"brain surgery\",\n    \"neurosurgery Dubai\"\n  ],\n  \"readingTimeMinutes\": 6,\n  \"featuredImagePath\": \"assets/images/blog/example.webp\",\n  \"content\": [\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Opening paragraph.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Section heading\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Body text.\"\n    }\n  ]\n}"
       },
-      "id": "7aded0f8-f2be-42ea-80d0-8e9f8cb59778",
+      "id": "ae501de2-68fe-477d-8fb2-335fe2e717d4",
       "name": "Blog JSON parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -94,7 +94,7 @@
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "9c09dc14-9315-4a0a-8913-3a97bae88034",
+      "id": "f0418f10-5db5-47a8-9d96-3e867b3ff031",
       "name": "Gemini blog writer",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -112,7 +112,7 @@
         "filePath": "blog/_post-shell.html",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "8f5860f0-28e8-429e-98b2-002e9d50c49c",
+      "id": "68a7cbe7-8654-45ca-bdcb-cdbe077d5795",
       "name": "Get post HTML shell",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -123,16 +123,29 @@
     },
     {
       "parameters": {
+        "jsCode": "const p = $('Gemini blog writer').first().json.output;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n' } }];\n"
+      },
+      "id": "8a617576-66d1-4c74-9444-3a0716655ba4",
+      "name": "Build post JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        990,
+        -80
+      ]
+    },
+    {
+      "parameters": {
         "resource": "file",
         "operation": "create",
         "owner": "={{ $env.GIV_GITHUB_OWNER }}",
         "repository": "={{ $env.GIV_GITHUB_REPO }}",
         "filePath": "={{ 'posts/data/' + $('Gemini blog writer').item.json.output.slug + '.json' }}",
-        "fileContent": "={{ JSON.stringify(Object.assign($('Gemini blog writer').item.json.output, { author: { name: 'Prof. Giv Sharifi', title: 'Board-Certified Neurosurgeon', url: 'https://www.givsharifi.com/' }, featuredImage: '/' + $('Gemini blog writer').item.json.output.featuredImagePath }), null, 2) }}",
+        "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
         "commitMessage": "content: add blog post via Telegram bot",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "a7d2da9b-2378-4f4f-8736-d015c2c3e384",
+      "id": "9f6579c5-47a8-418f-b72e-810b20a0f5db",
       "name": "Create post JSON",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -152,7 +165,7 @@
         "commitMessage": "content: add blog page shell via Telegram bot",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "c37bb228-1cee-4d58-91b6-29acd2a251b5",
+      "id": "fac6dd79-ea4c-406e-bd9e-24576c9747f0",
       "name": "Create blog HTML page",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -170,7 +183,7 @@
         "filePath": "posts/data/index.json",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "4bad328e-66d8-4d96-a0c2-184f1ba5b7e0",
+      "id": "2e861c00-d5e1-4703-90f4-f831cb56901d",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -181,22 +194,12 @@
     },
     {
       "parameters": {
-        "mode": "manual",
-        "assignments": {
-          "assignments": [
-            {
-              "id": "2321f2fc-20ed-4357-9816-1dacc92c7ef5",
-              "name": "index_json",
-              "value": "={{ (() => { const idx = JSON.parse($json.content); const p = $('Gemini blog writer').item.json.output; idx.posts = [{ slug: p.slug, title: p.title, excerpt: p.excerpt, date: p.date, category: p.category, image: '/' + p.featuredImagePath }, ...(idx.posts||[])]; return JSON.stringify(idx, null, 2); })() }}",
-              "type": "string"
-            }
-          ]
-        }
+        "jsCode": "const github = $input.first().json;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nconst idx = JSON.parse(raw);\nconst p = $('Gemini blog writer').first().json.output;\nidx.posts = [{\n  slug: p.slug,\n  title: p.title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${p.featuredImagePath}`,\n}, ...(idx.posts || [])];\nreturn [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n' } }];\n"
       },
-      "id": "836abe72-9003-42f5-90cd-12e5e8091db2",
+      "id": "10a8db21-ee66-40bf-b396-ed5651f8c18f",
       "name": "Prepend to index",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1540,
         0
@@ -213,7 +216,7 @@
         "commitMessage": "content: update blog index via Telegram bot",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "1f779d4c-752b-4bc6-ab8e-319366b43af6",
+      "id": "04cab266-0e78-4525-a7a8-070439995e79",
       "name": "Update posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -227,7 +230,7 @@
         "chatId": "={{ $('When called by router').item.json.chat_id }}",
         "text": "=Blog post published.\n\n{{ $('Gemini blog writer').item.json.output.title }}\n\n{{ $env.GIV_SITE_URL }}/blog/{{ $('Gemini blog writer').item.json.output.slug }}/"
       },
-      "id": "5fdaad09-b33c-4ccc-83bb-751a88ffbe65",
+      "id": "7f9ce9e0-c746-4aac-9937-7478e58ab151",
       "name": "Telegram success",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -240,7 +243,7 @@
       "parameters": {
         "content": "## Blog publish\nDraft text → Gemini (full JSON) → GitHub post JSON + HTML shell + index.json.\n\nOptional: upload featured WebP to `assets/images/blog/` via GitHub node on the **true** branch of If."
       },
-      "id": "e165ab3b-9232-4306-8c3e-d6ea15906a2f",
+      "id": "6131ac34-f0c6-4792-a4e8-7106d06907ab",
       "name": "Note: Blog flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -328,12 +331,23 @@
       "main": [
         [
           {
-            "node": "Create post JSON",
+            "node": "Build post JSON",
             "type": "main",
             "index": 0
           },
           {
             "node": "Create blog HTML page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build post JSON": {
+      "main": [
+        [
+          {
+            "node": "Create post JSON",
             "type": "main",
             "index": 0
           }
@@ -401,7 +415,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3fee4b36-76bb-4fe5-bc0a-3b641030d952",
+  "versionId": "5dced181-83cb-49cf-835b-fb2eb3570073",
   "meta": {
     "templateCredsSetupCompleted": false
   },

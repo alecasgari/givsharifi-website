@@ -96,6 +96,7 @@ Push to `main` triggers existing **Deploy to GitHub Pages** workflow automatical
 ## Workflow design notes
 
 - **If / Switch** nodes for routing — no Code node for branching
+- **Code** nodes for JSON merge/parse (Set node expressions cannot run `Object.assign`, computed keys, or multi-line JS)
 - **AI Agent** + **Google Gemini Chat Model** + **Structured Output Parser** for metadata
 - **GitHub** node for repo files (images, JSON, HTML shell)
 - **AWS S3** node for R2 video/poster upload

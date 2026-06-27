@@ -100,6 +100,109 @@ def wire_agent(connections: dict, agent: str, model: str, parser: str, upstream:
     connect(connections, parser, agent, ctype="ai_outputParser")
 
 
+def code_node(name: str, position: list[int], js_code: str) -> dict:
+    return node(
+        name,
+        "n8n-nodes-base.code",
+        position,
+        {"jsCode": js_code},
+        type_version=2,
+    )
+
+
+def github_raw_content_expr() -> str:
+    """JS snippet: decode GitHub file get response into `raw` string."""
+    return """let raw = github.content ?? '';
+if (github.encoding === 'base64' && raw) {
+  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');
+}
+raw = String(raw).trim();"""
+
+
+MERGE_MANIFEST_CODE = (
+    "const github = $input.first().json;\n"
+    + github_raw_content_expr()
+    + """
+let manifest = {};
+try {
+  manifest = JSON.parse(raw || '{}');
+} catch {
+  manifest = {};
+}
+const fileName = $('Set incoming filename').first().json.incoming_name;
+const meta = $('Gemini photo metadata').first().json.output;
+manifest[fileName] = meta;
+return [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n' } }];
+"""
+)
+
+PARSE_REEL_CODE = """const item = $input.first().json;
+const payload = item.data ?? item.json ?? item.content;
+const reel = typeof payload === 'string' ? JSON.parse(payload) : payload;
+return [{ json: { reel_meta: reel, video_id: reel.id } }];
+"""
+
+PREPEND_VIDEO_CODE = (
+    "const github = $input.first().json;\n"
+    + github_raw_content_expr()
+    + """
+const lib = JSON.parse(raw);
+const id = $('Parse reel metadata').first().json.video_id;
+const meta = $('Gemini video copy').first().json.output;
+const m = $('Parse reel metadata').first().json.reel_meta;
+const d = m.upload_date || '';
+const date = d.length === 8
+  ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
+  : new Date().toISOString().slice(0, 10);
+const entry = {
+  id,
+  file: `${id}.mp4`,
+  poster: `${id}.jpg`,
+  title: meta.title,
+  description: meta.description,
+  date,
+  duration: m.duration_string || '',
+  instagram: m.webpage_url || $('Set reel URL').first().json.reel_url,
+  category: meta.category || 'Patient Stories',
+};
+lib.videos = [entry, ...(lib.videos || [])];
+lib.updated = new Date().toISOString().slice(0, 10);
+return [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n' } }];
+"""
+)
+
+BUILD_POST_JSON_CODE = """const p = $('Gemini blog writer').first().json.output;
+const post = {
+  ...p,
+  author: {
+    name: 'Prof. Giv Sharifi',
+    title: 'Board-Certified Neurosurgeon',
+    url: 'https://www.givsharifi.com/',
+  },
+  featuredImage: `/${p.featuredImagePath}`,
+};
+return [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n' } }];
+"""
+
+PREPEND_INDEX_CODE = (
+    "const github = $input.first().json;\n"
+    + github_raw_content_expr()
+    + """
+const idx = JSON.parse(raw);
+const p = $('Gemini blog writer').first().json.output;
+idx.posts = [{
+  slug: p.slug,
+  title: p.title,
+  excerpt: p.excerpt,
+  date: p.date,
+  category: p.category,
+  image: `/${p.featuredImagePath}`,
+}, ...(idx.posts || [])];
+return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n' } }];
+"""
+)
+
+
 MANIFEST_SCHEMA = {
     "slug": "prof-giv-sharifi-neurosurgery-clinic",
     "alt": "Descriptive alt text for SEO",
@@ -202,25 +305,7 @@ def build_photo_workflow() -> dict:
     )
     nodes.append(gh_manifest_get)
 
-    merge_manifest = node(
-        "Merge manifest entry",
-        "n8n-nodes-base.set",
-        [1100, 0],
-        {
-            "mode": "manual",
-            "assignments": {
-                "assignments": [
-                    {
-                        "id": nid(),
-                        "name": "manifest_json",
-                        "value": "={{ JSON.stringify(Object.assign(JSON.parse($json.content || '{}'), { [$('Set incoming filename').item.json.incoming_name]: $('Gemini photo metadata').item.json.output } }), null, 2) }}",
-                        "type": "string",
-                    }
-                ]
-            },
-        },
-        type_version=3.4,
-    )
+    merge_manifest = code_node("Merge manifest entry", [1100, 0], MERGE_MANIFEST_CODE)
     nodes.append(merge_manifest)
 
     gh_upload = node(
@@ -363,21 +448,7 @@ def build_video_workflow() -> dict:
     )
     nodes.append(read_meta)
 
-    parse_meta = node(
-        "Parse reel metadata",
-        "n8n-nodes-base.set",
-        [880, 0],
-        {
-            "mode": "manual",
-            "assignments": {
-                "assignments": [
-                    {"id": nid(), "name": "reel_meta", "value": "={{ JSON.parse($json.data) }}", "type": "object"},
-                    {"id": nid(), "name": "video_id", "value": "={{ JSON.parse($json.data).id }}", "type": "string"},
-                ]
-            },
-        },
-        type_version=3.4,
-    )
+    parse_meta = code_node("Parse reel metadata", [880, 0], PARSE_REEL_CODE)
     nodes.append(parse_meta)
 
     prompt = (
@@ -441,25 +512,7 @@ def build_video_workflow() -> dict:
     )
     nodes.append(gh_get)
 
-    build_json = node(
-        "Prepend new video entry",
-        "n8n-nodes-base.set",
-        [1760, 0],
-        {
-            "mode": "manual",
-            "assignments": {
-                "assignments": [
-                    {
-                        "id": nid(),
-                        "name": "library_json",
-                        "value": "={{ (() => { const lib = JSON.parse($json.content); const id = $('Parse reel metadata').item.json.video_id; const meta = $('Gemini video copy').item.json.output; const m = $('Parse reel metadata').item.json.reel_meta; const d = m.upload_date || ''; const date = d.length===8 ? d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8) : new Date().toISOString().slice(0,10); const entry = { id, file: id+'.mp4', poster: id+'.jpg', title: meta.title, description: meta.description, date, duration: m.duration_string || '', instagram: m.webpage_url || $('Set reel URL').item.json.reel_url, category: meta.category || 'Patient Stories' }; lib.videos = [entry, ...(lib.videos||[])]; lib.updated = new Date().toISOString().slice(0,10); return JSON.stringify(lib, null, 2); })() }}",
-                        "type": "string",
-                    }
-                ]
-            },
-        },
-        type_version=3.4,
-    )
+    build_json = code_node("Prepend new video entry", [1760, 0], PREPEND_VIDEO_CODE)
     nodes.append(build_json)
 
     gh_put = node(
@@ -591,6 +644,9 @@ def build_blog_workflow() -> dict:
     )
     nodes.append(gh_shell)
 
+    build_post = code_node("Build post JSON", [990, -80], BUILD_POST_JSON_CODE)
+    nodes.append(build_post)
+
     gh_post = node(
         "Create post JSON",
         "n8n-nodes-base.github",
@@ -601,7 +657,7 @@ def build_blog_workflow() -> dict:
             "owner": "={{ $env.GIV_GITHUB_OWNER }}",
             "repository": "={{ $env.GIV_GITHUB_REPO }}",
             "filePath": "={{ 'posts/data/' + $('Gemini blog writer').item.json.output.slug + '.json' }}",
-            "fileContent": "={{ JSON.stringify(Object.assign($('Gemini blog writer').item.json.output, { author: { name: 'Prof. Giv Sharifi', title: 'Board-Certified Neurosurgeon', url: 'https://www.givsharifi.com/' }, featuredImage: '/' + $('Gemini blog writer').item.json.output.featuredImagePath }), null, 2) }}",
+            "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
             "commitMessage": "content: add blog post via Telegram bot",
             "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
@@ -643,25 +699,7 @@ def build_blog_workflow() -> dict:
     )
     nodes.append(gh_index)
 
-    update_index = node(
-        "Prepend to index",
-        "n8n-nodes-base.set",
-        [1540, 0],
-        {
-            "mode": "manual",
-            "assignments": {
-                "assignments": [
-                    {
-                        "id": nid(),
-                        "name": "index_json",
-                        "value": "={{ (() => { const idx = JSON.parse($json.content); const p = $('Gemini blog writer').item.json.output; idx.posts = [{ slug: p.slug, title: p.title, excerpt: p.excerpt, date: p.date, category: p.category, image: '/' + p.featuredImagePath }, ...(idx.posts||[])]; return JSON.stringify(idx, null, 2); })() }}",
-                        "type": "string",
-                    }
-                ]
-            },
-        },
-        type_version=3.4,
-    )
+    update_index = code_node("Prepend to index", [1540, 0], PREPEND_INDEX_CODE)
     nodes.append(update_index)
 
     gh_index_put = node(
@@ -701,8 +739,9 @@ def build_blog_workflow() -> dict:
     connect(c, "Gemini blog model", "Gemini blog writer", ctype="ai_languageModel")
     connect(c, "Blog JSON parser", "Gemini blog writer", ctype="ai_outputParser")
     connect(c, "Gemini blog writer", "Get post HTML shell")
-    connect(c, "Get post HTML shell", "Create post JSON")
+    connect(c, "Get post HTML shell", "Build post JSON")
     connect(c, "Get post HTML shell", "Create blog HTML page")
+    connect(c, "Build post JSON", "Create post JSON")
     connect(c, "Create post JSON", "Get posts index")
     connect(c, "Create blog HTML page", "Get posts index")
     connect(c, "Get posts index", "Prepend to index")
