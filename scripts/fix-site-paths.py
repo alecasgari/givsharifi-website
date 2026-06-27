@@ -8,13 +8,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-SITE_BASE_BLOCK = """<base href="/" id="site-base">
+SITE_BASE_BLOCK = """<base href='/' id="site-base">
   <script>
 (function(){var b=document.getElementById('site-base');var r='/';if(/\\.github\\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';b.href=r;}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\\/\\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\\//,'');};})();
 </script>"""
 
 OLD_BASE_SCRIPT = re.compile(
-    r'<script>\s*\(function\(\)\{var r=\'/\';if\(/\\\.github\\\.io\$.*?document\.head\.appendChild\(b\);\}\)\(\);\s*</script>',
+    r'<base href=["\']/?["\'] id="site-base">\s*<script>\s*\(function\(\)\{var b=document\.getElementById\(\'site-base\'\);.*?\}\)\(\);\s*</script>',
+    re.DOTALL,
+)
+BROKEN_BASE = re.compile(
+    r'<base href="\./" id="site-base">\s*<script>\s*\(function\(\)\{var b=document\.getElementById\(\'site-base\'\);.*?\}\)\(\);\s*</script>',
     re.DOTALL,
 )
 
@@ -30,7 +34,8 @@ HOME_HREF = re.compile(r'\bhref="/"')
 
 
 def fix_html(text: str) -> str:
-    if OLD_BASE_SCRIPT.search(text):
+    if BROKEN_BASE.search(text) or OLD_BASE_SCRIPT.search(text):
+        text = BROKEN_BASE.sub(SITE_BASE_BLOCK, text, count=1)
         text = OLD_BASE_SCRIPT.sub(SITE_BASE_BLOCK, text, count=1)
     elif 'id="site-base"' not in text and 'window.__SITE_ROOT__' not in text:
         marker = '<meta charset="UTF-8">'
