@@ -62,6 +62,10 @@
       )
       .join('');
 
+    if (window.GivVideoPlayback) {
+      window.GivVideoPlayback.bindSingleVideoPlayback(grid);
+    }
+
     document.dispatchEvent(new CustomEvent('giv:home-videos-ready'));
   }
 

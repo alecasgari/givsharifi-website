@@ -192,11 +192,18 @@ https://media.givsharifi.com/homepage/Cranial-Nerves-Problem.mp4
 
 ## مرحله بعد: تالار ویدیو (`/videos/`)
 
-وقتی این ۴ تا درست شد:
+پوشه R2: **`library/`** — همان bucket `givsharifi-videos`.
 
-1. پوشه جدید در bucket: مثلاً `library/`
-2. بقیه ویدیوها را آنجا آپلود کنید
-3. صفحه `/videos/` را با JSON مشابه `home-videos.json` می‌سازیم
+1. در Cloudflare R2 → bucket → پوشه `library` بسازید.
+2. فایل‌های `video/library/*.mp4` را آپلود کنید (۹ ریل اینستاگرام).
+3. سایت از `assets/data/video-library.json` می‌خواند (`baseUrl` + `pathPrefix: library`).
+4. برای دانلود مجدد ریل‌ها: `python scripts/download-instagram-reels.py`
+5. برای به‌روزرسانی JSON: `python scripts/build-video-library.py`
+
+تست لینک:
+```
+https://media.givsharifi.com/library/DZ455nVtZ30.mp4
+```
 
 ---
 

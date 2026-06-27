@@ -6,27 +6,85 @@
 (function(){var r='/';if(/\.github\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\/\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\//,'');};var b=document.createElement('base');b.id='site-base';b.href=r;document.head.appendChild(b);})();
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Gallery | Prof. Giv Sharifi</title>
-  <meta name="description" content="Educational neurosurgery videos by Prof. Giv Sharifi.">
-  <meta name="robots" content="noindex">
+  <title>Video Gallery | Prof. Giv Sharifi — Neurosurgery Education</title>
+  <meta name="description" content="Educational neurosurgery videos and Instagram reels by Prof. Giv Sharifi — brain surgery, spine surgery, patient stories, and surgical education. Dubai &amp; Tehran.">
+  <meta name="keywords" content="neurosurgery videos, brain surgery video, spine surgery education, Prof Giv Sharifi Instagram">
   <link rel="canonical" href="https://www.givsharifi.com/videos/">
+  <meta property="og:title" content="Neurosurgery Video Gallery — Prof. Giv Sharifi">
+  <meta property="og:description" content="Surgical education videos and patient stories from Prof. Giv Sharifi.">
+  <meta property="og:url" content="https://www.givsharifi.com/videos/">
+  <meta property="og:type" content="website">
   <link rel="stylesheet" href="assets/css/site.bundle.css">
   <link rel="stylesheet" href="assets/css/pages.css">
+  <link rel="stylesheet" href="assets/css/videos.css">
   <link rel="icon" href="assets/images/brand/favicon.svg" type="image/svg+xml">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.givsharifi.com/"},
+      {"@type": "ListItem", "position": 2, "name": "Videos", "item": "https://www.givsharifi.com/videos/"}
+    ]
+  }
+  </script>
 </head>
-<body class="site-page">
+<body class="site-page vid-page">
   <div id="site-header"></div>
-  <main class="pg-soon">
-    <div class="container pg-soon__box">
-      <span class="hp-label">Video Gallery</span>
-      <h1>Surgery Education Videos</h1>
-      <p>Our full video library — surgical education, patient stories, and expert commentary — is being prepared for launch.</p>
-      <p class="pg-soon__note">Coming soon.</p>
-      <a href="./" class="btn btn--primary">Back to Home</a>
+
+  <main>
+    <section class="vid-hero">
+      <div class="container">
+        <nav class="blog-breadcrumb" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="./">Home</a></li>
+            <li aria-current="page">Videos</li>
+          </ol>
+        </nav>
+        <p class="vid-hero__label">Video library</p>
+        <h1>Neurosurgery Education Videos</h1>
+        <p class="vid-hero__lead">Surgical education, post-operative visits, and patient stories from Prof. Giv Sharifi — also shared on <a href="https://www.instagram.com/dr.guive.sharifi/" target="_blank" rel="noopener noreferrer" style="color:inherit">@dr.guive.sharifi</a>.</p>
+        <p class="vid-hero__meta" id="vid-updated">Loading…</p>
+        <p class="vid-warn"><strong>Note:</strong> Some content may show surgical procedures or clinical settings.</p>
+      </div>
+    </section>
+
+    <div class="vid-toolbar">
+      <div class="container vid-toolbar__inner">
+        <label class="vid-search">
+          <span class="visually-hidden">Search videos</span>
+          <input type="search" id="vid-search" placeholder="Search videos…" autocomplete="off">
+        </label>
+        <span class="vid-count" id="vid-count" aria-live="polite"></span>
+      </div>
     </div>
+
+    <section class="vid-list" aria-label="Video list">
+      <div class="container">
+        <div class="vid-grid" id="vid-grid">
+          <p class="vid-loading">Loading videos…</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pg-cta" aria-label="Consultation">
+      <div class="container pg-cta__inner">
+        <h2>Questions after watching?</h2>
+        <p>Book a free consultation in Dubai, Tehran, or online — bring your MRI for specialist review.</p>
+        <div class="pg-cta__actions">
+          <button type="button" class="btn btn--primary btn--lg" data-open-consultation>Free Consultation</button>
+          <a href="brain-surgery/" class="btn btn--secondary btn--lg">Our Services</a>
+        </div>
+      </div>
+    </section>
   </main>
+
   <div id="site-footer"></div>
   <script src="assets/js/layout.js"></script>
+  <script src="assets/js/form.js"></script>
+  <script src="assets/js/video-playback.js"></script>
+  <script src="assets/js/video-gallery.js"></script>
   <script src="assets/js/analytics.js" defer></script>
 </body>
 </html>
