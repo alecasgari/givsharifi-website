@@ -65,26 +65,9 @@ If you use **n8n Cloud**, replace the **Execute Command** node with an HTTP call
 
 After a photo is pushed to `_incoming/`, workflow `01` calls `repository_dispatch` event `process-gallery`.
 
-Add this job to `.github/workflows/content-automation.yml` (or merge into deploy):
+### 6. n8n binary mode (self-hosted)
 
-```yaml
-on:
-  repository_dispatch:
-    types: [process-gallery]
-
-jobs:
-  process-gallery:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: pip install Pillow
-      - run: python scripts/process-gallery.py
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: process gallery images from n8n"
-```
-
-Push to `main` triggers existing **Deploy to GitHub Pages** workflow automatically.
+If `N8N_DEFAULT_BINARY_DATA_MODE=filesystem` (n8n v2 default), binary fields are file references — not raw Base64. Workflow `01` uses a **Prepare photo base64** Code node with `getBinaryDataBuffer()` before the GitHub upload. Do not set GitHub `fileContent` to `binary.data` directly.
 
 ## Bot usage
 

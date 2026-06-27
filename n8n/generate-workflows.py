@@ -132,9 +132,20 @@ try {
 const fileName = $('Set incoming filename').first().json.incoming_name;
 const meta = $('Gemini photo metadata').first().json.output;
 manifest[fileName] = meta;
-return [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n' } }];
+return [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n', manifest_sha: github.sha || '' } }];
 """
 )
+
+PREPARE_PHOTO_UPLOAD_CODE = """const photoItem = $('Download Telegram photo').first();
+const buffer = await this.helpers.getBinaryDataBuffer(photoItem, 'data');
+
+return [{
+  json: {
+    manifest_json: $input.first().json.manifest_json,
+    photo_base64: buffer.toString('base64'),
+  },
+}];
+"""
 
 PARSE_REEL_CODE = """const item = $input.first().json;
 const payload = item.data ?? item.json ?? item.content;
@@ -308,6 +319,9 @@ def build_photo_workflow() -> dict:
     merge_manifest = code_node("Merge manifest entry", [1100, 0], MERGE_MANIFEST_CODE)
     nodes.append(merge_manifest)
 
+    prepare_photo = code_node("Prepare photo base64", [1210, -80], PREPARE_PHOTO_UPLOAD_CODE)
+    nodes.append(prepare_photo)
+
     gh_upload = node(
         "Upload photo to _incoming",
         "n8n-nodes-base.github",
@@ -318,7 +332,7 @@ def build_photo_workflow() -> dict:
             "owner": "={{ $env.GIV_GITHUB_OWNER }}",
             "repository": "={{ $env.GIV_GITHUB_REPO }}",
             "filePath": "={{ 'assets/images/gallery/_incoming/' + $('Set incoming filename').item.json.incoming_name }}",
-            "fileContent": "={{ $('Download Telegram photo').item.binary.data }}",
+            "fileContent": "={{ $json.photo_base64 }}",
             "commitMessage": "content: add gallery photo via Telegram bot",
             "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
@@ -339,6 +353,9 @@ def build_photo_workflow() -> dict:
             "fileContent": "={{ $('Merge manifest entry').item.json.manifest_json }}",
             "commitMessage": "content: update gallery manifest via Telegram bot",
             "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
+            "additionalParameters": {
+                "sha": "={{ $('Merge manifest entry').item.json.manifest_sha }}",
+            },
         },
         type_version=1.1,
     )
@@ -379,8 +396,9 @@ def build_photo_workflow() -> dict:
     wire_agent(c, "Gemini photo metadata", "Gemini photo model", "Photo metadata parser", "Set incoming filename")
     connect(c, "Gemini photo metadata", "Get manifest.json")
     connect(c, "Get manifest.json", "Merge manifest entry")
-    connect(c, "Merge manifest entry", "Upload photo to _incoming")
+    connect(c, "Merge manifest entry", "Prepare photo base64")
     connect(c, "Merge manifest entry", "Update manifest.json")
+    connect(c, "Prepare photo base64", "Upload photo to _incoming")
     connect(c, "Upload photo to _incoming", "Dispatch process-gallery")
     connect(c, "Update manifest.json", "Dispatch process-gallery")
     connect(c, "Dispatch process-gallery", "Telegram success")

@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "d38413b8-242b-49e9-b448-3a327b1ce488",
+      "id": "a0b1f3f7-6901-40a8-a387-931a590f407a",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -17,7 +17,7 @@
         "resource": "file",
         "fileId": "={{ $json.photo_file_id }}"
       },
-      "id": "97b8d7cd-78e5-4bba-a69f-3e699630b20d",
+      "id": "2d11d09d-9c5d-406e-bcdb-6947fed05cff",
       "name": "Download Telegram photo",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -33,19 +33,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "7cc090e5-f8c7-448f-aa5f-4dd99ea67836",
+              "id": "65cdf3a4-3503-4623-9c06-73ef70d21412",
               "name": "incoming_name",
               "value": "={{ 'tg-' + $now.toFormat('yyyyMMdd-HHmmss') + '.jpg' }}",
               "type": "string"
             },
             {
-              "id": "3905f7cd-6330-474e-aea7-f600d4ea3dc3",
+              "id": "0a34432e-90dc-404b-a49b-a052af374f38",
               "name": "chat_id",
               "value": "={{ $('When called by router').item.json.chat_id }}",
               "type": "number"
             },
             {
-              "id": "4a871ec3-7ff3-486b-aa1e-8cf386da9e70",
+              "id": "e4fd2286-eca5-4d63-9a20-a82680e921db",
               "name": "caption",
               "value": "={{ $('When called by router').item.json.caption || '' }}",
               "type": "string"
@@ -53,7 +53,7 @@
           ]
         }
       },
-      "id": "3c03eefb-39bf-4f61-be4d-f0a8a8894d1b",
+      "id": "3755c73c-3f3d-4bfc-aa30-2ffc519a9a68",
       "name": "Set incoming filename",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -68,7 +68,7 @@
           "temperature": 0.3
         }
       },
-      "id": "d3ee48fc-7f3c-474b-a259-fca409520003",
+      "id": "12d26fd6-9b78-443d-96e2-3f3f18c7fcf8",
       "name": "Gemini photo model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -81,7 +81,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"slug\": \"prof-giv-sharifi-neurosurgery-clinic\",\n  \"alt\": \"Descriptive alt text for SEO\",\n  \"title\": \"Short gallery title\",\n  \"category\": \"Surgery\",\n  \"featured\": false\n}"
       },
-      "id": "c854b233-0d1e-45bb-8b0e-417ec517e7fd",
+      "id": "7c7a6065-8af2-48d4-b86c-1202b0c91537",
       "name": "Photo metadata parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -99,7 +99,7 @@
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "a456167a-9fff-4825-b104-d07c992fcad4",
+      "id": "4000d201-b1d5-4a8e-a7f4-715c39cc5ff7",
       "name": "Gemini photo metadata",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -117,7 +117,7 @@
         "filePath": "assets/images/gallery/_incoming/manifest.json",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "a54b27a6-f59b-4b87-a127-010850cd6dc4",
+      "id": "42d50034-4725-427d-9113-3eef2f75b066",
       "name": "Get manifest.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -128,9 +128,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const github = $input.first().json;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nlet manifest = {};\ntry {\n  manifest = JSON.parse(raw || '{}');\n} catch {\n  manifest = {};\n}\nconst fileName = $('Set incoming filename').first().json.incoming_name;\nconst meta = $('Gemini photo metadata').first().json.output;\nmanifest[fileName] = meta;\nreturn [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n' } }];\n"
+        "jsCode": "const github = $input.first().json;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nlet manifest = {};\ntry {\n  manifest = JSON.parse(raw || '{}');\n} catch {\n  manifest = {};\n}\nconst fileName = $('Set incoming filename').first().json.incoming_name;\nconst meta = $('Gemini photo metadata').first().json.output;\nmanifest[fileName] = meta;\nreturn [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n', manifest_sha: github.sha || '' } }];\n"
       },
-      "id": "1481de09-1ee5-4b51-9ae8-8bb584eaac15",
+      "id": "56531d9e-070e-4625-8f90-0f15fc3074f4",
       "name": "Merge manifest entry",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -141,16 +141,29 @@
     },
     {
       "parameters": {
+        "jsCode": "const photoItem = $('Download Telegram photo').first();\nconst buffer = await this.helpers.getBinaryDataBuffer(photoItem, 'data');\n\nreturn [{\n  json: {\n    manifest_json: $input.first().json.manifest_json,\n    photo_base64: buffer.toString('base64'),\n  },\n}];\n"
+      },
+      "id": "b2278922-1ad9-4a92-8685-ec6ffc0a3722",
+      "name": "Prepare photo base64",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1210,
+        -80
+      ]
+    },
+    {
+      "parameters": {
         "resource": "file",
         "operation": "create",
         "owner": "={{ $env.GIV_GITHUB_OWNER }}",
         "repository": "={{ $env.GIV_GITHUB_REPO }}",
         "filePath": "={{ 'assets/images/gallery/_incoming/' + $('Set incoming filename').item.json.incoming_name }}",
-        "fileContent": "={{ $('Download Telegram photo').item.binary.data }}",
+        "fileContent": "={{ $json.photo_base64 }}",
         "commitMessage": "content: add gallery photo via Telegram bot",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "7a683de4-623f-4d1c-9424-54408de6cb4d",
+      "id": "71759e1a-71e5-4a26-81b0-559ad985d8df",
       "name": "Upload photo to _incoming",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -168,9 +181,12 @@
         "filePath": "assets/images/gallery/_incoming/manifest.json",
         "fileContent": "={{ $('Merge manifest entry').item.json.manifest_json }}",
         "commitMessage": "content: update gallery manifest via Telegram bot",
-        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
+        "additionalParameters": {
+          "sha": "={{ $('Merge manifest entry').item.json.manifest_sha }}"
+        }
       },
-      "id": "c821dd46-934d-4d98-8d52-ea16f3f95b82",
+      "id": "660f3245-01a4-467d-bdfa-4128b32cab07",
       "name": "Update manifest.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -189,7 +205,7 @@
         "specifyBody": "json",
         "jsonBody": "={\"event_type\":\"process-gallery\",\"client_payload\":{\"source\":\"n8n\"}}"
       },
-      "id": "232727d5-2ceb-466b-8528-f43df53ef2ff",
+      "id": "06efceeb-2354-4221-86c4-27049bb6165f",
       "name": "Dispatch process-gallery",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -204,7 +220,7 @@
         "chatId": "={{ $('When called by router').item.json.chat_id }}",
         "text": "=Photo queued for processing.\n\nTitle: {{ $('Gemini photo metadata').item.json.output.title }}\nSlug: {{ $('Gemini photo metadata').item.json.output.slug }}\n\nGallery will update in ~2 min: {{ $env.GIV_SITE_URL }}/gallery/"
       },
-      "id": "a0fdfb97-5056-4535-8fe8-395d3d7ad1c5",
+      "id": "70185b19-7587-4213-be9a-77272e751065",
       "name": "Telegram success",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -217,7 +233,7 @@
       "parameters": {
         "content": "## Photo publish\nTelegram photo → Gemini (alt/slug) → GitHub `_incoming/` + manifest → `repository_dispatch` → `process-gallery.py` → WebP + gallery.json → GitHub Pages deploy."
       },
-      "id": "557b06ff-31d3-4c81-b375-636d7faba101",
+      "id": "bb4efc5a-39bf-4ec6-b7bb-aa8a8a5fc988",
       "name": "Note: Photo flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -309,12 +325,23 @@
       "main": [
         [
           {
-            "node": "Upload photo to _incoming",
+            "node": "Prepare photo base64",
             "type": "main",
             "index": 0
           },
           {
             "node": "Update manifest.json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare photo base64": {
+      "main": [
+        [
+          {
+            "node": "Upload photo to _incoming",
             "type": "main",
             "index": 0
           }
@@ -360,7 +387,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "44d8c286-d804-4cbc-8398-6fcf7bb576f7",
+  "versionId": "633d18f9-e682-424a-8bdd-0b20cbdcd1bb",
   "meta": {
     "templateCredsSetupCompleted": false
   },

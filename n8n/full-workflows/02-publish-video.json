@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "6a7b9643-22c0-4141-95dd-fcaceb9c07ca",
+      "id": "0f71139c-ca92-4ecb-9df1-0655238e32a9",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -18,19 +18,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "3cf49804-f05b-4ade-987e-163c55af6bea",
+              "id": "0d560bed-b21e-47ef-ba97-598393df7bf6",
               "name": "reel_url",
               "value": "={{ $json.reel_url }}",
               "type": "string"
             },
             {
-              "id": "e232f02a-4d9e-4c2a-92b6-f8ccc5f959fc",
+              "id": "d5c18afc-c543-4080-b6d3-df655871fbff",
               "name": "chat_id",
               "value": "={{ $json.chat_id }}",
               "type": "number"
             },
             {
-              "id": "74e4561f-f52f-46ac-9d33-fe502a4176c1",
+              "id": "e3f87983-f527-4198-8a40-c5f2fdd21834",
               "name": "work_dir",
               "value": "=/tmp/giv-video-{{ $execution.id }}",
               "type": "string"
@@ -38,7 +38,7 @@
           ]
         }
       },
-      "id": "4f5ae6b7-0ff5-4a75-9b66-bee12a2837bc",
+      "id": "42e36934-0a0b-4ee7-8f9d-9595799ed7a2",
       "name": "Set reel URL",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -51,7 +51,7 @@
       "parameters": {
         "command": "=mkdir -p {{ $json.work_dir }} && yt-dlp --no-playlist -f 'mp4/best' -o '{{ $json.work_dir }}/%(id)s.%(ext)s' --write-info-json --write-thumbnail --convert-thumbnails jpg '{{ $json.reel_url }}'"
       },
-      "id": "72e95ddb-4cfa-4f38-ae59-d50b0a4ebd2d",
+      "id": "b10e22b4-0f27-4566-858d-2421021eafc4",
       "name": "yt-dlp download",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -67,7 +67,7 @@
         "fileSelector": "={{ $json.work_dir + '/*.info.json' }}",
         "options": {}
       },
-      "id": "9cc667bb-6c8e-4bb5-b1b7-bd9dab7153b6",
+      "id": "449e5592-3a99-47d8-8101-8844f822b499",
       "name": "Read info JSON",
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
@@ -80,7 +80,7 @@
       "parameters": {
         "jsCode": "const item = $input.first().json;\nconst payload = item.data ?? item.json ?? item.content;\nconst reel = typeof payload === 'string' ? JSON.parse(payload) : payload;\nreturn [{ json: { reel_meta: reel, video_id: reel.id } }];\n"
       },
-      "id": "ce213420-0cac-4f08-8a3c-6a836bc7a7ef",
+      "id": "a05b14ae-6fd6-4d87-8eb0-88931edefb53",
       "name": "Parse reel metadata",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -95,7 +95,7 @@
           "temperature": 0.3
         }
       },
-      "id": "755a5b91-8c18-43ca-8532-79cf3d5ee7c1",
+      "id": "9a77cdfe-2627-44c3-9f9e-68ae17e35d00",
       "name": "Gemini video model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -108,7 +108,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"title\": \"English video title max 80 chars\",\n  \"description\": \"English description max 160 chars\",\n  \"category\": \"Patient Stories\"\n}"
       },
-      "id": "129dc772-20b9-4bf5-ab98-4e7828f0a12d",
+      "id": "950719f4-334e-4d34-b724-b6b703a0e188",
       "name": "Video copy parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -126,7 +126,7 @@
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "745a8ad5-d191-4db9-bd2c-e3b0e124626a",
+      "id": "d3086caa-8686-4a2e-9f36-c0dedb062fbe",
       "name": "Gemini video copy",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -143,7 +143,7 @@
         "additionalFields": {},
         "binaryPropertyName": "data"
       },
-      "id": "b3f2fec1-0b56-4dfe-9914-3d4928fae87f",
+      "id": "b44ee50e-3948-46c6-9f6b-95153391e7fa",
       "name": "Upload MP4 to R2",
       "type": "n8n-nodes-base.awsS3",
       "typeVersion": 2,
@@ -160,7 +160,7 @@
         "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.jpg",
         "additionalFields": {}
       },
-      "id": "dd9390df-4ee2-40e3-8751-592ab2cc3df5",
+      "id": "12418677-02cf-450f-a8bf-f42c3a9c9ac9",
       "name": "Upload poster to R2",
       "type": "n8n-nodes-base.awsS3",
       "typeVersion": 2,
@@ -178,7 +178,7 @@
         "filePath": "assets/data/video-library.json",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "ca976990-9146-409b-998a-40c533a68e55",
+      "id": "bbad0efa-6a16-4d60-b35c-5d9bb1f13c30",
       "name": "Get video-library.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -191,7 +191,7 @@
       "parameters": {
         "jsCode": "const github = $input.first().json;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nconst lib = JSON.parse(raw);\nconst id = $('Parse reel metadata').first().json.video_id;\nconst meta = $('Gemini video copy').first().json.output;\nconst m = $('Parse reel metadata').first().json.reel_meta;\nconst d = m.upload_date || '';\nconst date = d.length === 8\n  ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`\n  : new Date().toISOString().slice(0, 10);\nconst entry = {\n  id,\n  file: `${id}.mp4`,\n  poster: `${id}.jpg`,\n  title: meta.title,\n  description: meta.description,\n  date,\n  duration: m.duration_string || '',\n  instagram: m.webpage_url || $('Set reel URL').first().json.reel_url,\n  category: meta.category || 'Patient Stories',\n};\nlib.videos = [entry, ...(lib.videos || [])];\nlib.updated = new Date().toISOString().slice(0, 10);\nreturn [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n' } }];\n"
       },
-      "id": "07b0cd10-4284-4623-9a03-612c0548f31b",
+      "id": "8fcb61f3-2ce0-4d9d-8398-b065277e4531",
       "name": "Prepend new video entry",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -211,7 +211,7 @@
         "commitMessage": "content: add video via Telegram bot",
         "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
       },
-      "id": "87ef4aa4-0006-4b97-8e3c-06ba5c116793",
+      "id": "6cd60e47-e900-44df-9729-2f742182b82a",
       "name": "Update video-library.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -225,7 +225,7 @@
         "chatId": "={{ $('When called by router').item.json.chat_id }}",
         "text": "=Video published.\n\n{{ $('Gemini video copy').item.json.output.title }}\n\n{{ $env.GIV_SITE_URL }}/videos/"
       },
-      "id": "6c38404b-fc35-49a2-ab6f-011e2c12c2aa",
+      "id": "95e14023-8dcb-41e4-bde1-e2bebc5e3916",
       "name": "Telegram success",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -238,7 +238,7 @@
       "parameters": {
         "content": "## Video publish\nInstagram URL → yt-dlp → Gemini English copy → R2 `library/` (S3 node) → `video-library.json` on GitHub.\n\nAdd **Read/Write File** nodes for MP4/JPG binaries before S3 uploads if Execute Command output needs wiring."
       },
-      "id": "a0998721-1f2d-4eb3-9734-e5ed6d46ada2",
+      "id": "df5d8e2a-c471-4071-8dc0-28071dd4ce8e",
       "name": "Note: Video flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -386,7 +386,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8541fe3d-ffa4-4534-947f-819d4e0e9a64",
+  "versionId": "7cb0cb1f-cb6e-4c52-8e95-65c49216c593",
   "meta": {
     "templateCredsSetupCompleted": false
   },
