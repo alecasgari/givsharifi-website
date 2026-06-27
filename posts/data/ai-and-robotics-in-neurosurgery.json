@@ -1,0 +1,135 @@
+{
+  "slug": "ai-and-robotics-in-neurosurgery",
+  "title": "AI and Robotics in Neurosurgery: Precision, Planning & Patient Outcomes",
+  "metaDescription": "How artificial intelligence and robotic neurosurgery improve surgical planning, tumour resection, and spine procedures — with Prof. Giv Sharifi in Dubai and Tehran.",
+  "excerpt": "Artificial intelligence and robotic systems are reshaping neurosurgery — from MRI analysis and surgical navigation to brain and spine procedures with greater precision and safer outcomes.",
+  "date": "2023-05-05",
+  "category": "Neurosurgery",
+  "tags": [
+    "AI neurosurgery",
+    "robotic neurosurgery",
+    "surgical navigation",
+    "brain tumour surgery",
+    "neurosurgery Dubai",
+    "neurosurgeon Tehran",
+    "robotic spine surgery",
+    "intraoperative MRI"
+  ],
+  "author": {
+    "name": "Prof. Giv Sharifi",
+    "title": "Board-Certified Neurosurgeon",
+    "url": "https://www.givsharifi.com/"
+  },
+  "featuredImage": "/assets/images/blog/ai-and-robotics.webp",
+  "readingTimeMinutes": 7,
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Artificial intelligence and robotics are no longer experimental add-ons in neurosurgery — they are becoming standard tools in planning, navigation, and execution of complex brain and spine procedures. From analysing MRI scans in seconds to guiding instruments with sub-millimetre accuracy, these technologies help neurosurgeons operate more safely on the most delicate structures in the human body."
+    },
+    {
+      "type": "paragraph",
+      "text": "Prof. Giv Sharifi, practising in Dubai and Tehran, integrates advanced imaging and navigation into everyday surgical care. The goal is not technology for its own sake, but better outcomes: smaller incisions, more complete tumour removal, and faster recovery for patients across the Gulf and beyond."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Why AI Matters Before Surgery Even Begins"
+    },
+    {
+      "type": "paragraph",
+      "text": "Most surgical risk is determined in the planning phase. AI-assisted software can segment brain tumours on MRI, map white-matter tracts with tractography, and highlight vessels and eloquent cortex that must be preserved. Machine learning models trained on thousands of scans can flag subtle pathology that might be missed on a quick review."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Automated tumour volume measurement and growth tracking",
+        "Functional MRI integration for language and motor mapping",
+        "Predictive models for surgical risk and expected recovery",
+        "Fusion of CT, MRI, and PET for unified 3D surgical models",
+        "Decision support for when to operate vs. observe or treat medically"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "AI augments — it does not replace — the judgement of an experienced neurosurgeon. Final decisions about approach, timing, and extent of resection remain human, informed by decades of clinical experience and direct patient assessment."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Robotic Assistance in the Operating Theatre"
+    },
+    {
+      "type": "paragraph",
+      "text": "Robotic systems in neurosurgery act as precision platforms rather than autonomous surgeons. They stabilise instruments, filter hand tremor, and hold trajectories during long procedures. In spine surgery, robotic arms guide pedicle screw placement. In skull base and pituitary surgery, endoscopic holders and navigation-linked tools improve consistency."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Increased precision in tumour resection near critical brain areas",
+        "Enhanced 3D visualisation of anatomy during minimally invasive approaches",
+        "Reduced surgeon fatigue during lengthy operations",
+        "More consistent screw placement in spinal fusion",
+        "Integration with neuronavigation for real-time instrument tracking"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Neuronavigation & Intraoperative Imaging"
+    },
+    {
+      "type": "paragraph",
+      "text": "Neuronavigation links pre-operative scans to the patient's anatomy in real time. The surgeon sees instrument position overlaid on MRI or CT, reducing the need for large exploratory openings. Intraoperative ultrasound and MRI can confirm tumour removal before the patient leaves the operating theatre — especially valuable in glioma and pituitary surgery."
+    },
+    {
+      "type": "paragraph",
+      "text": "For patients, this means fewer repeat surgeries, better preservation of speech and movement, and greater confidence that the surgical goal was achieved in a single procedure."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Applications Across Brain & Spine Surgery"
+    },
+    {
+      "type": "paragraph",
+      "text": "AI and robotics touch nearly every subspecialty. Brain tumour surgery benefits from enhanced resection planning. Pituitary and skull base procedures use endoscopic navigation. Spinal surgery employs robotic screw guidance and AI-assisted alignment analysis. Vascular neurosurgery uses flow models and 3D angiography fusion."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Care in Dubai, Tehran & for International Patients"
+    },
+    {
+      "type": "paragraph",
+      "text": "Patients in Dubai (City Walk) and Tehran (Tavanir) can access neurosurgical care that incorporates modern navigation and minimally invasive technique. International patients travelling for neurosurgery in Iran benefit from coordinated medical tourism support — from MRI review and consultation to surgery and rehabilitation planning."
+    },
+    {
+      "type": "cta",
+      "text": "Learn about our neurosurgery services",
+      "href": "/brain-surgery/"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "The Human Element Remains Central"
+    },
+    {
+      "type": "paragraph",
+      "text": "Technology cannot replicate the experience required when a surgery takes an unexpected turn, when anatomy differs from the scan, or when a family needs clear, honest communication. The best outcomes combine advanced tools with a surgeon who has performed thousands of brain and spine procedures."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Looking Ahead"
+    },
+    {
+      "type": "paragraph",
+      "text": "The next decade will bring augmented reality overlays in theatre, AI that learns from operative video, and ever more personalised treatment pathways. For patients considering neurosurgery today, the practical question is simpler: does your surgeon use modern planning and navigation to make your procedure as safe and effective as possible?"
+    },
+    {
+      "type": "paragraph",
+      "text": "If you have a brain or spine condition and want a specialist review of your imaging, a consultation is the essential first step. Early, accurate assessment opens the door to the right treatment — whether surgical or conservative — at the right time."
+    }
+  ]
+}

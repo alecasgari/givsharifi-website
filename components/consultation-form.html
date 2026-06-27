@@ -1,0 +1,73 @@
+<form class="form-card" data-consultation-form novalidate>
+  <header class="form-card__header">
+    <h3 class="form-card__title" id="consultation-modal-title">Free Consultation</h3>
+    <p class="form-card__subtitle">We reply on WhatsApp within 24 hours</p>
+  </header>
+
+  <div class="form-message" role="alert"></div>
+
+  <div class="form-loading" aria-hidden="true">
+    <div class="form-loading__spinner"></div>
+    <p>Please wait up to 1 minute<br>to submit your free consultation.</p>
+  </div>
+
+  <!-- Honeypot: hidden from users, bots often fill "website" fields -->
+  <div class="form-hp" aria-hidden="true">
+    <label for="cf-website">Website URL<input type="text" id="cf-website" name="website" tabindex="-1" autocomplete="off" value=""></label>
+  </div>
+
+  <div class="form-group">
+    <label for="cf-name">Full name</label>
+    <input type="text" id="cf-name" name="patient_name" required autocomplete="name" placeholder="Your full name">
+  </div>
+
+  <div class="form-group">
+    <label for="cf-phone">WhatsApp number</label>
+    <div class="phone-field">
+      <select id="cf-country-code" class="phone-field__code" name="patient_number_copy_country" required autocomplete="tel-country-code" aria-label="Country code">
+        <option value="971" selected>+971 🇦🇪</option>
+        <option value="98">+98 🇮🇷</option>
+        <option value="966">+966 🇸🇦</option>
+        <option value="965">+965 🇰🇼</option>
+        <option value="974">+974 🇶🇦</option>
+        <option value="968">+968 🇴🇲</option>
+        <option value="973">+973 🇧🇭</option>
+        <option value="44">+44 🇬🇧</option>
+        <option value="1">+1 🇺🇸</option>
+        <option value="49">+49 🇩🇪</option>
+        <option value="33">+33 🇫🇷</option>
+        <option value="91">+91 🇮🇳</option>
+        <option value="92">+92 🇵🇰</option>
+        <option value="90">+90 🇹🇷</option>
+        <option value="7">+7 🇷🇺</option>
+        <option value="86">+86 🇨🇳</option>
+        <option value="61">+61 🇦🇺</option>
+        <option value="39">+39 🇮🇹</option>
+        <option value="31">+31 🇳🇱</option>
+        <option value="41">+41 🇨🇭</option>
+        <option value="46">+46 🇸🇪</option>
+        <option value="47">+47 🇳🇴</option>
+        <option value="45">+45 🇩🇰</option>
+        <option value="34">+34 🇪🇸</option>
+        <option value="351">+351 🇵🇹</option>
+        <option value="30">+30 🇬🇷</option>
+        <option value="20">+20 🇪🇬</option>
+        <option value="962">+962 🇯🇴</option>
+        <option value="961">+961 🇱🇧</option>
+        <option value="964">+964 🇮🇶</option>
+        <option value="93">+93 🇦🇫</option>
+      </select>
+      <input type="tel" id="cf-phone" class="phone-field__number" name="patient_number" required autocomplete="tel-national" inputmode="tel" placeholder="50 123 4567">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="cf-issue">Describe your issue</label>
+    <div class="form-textarea-wrap">
+      <textarea id="cf-issue" name="issue" required maxlength="300" rows="3" placeholder="Briefly describe your symptoms or question…"></textarea>
+      <span class="form-char-count" data-char-count aria-live="polite">0 / 300</span>
+    </div>
+  </div>
+
+  <button type="submit" class="form-submit btn btn--primary btn--block">Get Free Consultation</button>
+</form>

@@ -1,0 +1,26 @@
+{
+  "name": "Prof. Giv Sharifi",
+  "tagline": "Neurosurgeon — Dubai & Tehran",
+  "domain": "https://www.givsharifi.com",
+  "phoneUAE": "+971 50 579 3627",
+  "phoneIran": "+98 912 96 46 397",
+  "email": "info@givsharifi.com",
+  "whatsappUAE": "971505793627",
+  "whatsappIran": "989129646397",
+  "locations": [
+    "City Walk, Dubai, UAE",
+    "Tavanir, Tehran, Iran"
+  ],
+  "hours": {
+    "weekdays": "Mon–Fri: 9am – 9pm",
+    "weekend": "Sat–Sun: 11am – 9pm"
+  },
+  "webhookUrl": "https://n8n.alecasgari.com/webhook/7d580876-f96b-4a1b-a829-3a7458caf881",
+  "gtmId": "GTM-PSFDMJX9",
+  "ga4Id": "G-RTRXEXJ8Y6",
+  "social": {
+    "instagram": "https://www.instagram.com/dr.guive.sharifi",
+    "linkedin": "https://www.linkedin.com/in/guive-sharifi-82a52144/",
+    "youtube": "https://www.youtube.com/@givsharifi"
+  }
+}

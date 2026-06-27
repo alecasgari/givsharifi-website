@@ -1,0 +1,141 @@
+.container {
+  width: min(100% - 2rem, var(--max-width));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--space-2xl);
+}
+
+.section--gray {
+  background: var(--color-off-white);
+}
+
+.section--navy {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.section--navy h2,
+.section--navy h3 {
+  color: var(--color-white);
+}
+
+.section--navy p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.section__header {
+  text-align: center;
+  max-width: 40rem;
+  margin-inline: auto;
+  margin-bottom: var(--space-xl);
+}
+
+.section__label {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-teal);
+  margin-bottom: var(--space-sm);
+}
+
+.section--navy .section__label {
+  color: var(--color-teal-light);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.grid--2 {
+  grid-template-columns: 1fr;
+}
+
+.grid--3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid--2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 768px) {
+  .grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .section { padding-block: var(--space-3xl); }
+}
+
+.page-hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-end;
+  padding-block: calc(var(--header-height) + var(--space-2xl)) var(--space-2xl);
+  background: var(--color-navy);
+  color: var(--color-white);
+  overflow: hidden;
+}
+
+.page-hero__bg {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  opacity: 0.45;
+}
+
+.page-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12, 31, 51, 0.95) 0%, rgba(12, 31, 51, 0.4) 60%, rgba(12, 31, 51, 0.2) 100%);
+}
+
+.page-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.page-hero h1 {
+  color: var(--color-white);
+  max-width: 18ch;
+}
+
+.page-hero p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.0625rem;
+  max-width: 42ch;
+}
+
+.page-hero--short {
+  min-height: 50vh;
+  background: var(--color-navy);
+}
+
+.prose {
+  max-width: 48rem;
+}
+
+.prose h2 {
+  margin-top: var(--space-xl);
+}
+
+.prose img {
+  border-radius: var(--radius-lg);
+  margin-block: var(--space-lg);
+}
+
+.split {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .split {
+    grid-template-columns: 1fr 1fr;
+  }
+}

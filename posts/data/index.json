@@ -1,0 +1,60 @@
+{
+  "posts": [
+    {
+      "slug": "the-future-of-spinal-surgery",
+      "title": "The Future of Spinal Surgery: Robotics, AI & Minimally Invasive Care",
+      "excerpt": "Robotics, AI, and minimally invasive techniques are reshaping spinal surgery — greater precision, shorter hospital stays, and faster recovery.",
+      "date": "2024-05-17",
+      "category": "Spinal Surgery",
+      "image": "/assets/images/blog/future-of-spinal-surgery.webp"
+    },
+    {
+      "slug": "ai-and-robotics-in-neurosurgery",
+      "title": "AI and Robotics in Neurosurgery: Precision, Planning & Patient Outcomes",
+      "excerpt": "AI and robotic systems are reshaping neurosurgery — from MRI analysis and surgical navigation to brain and spine procedures with greater precision.",
+      "date": "2023-05-05",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/ai-and-robotics.webp"
+    },
+    {
+      "slug": "groundbreaking-advances-in-non-invasive-neurosurgery-techniques",
+      "title": "Groundbreaking Advances in Non-Invasive Neurosurgery Techniques",
+      "excerpt": "Non-invasive neurosurgery offers effective treatment for brain tumours and skull base lesions — with less risk and faster recovery than open surgery.",
+      "date": "2023-05-24",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/non-invasive-neurosurgery.webp"
+    },
+    {
+      "slug": "minimally-invasive-neurosurgery",
+      "title": "Minimally Invasive Neurosurgery: Benefits, Techniques & Who It Helps",
+      "excerpt": "Minimally invasive neurosurgery treats brain and spine conditions through small incisions — less pain, shorter stays, faster return to daily life.",
+      "date": "2023-05-13",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/minimally-invasive-neurosurgery.webp"
+    },
+    {
+      "slug": "pediatric-neurosurgery",
+      "title": "Pediatric Neurosurgery: Advances, Conditions & Hope for Children",
+      "excerpt": "Advances in pediatric neurosurgery mean safer surgery and better outcomes for children with brain tumours, hydrocephalus, and congenital conditions.",
+      "date": "2023-04-21",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/pediatric-neurosurgery.webp"
+    },
+    {
+      "slug": "the-future-of-brain-surgery-advancements-and-innovations",
+      "title": "The Future of Brain Surgery: Advancements, Innovations & What Patients Can Expect",
+      "excerpt": "Brain surgery is advancing rapidly — awake craniotomy, fluorescence-guided resection, and robotic navigation for safer operations.",
+      "date": "2023-04-06",
+      "category": "Brain Surgery",
+      "image": "/assets/images/blog/future-of-brain-surgery.webp"
+    },
+    {
+      "slug": "spinal-cord-injuries",
+      "title": "Understanding Spinal Cord Injuries: Causes, Treatment & Recovery",
+      "excerpt": "Spinal cord injuries can cause paralysis — but early neurosurgical decompression, stabilisation, and rehab can significantly improve outcomes.",
+      "date": "2023-04-11",
+      "category": "Spinal Surgery",
+      "image": "/assets/images/blog/spinal-cord-injuries.webp"
+    }
+  ]
+}

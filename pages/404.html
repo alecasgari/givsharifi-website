@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | Prof. Giv Sharifi</title>
+  <link rel="stylesheet" href="/assets/css/site.bundle.css">
+  <link rel="stylesheet" href="/assets/css/pages.css">
+  <link rel="icon" href="/assets/images/brand/favicon.svg" type="image/svg+xml">
+  <script>
+    var p = location.pathname.replace(/\/$/, '');
+    var redirects = { '/bio': '/', '/etn_category': '/', '/etn-tags': '/', '/etn-speaker-category': '/' };
+    if (redirects[p]) { location.replace(redirects[p]); }
+  </script>
+</head>
+<body class="site-page">
+  <div id="site-header"></div>
+  <main class="pg-404">
+    <div class="container">
+      <h1>404</h1>
+      <p>The page you're looking for doesn't exist.</p>
+      <a href="/" class="btn btn--primary">Back to Home</a>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script src="/assets/js/layout.js"></script>
+  <script src="/assets/js/analytics.js" defer></script>
+</body>
+</html>
