@@ -703,6 +703,14 @@ a.hp-stats__item--link:hover .hp-stats__label {
   color: rgba(255, 255, 255, 0.5);
 }
 
+.hp-video-loading {
+  font-family: var(--hp-sans);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  grid-column: 1 / -1;
+}
+
 /* ── Pillars ── */
 .hp-pillars {
   display: grid;

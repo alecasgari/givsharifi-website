@@ -1,22 +1,25 @@
 # Video Files for Homepage
 
-The homepage surgery video section uses files from `/video/`:
+See **[r2-videos-setup.md](./r2-videos-setup.md)** for the full Cloudflare R2 guide (Persian).
+
+## Config
+
+Video list and R2 base URL: `assets/data/home-videos.json`  
+Renderer: `assets/js/home-videos.js`
+
+## Files (upload to R2 folder `homepage/`)
 
 - `Cranial-Nerves-Problem.mp4`
 - `Brain-Tumor-Surgery-with-panic-attack.mp4`
 - `Tumor-Affecting-Hearing-and-Balance.mp4`
 - `brain-cyst.mp4`
 
-## Before deploy
+## Local test (before R2)
 
-Copy the `video` folder from the old WordPress backup:
+Copy from WordPress backup:
 
 ```
 OLD-WP-Website/Wordpress-website/video/  →  givsharifi-website/video/
 ```
 
-Total size is ~280 MB. These files are not included in git by default due to size.
-
-## GitHub Pages
-
-Upload the `video/` folder to your repo or host videos on a CDN and update `index.html` video `src` paths.
+Keep `baseUrl` empty and `pathPrefix` as `video` in `home-videos.json`.

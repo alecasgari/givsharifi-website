@@ -1,0 +1,30 @@
+{
+  "baseUrl": "https://media.givsharifi.com",
+  "pathPrefix": "homepage",
+  "videos": [
+    {
+      "file": "Cranial-Nerves-Problem.mp4",
+      "poster": "assets/images/services/brain-surgery/hero.webp",
+      "title": "Brain Tumor & Cranial Nerves",
+      "description": "How cranial nerve problems affect your health"
+    },
+    {
+      "file": "Brain-Tumor-Surgery-with-panic-attack.mp4",
+      "poster": "assets/images/services/spinal-surgery/care.webp",
+      "title": "Brain Tumor Surgery",
+      "description": "Surgical approach and patient care"
+    },
+    {
+      "file": "Tumor-Affecting-Hearing-and-Balance.mp4",
+      "poster": "assets/images/services/brain-surgery/hero.webp",
+      "title": "Tumor Affecting Hearing & Balance",
+      "description": "Vestibular schwannoma and balance-related tumors"
+    },
+    {
+      "file": "brain-cyst.mp4",
+      "poster": "assets/images/services/spinal-surgery/care.webp",
+      "title": "Brain Cyst",
+      "description": "Diagnosis and surgical management of brain cysts"
+    }
+  ]
+}
