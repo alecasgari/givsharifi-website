@@ -1,4 +1,203 @@
 {
-  "updated": "",
-  "images": []
+  "updated": "2026-06-27",
+  "images": [
+    {
+      "slug": "prof-giv-sharifi-neurosurgery-microscope-operating-room",
+      "file": "assets/images/gallery/prof-giv-sharifi-neurosurgery-microscope-operating-room.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-neurosurgery-microscope-operating-room-thumb.webp",
+      "alt": "Prof. Giv Sharifi performing neurosurgery with a sterile-draped surgical microscope in a modern operating room",
+      "title": "Neurosurgery with surgical microscope",
+      "category": "Surgery",
+      "featured": true,
+      "width": 897,
+      "height": 1280
+    },
+    {
+      "slug": "surgical-team-endoscopic-procedure",
+      "file": "assets/images/gallery/surgical-team-endoscopic-procedure.webp",
+      "thumb": "assets/images/gallery/surgical-team-endoscopic-procedure-thumb.webp",
+      "alt": "Surgical team performing an endoscopic procedure with advanced medical technology",
+      "title": "Endoscopic surgical procedure",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "neurosurgery-team-skull-base-procedure",
+      "file": "assets/images/gallery/neurosurgery-team-skull-base-procedure.webp",
+      "thumb": "assets/images/gallery/neurosurgery-team-skull-base-procedure-thumb.webp",
+      "alt": "Neurosurgery team performing a skull base procedure with precision instruments",
+      "title": "Skull base neurosurgery",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "prof-giv-sharifi-tandis-hospital-consultation",
+      "file": "assets/images/gallery/prof-giv-sharifi-tandis-hospital-consultation.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-tandis-hospital-consultation-thumb.webp",
+      "alt": "Prof. Giv Sharifi at Tandis Hospital during a patient consultation at his desk",
+      "title": "Consultation at Tandis Hospital",
+      "category": "Clinic",
+      "featured": true,
+      "width": 1280,
+      "height": 718
+    },
+    {
+      "slug": "prof-giv-sharifi-patient-mri-review-hospital",
+      "file": "assets/images/gallery/prof-giv-sharifi-patient-mri-review-hospital.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-patient-mri-review-hospital-thumb.webp",
+      "alt": "Prof. Giv Sharifi reviewing an MRI scan with a patient in the hospital recovery ward",
+      "title": "Post-operative MRI review",
+      "category": "Patient Care",
+      "featured": true,
+      "width": 930,
+      "height": 1280
+    },
+    {
+      "slug": "surgical-team-procedure-operating-theatre",
+      "file": "assets/images/gallery/surgical-team-procedure-operating-theatre.webp",
+      "thumb": "assets/images/gallery/surgical-team-procedure-operating-theatre-thumb.webp",
+      "alt": "Three surgeons performing a procedure on a patient in a sterile operating theatre",
+      "title": "Surgery in the operating theatre",
+      "category": "Surgery",
+      "featured": false,
+      "width": 943,
+      "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-brain-mri-scan-operating-room",
+      "file": "assets/images/gallery/prof-giv-sharifi-brain-mri-scan-operating-room.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-brain-mri-scan-operating-room-thumb.webp",
+      "alt": "Prof. Giv Sharifi reviewing a brain MRI scan on a smartphone in the operating room",
+      "title": "Brain MRI review in the OR",
+      "category": "Diagnostics",
+      "featured": true,
+      "width": 871,
+      "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-clinic-consultation-office",
+      "file": "assets/images/gallery/prof-giv-sharifi-clinic-consultation-office.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-clinic-consultation-office-thumb.webp",
+      "alt": "Prof. Giv Sharifi in his clinic office during a consultation",
+      "title": "Clinic consultation",
+      "category": "Clinic",
+      "featured": false,
+      "width": 927,
+      "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-reviewing-brain-mri-scans",
+      "file": "assets/images/gallery/prof-giv-sharifi-reviewing-brain-mri-scans.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-reviewing-brain-mri-scans-thumb.webp",
+      "alt": "Prof. Giv Sharifi examining brain MRI scans on a light box in the hospital",
+      "title": "Reviewing brain MRI scans",
+      "category": "Diagnostics",
+      "featured": true,
+      "width": 972,
+      "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-spine-xray-farda-hospital",
+      "file": "assets/images/gallery/prof-giv-sharifi-spine-xray-farda-hospital.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-spine-xray-farda-hospital-thumb.webp",
+      "alt": "Prof. Giv Sharifi reviewing spinal X-ray films at Farda Hospital",
+      "title": "Spinal X-ray review — Farda Hospital",
+      "category": "Diagnostics",
+      "featured": false,
+      "width": 973,
+      "height": 1280
+    },
+    {
+      "slug": "neurosurgical-team-precision-surgery-operating-room",
+      "file": "assets/images/gallery/neurosurgical-team-precision-surgery-operating-room.webp",
+      "thumb": "assets/images/gallery/neurosurgical-team-precision-surgery-operating-room-thumb.webp",
+      "alt": "Neurosurgical team performing a precise procedure with surgical instruments in the operating theatre",
+      "title": "Precision neurosurgical procedure",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "surgeons-close-up-neurosurgery-operating-room",
+      "file": "assets/images/gallery/surgeons-close-up-neurosurgery-operating-room.webp",
+      "thumb": "assets/images/gallery/surgeons-close-up-neurosurgery-operating-room-thumb.webp",
+      "alt": "Close-up of surgeons performing a focused neurosurgical procedure under bright surgical lighting",
+      "title": "Focused surgical technique",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "neurosurgery-team-surgical-procedure-operating-room",
+      "file": "assets/images/gallery/neurosurgery-team-surgical-procedure-operating-room.webp",
+      "thumb": "assets/images/gallery/neurosurgery-team-surgical-procedure-operating-room-thumb.webp",
+      "alt": "Prof. Giv Sharifi's surgical team performing a procedure in a modern operating room under surgical lights",
+      "title": "Surgical team in the operating room",
+      "category": "Surgery",
+      "featured": true,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "expert-surgical-team-operating-theatre",
+      "file": "assets/images/gallery/expert-surgical-team-operating-theatre.webp",
+      "thumb": "assets/images/gallery/expert-surgical-team-operating-theatre-thumb.webp",
+      "alt": "Expert surgical team performing a medical procedure in a sterile operating theatre",
+      "title": "Expert surgical team at work",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "giv-sharifi-medical-team-clinic-group-photo",
+      "file": "assets/images/gallery/giv-sharifi-medical-team-clinic-group-photo.webp",
+      "thumb": "assets/images/gallery/giv-sharifi-medical-team-clinic-group-photo-thumb.webp",
+      "alt": "Prof. Giv Sharifi's medical and surgical team group photo at the clinic",
+      "title": "Medical team at the clinic",
+      "category": "Team",
+      "featured": true,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "giv-sharifi-surgical-team-operating-room-group",
+      "file": "assets/images/gallery/giv-sharifi-surgical-team-operating-room-group.webp",
+      "thumb": "assets/images/gallery/giv-sharifi-surgical-team-operating-room-group-thumb.webp",
+      "alt": "Prof. Giv Sharifi and the neurosurgery team in the operating room — group portrait",
+      "title": "Surgical team — operating room",
+      "category": "Team",
+      "featured": true,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "minimally-invasive-surgery-team-monitor",
+      "file": "assets/images/gallery/minimally-invasive-surgery-team-monitor.webp",
+      "thumb": "assets/images/gallery/minimally-invasive-surgery-team-monitor-thumb.webp",
+      "alt": "Surgical team performing a minimally invasive procedure while monitoring imaging on screen",
+      "title": "Minimally invasive surgery",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "neurosurgeon-laparoscopic-instruments-operating-room",
+      "file": "assets/images/gallery/neurosurgeon-laparoscopic-instruments-operating-room.webp",
+      "thumb": "assets/images/gallery/neurosurgeon-laparoscopic-instruments-operating-room-thumb.webp",
+      "alt": "Neurosurgeon using advanced laparoscopic instruments during surgery in the operating room",
+      "title": "Advanced surgical instruments",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
+    }
+  ]
 }

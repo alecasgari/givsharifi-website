@@ -30,7 +30,14 @@
       .replace(/"/g, '&quot;');
   }
 
+  function showSkeleton() {
+    if (window.GivSkeleton) {
+      grid.innerHTML = window.GivSkeleton.homeVideos(4);
+    }
+  }
+
   async function init() {
+    showSkeleton();
     const configPath =
       typeof window.siteUrl === 'function'
         ? window.siteUrl('assets/data/home-videos.json')

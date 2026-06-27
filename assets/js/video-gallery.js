@@ -30,7 +30,14 @@
   let config = {};
   let debounceTimer;
 
+  function showSkeleton() {
+    if (window.GivSkeleton) {
+      grid.innerHTML = window.GivSkeleton.videoPage(3);
+    }
+  }
+
   async function init() {
+    showSkeleton();
     try {
       const res = await fetch(u('assets/data/video-library.json'));
       if (!res.ok) throw new Error('Failed to load');

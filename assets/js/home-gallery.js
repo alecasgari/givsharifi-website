@@ -9,10 +9,19 @@
     return typeof window.siteUrl === "function" ? window.siteUrl(path) : path;
   }
 
+  function showSkeleton() {
+    if (window.GivSkeleton) {
+      track.innerHTML = window.GivSkeleton.homeGalleryStrip(6);
+    }
+    const section = document.getElementById("home-gallery-section");
+    if (section) section.hidden = false;
+  }
+
   async function init() {
+    showSkeleton();
     try {
       const res = await fetch(u("assets/data/gallery.json"));
-      if (!res.ok) return;
+      if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
       const featured = (data.images || []).filter((img) => img.featured);
       if (!featured.length) {

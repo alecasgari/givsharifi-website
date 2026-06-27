@@ -12,6 +12,7 @@ PARTS = (
     "theme.css",
     "layout.css",
     "components.css",
+    "skeleton.css",
 )
 OUT = CSS / "site.bundle.css"
 

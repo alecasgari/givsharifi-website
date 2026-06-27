@@ -17,6 +17,9 @@
   let debounceTimer;
 
   async function init() {
+    if (window.GivSkeleton) {
+      grid.innerHTML = window.GivSkeleton.galleryGrid(8);
+    }
     try {
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");

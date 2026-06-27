@@ -19,7 +19,14 @@
   let allPubs = [];
   let debounceTimer;
 
+  function showSkeleton() {
+    if (window.GivSkeleton) {
+      grid.innerHTML = window.GivSkeleton.publications(6);
+    }
+  }
+
   async function init() {
+    showSkeleton();
     try {
       const res = await fetch(u('publications/data/index.json'));
       if (!res.ok) throw new Error('Failed to load');

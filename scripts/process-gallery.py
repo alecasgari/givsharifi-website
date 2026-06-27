@@ -114,7 +114,7 @@ def main() -> int:
         out_main = OUT_DIR / f"{slug}.webp"
         out_thumb = OUT_DIR / f"{slug}-thumb.webp"
 
-        print(f"  {src.name} → {slug}.webp")
+        print(f"  {src.name} -> {slug}.webp")
 
         if args.dry_run:
             continue

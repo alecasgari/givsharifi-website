@@ -2,10 +2,17 @@ function u(path) {
   return typeof window.siteUrl === 'function' ? window.siteUrl(path) : path;
 }
 
+function showBlogListSkeleton(grid) {
+  if (window.GivSkeleton) {
+    grid.innerHTML = window.GivSkeleton.blogList(5);
+  }
+}
+
 async function renderBlogList() {
   const grid = document.getElementById('blog-grid');
   if (!grid) return;
 
+  showBlogListSkeleton(grid);
   try {
     const res = await fetch(u('posts/data/index.json'));
     const data = await res.json();
