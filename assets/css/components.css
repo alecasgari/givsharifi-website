@@ -702,6 +702,22 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
+.site-footer__bottom p {
+  margin: 0;
+}
+
+.site-footer__credit {
+  margin-top: 0.5rem !important;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.site-footer__credit a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 .blog-meta {
   font-size: 0.8125rem;
   color: var(--color-gray-400);
