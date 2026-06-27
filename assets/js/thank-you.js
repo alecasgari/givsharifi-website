@@ -1,4 +1,5 @@
 (function () {
+  const homeHref = typeof window.siteUrl === 'function' ? window.siteUrl('./') : '/';
   const box = document.getElementById('thank-you-content');
   if (!box) return;
 
@@ -16,7 +17,7 @@
         <h1>Thank You</h1>
         <p>Your request has been received. Our team will contact you shortly.</p>
         <div class="pg-thanks__actions">
-          <a href="/" class="btn btn--primary">Back to Home</a>
+          <a href="${homeHref}" class="btn btn--primary">Back to Home</a>
         </div>
       </div>
     `;
@@ -37,7 +38,7 @@
       ` : '<p>We will be in touch soon.</p>'}
       <div class="pg-thanks__actions">
         <button type="button" class="btn btn--whatsapp" data-open-whatsapp>Chat on WhatsApp</button>
-        <a href="/" class="btn btn--secondary">Back to Home</a>
+        <a href="${homeHref}" class="btn btn--secondary">Back to Home</a>
       </div>
     </div>
   `;

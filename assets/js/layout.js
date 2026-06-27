@@ -1,22 +1,38 @@
 const SITE = {
-  base: '',
   components: {
-    header: '/components/header.html',
-    footer: '/components/footer.html',
-    modal: '/components/consultation-modal.html'
+    header: 'components/header.html',
+    footer: 'components/footer.html',
+    modal: 'components/consultation-modal.html'
   }
 };
 
+function sitePath(path) {
+  return typeof window.siteUrl === 'function' ? window.siteUrl(path) : path;
+}
+
 async function loadHTML(url) {
-  const res = await fetch(url);
+  const res = await fetch(sitePath(url));
   if (!res.ok) throw new Error('Failed to load ' + url);
   return res.text();
 }
 
+function currentSitePath() {
+  let path = window.location.pathname.replace(/\/$/, '') || '/';
+  const root = (window.__SITE_ROOT__ || '/').replace(/\/$/, '');
+  if (root && root !== '/' && path.startsWith(root)) {
+    path = path.slice(root.length) || '/';
+  }
+  if (!path.startsWith('/')) path = '/' + path;
+  return path;
+}
+
 function setActiveNav() {
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
+  const path = currentSitePath();
   document.querySelectorAll('.site-nav a, .mobile-nav a').forEach((link) => {
-    const href = link.getAttribute('href').replace(/\/$/, '') || '/';
+    const raw = link.getAttribute('href');
+    if (!raw || /^https?:/i.test(raw) || raw.startsWith('tel:')) return;
+    let href = raw.replace(/^\.\//, '').replace(/\/$/, '') || '/';
+    if (!href.startsWith('/')) href = '/' + href;
     if (href === path || (href !== '/' && path.startsWith(href))) {
       link.classList.add('is-active');
     }
@@ -73,10 +89,11 @@ function initHeaderScroll() {
 }
 
 async function loadScript(src) {
-  if (document.querySelector(`script[src="${src}"]`)) return;
+  const resolved = sitePath(src);
+  if (document.querySelector(`script[src="${resolved}"]`)) return;
   await new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = src;
+    s.src = resolved;
     s.onload = resolve;
     s.onerror = reject;
     document.body.appendChild(s);
@@ -87,7 +104,7 @@ async function loadConsultationForm() {
   const formSlot = document.getElementById('consultation-form-slot');
   if (!formSlot || formSlot.dataset.loaded) return;
   try {
-    formSlot.innerHTML = await loadHTML('/components/consultation-form.html');
+    formSlot.innerHTML = await loadHTML('components/consultation-form.html');
     formSlot.dataset.loaded = '1';
     document.dispatchEvent(new CustomEvent('giv:forms-ready'));
   } catch (e) {
@@ -120,7 +137,7 @@ async function initLayout() {
   if (year) year.textContent = new Date().getFullYear();
 
   await loadConsultationForm();
-  await loadScript('/assets/js/modal.js');
+  await loadScript('assets/js/modal.js');
 
   document.dispatchEvent(new CustomEvent('giv:layout-ready'));
 

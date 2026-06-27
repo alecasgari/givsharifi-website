@@ -241,7 +241,7 @@
         response: data
       }));
 
-      window.location.href = '/done/';
+      window.location.href = typeof window.siteUrl === 'function' ? window.siteUrl('done/') : '/done/';
     } catch (err) {
       setLoading(form, false);
       if (msg) {

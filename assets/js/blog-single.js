@@ -3,22 +3,36 @@
   if (!root) return;
 
   const SITE = 'https://www.givsharifi.com';
-  const parts = window.location.pathname.replace(/\/$/, '').split('/');
+
+  function u(path) {
+    return typeof window.siteUrl === 'function' ? window.siteUrl(path) : path;
+  }
+
+  function sitePathname() {
+    let path = window.location.pathname.replace(/\/$/, '') || '/';
+    const root = (window.__SITE_ROOT__ || '/').replace(/\/$/, '');
+    if (root && root !== '/' && path.startsWith(root)) {
+      path = path.slice(root.length) || '/';
+    }
+    return path;
+  }
+
+  const parts = sitePathname().replace(/^\//, '').split('/').filter(Boolean);
   const slug = parts[parts.length - 1] || parts[parts.length - 2];
 
   if (!slug || slug === 'blog') return;
 
   const SERVICE_LINKS = {
-    'Spinal Surgery': { href: '/spinal-surgery/', label: 'Spinal Surgery Services' },
-    'Brain Surgery': { href: '/brain-surgery/', label: 'Brain Surgery Services' },
-    'Neurosurgery': { href: '/brain-surgery/', label: 'Neurosurgery Services' },
+    'Spinal Surgery': { href: 'spinal-surgery/', label: 'Spinal Surgery Services' },
+    'Brain Surgery': { href: 'brain-surgery/', label: 'Brain Surgery Services' },
+    'Neurosurgery': { href: 'brain-surgery/', label: 'Neurosurgery Services' },
   };
 
   async function loadPost() {
     try {
       const [postRes, indexRes] = await Promise.all([
-        fetch('/posts/data/' + slug + '.json'),
-        fetch('/posts/data/index.json'),
+        fetch(u('posts/data/' + slug + '.json')),
+        fetch(u('posts/data/index.json')),
       ]);
       if (!postRes.ok) throw new Error('Not found');
       const post = await postRes.json();
@@ -32,7 +46,7 @@
       initShare(pageUrl);
     } catch (e) {
       root.innerHTML =
-        '<div class="container blog-post__error"><h1>Article not found</h1><p><a href="/blog/">← Back to blog</a></p></div>';
+        '<div class="container blog-post__error"><h1>Article not found</h1><p><a href="' + u('blog/') + '">← Back to blog</a></p></div>';
     }
   }
 
@@ -137,7 +151,7 @@
   function renderPost(post, pageUrl, recent) {
     const author = post.author || { name: 'Prof. Giv Sharifi', title: 'Board-Certified Neurosurgeon' };
     const reading = post.readingTimeMinutes || estimateReading(post.content);
-    const service = SERVICE_LINKS[post.category] || { href: '/spinal-surgery/', label: 'Our Services' };
+    const service = SERVICE_LINKS[post.category] || { href: 'spinal-surgery/', label: 'Our Services' };
     const tags = post.tags || [];
 
     return `
@@ -149,8 +163,8 @@
           <div class="container">
             <nav class="blog-breadcrumb" aria-label="Breadcrumb">
               <ol>
-                <li><a href="/">Home</a></li>
-                <li><a href="/blog/">Blog</a></li>
+                <li><a href="./">Home</a></li>
+                <li><a href="blog/">Blog</a></li>
                 <li aria-current="page">${escapeHtml(truncate(post.title, 48))}</li>
               </ol>
             </nav>
@@ -171,7 +185,7 @@
             ${
               post.featuredImage
                 ? `<figure class="blog-post__cover">
-              <img src="${post.featuredImage}" alt="" width="800" height="450" itemprop="image" fetchpriority="high">
+              <img src="${escapeAttr(u(post.featuredImage))}" alt="" width="800" height="450" itemprop="image" fetchpriority="high">
             </figure>`
                 : ''
             }
@@ -224,7 +238,7 @@
                   : ''
               }
 
-              <p class="blog-post__back"><a href="/blog/">← All articles</a></p>
+              <p class="blog-post__back"><a href="blog/">← All articles</a></p>
             </div>
 
             <aside class="blog-post__sidebar" aria-label="Article sidebar">
@@ -300,7 +314,7 @@
         .map(
           (p) => `
         <li>
-          <a href="/blog/${p.slug}/">
+          <a href="blog/${p.slug}/">
             <span class="blog-sidebar__post-cat">${escapeHtml(p.category || 'Blog')}</span>
             <span class="blog-sidebar__post-title">${escapeHtml(p.title)}</span>
           </a>
@@ -340,7 +354,7 @@
           case 'paragraph':
             return `<p>${escapeHtml(b.text)}</p>`;
           case 'image':
-            return `<figure><img src="${escapeAttr(b.src)}" alt="${escapeAttr(b.alt || '')}" loading="lazy" width="800" height="450"><figcaption>${escapeHtml(b.alt || '')}</figcaption></figure>`;
+            return `<figure><img src="${escapeAttr(u(b.src))}" alt="${escapeAttr(b.alt || '')}" loading="lazy" width="800" height="450"><figcaption>${escapeHtml(b.alt || '')}</figcaption></figure>`;
           case 'list':
             return `<ul>${(b.items || []).map((i) => '<li>' + escapeHtml(i) + '</li>').join('')}</ul>`;
           case 'ordered-list':

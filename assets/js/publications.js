@@ -12,12 +12,16 @@
 
   if (!grid) return;
 
+  function u(path) {
+    return typeof window.siteUrl === 'function' ? window.siteUrl(path) : path;
+  }
+
   let allPubs = [];
   let debounceTimer;
 
   async function init() {
     try {
-      const res = await fetch('/publications/data/index.json');
+      const res = await fetch(u('publications/data/index.json'));
       if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
       allPubs = data.publications || [];

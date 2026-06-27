@@ -39,6 +39,10 @@ def main() -> int:
     if bundle.is_file():
         subprocess.run([sys.executable, str(bundle)], check=True)
 
+    fix_paths = ROOT / "scripts" / "fix-site-paths.py"
+    if fix_paths.is_file():
+        subprocess.run([sys.executable, str(fix_paths)], check=True)
+
     if not PAGES.is_dir():
         print("pages/ folder not found", file=sys.stderr)
         return 1
