@@ -43,6 +43,7 @@
       config = await res.json();
     } catch (e) {
       console.error('Home videos config:', e);
+      grid.innerHTML = '<p class="hp-video-loading">Unable to load videos. Please refresh the page.</p>';
       return;
     }
 
