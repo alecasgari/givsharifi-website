@@ -30,7 +30,7 @@ MANIFEST = INCOMING / "manifest.json"
 RASTER = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_WIDTH = 1400
 THUMB_WIDTH = 640
-STRIP_WIDTH = 400
+STRIP_WIDTH = 280
 WEBP_QUALITY = 82
 
 
@@ -98,7 +98,7 @@ def regenerate_strips(gallery: dict) -> int:
         with Image.open(src_path) as im:
             im.load()
             strip_im = resize(im, STRIP_WIDTH)
-            out_strip.write_bytes(save_webp(strip_im, quality=72))
+            out_strip.write_bytes(save_webp(strip_im, quality=65))
         img["strip"] = f"assets/images/gallery/{slug}-strip.webp"
         count += 1
     return count
@@ -169,7 +169,7 @@ def main() -> int:
             strip_im = resize(im, STRIP_WIDTH)
             out_main.write_bytes(save_webp(main_im))
             out_thumb.write_bytes(save_webp(thumb_im, quality=78))
-            out_strip.write_bytes(save_webp(strip_im, quality=72))
+            out_strip.write_bytes(save_webp(strip_im, quality=65))
 
         w, h = main_im.size
         tw, th = thumb_im.size

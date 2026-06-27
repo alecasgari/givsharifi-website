@@ -2,7 +2,7 @@
  * Homepage video poster strip — reverse auto-scroll below photo gallery.
  */
 (function () {
-  const STRIP_LIMIT = 6;
+  const STRIP_LIMIT = 4;
   const track = document.getElementById("home-video-strip-track");
   if (!track) return;
 
@@ -30,6 +30,18 @@
     if (section) section.hidden = false;
   }
 
+  function renderItem(poster, index) {
+    const eager = index < 2 ? "eager" : "lazy";
+    return `
+      <div class="hp-media-strip__item hp-media-strip__item--video" aria-hidden="true">
+        <img src="${escapeAttr(poster)}" alt=""
+          width="280" height="498"
+          sizes="(max-width: 768px) 18vw, 9.5rem"
+          decoding="async" loading="${eager}">
+      </div>
+    `;
+  }
+
   async function init() {
     showSkeleton();
     try {
@@ -43,22 +55,13 @@
       }
 
       const items = videos
-        .map((v) => {
-          const poster = posterUrl(config, v.poster);
-          const alt = v.title || "Patient feedback video";
-          return `
-        <a class="hp-media-strip__item hp-media-strip__item--video" href="${escapeAttr(u("videos/"))}" title="${escapeAttr(v.title || alt)}">
-          <img src="${escapeAttr(poster)}" alt="${escapeAttr(alt)}"
-            width="360" height="640"
-            sizes="(max-width: 768px) 18vw, 9.5rem"
-            decoding="async" fetchpriority="low" loading="eager">
-        </a>
-      `;
-        })
+        .map((v, i) => renderItem(posterUrl(config, v.poster), i))
         .join("");
 
       track.innerHTML = items + items;
       track.classList.add("is-ready");
+      const section = document.getElementById("home-video-strip-section");
+      if (section) section.hidden = false;
     } catch (e) {
       track.closest(".hp-media-strip")?.remove();
     }

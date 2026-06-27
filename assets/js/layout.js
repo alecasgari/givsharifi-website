@@ -41,7 +41,7 @@ function setActiveNav() {
 
 function setNavScrollLock(locked) {
   if (typeof window.givSetScrollLock === 'function') {
-    window.givSetScrollLock(locked);
+    window.givSetScrollLock('nav', locked);
   } else {
     document.body.style.overflow = locked ? 'hidden' : '';
   }

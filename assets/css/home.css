@@ -309,6 +309,18 @@ a.hp-stats__item--link:hover .hp-stats__label {
   overflow: hidden;
 }
 
+.hp-media-strip__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hp-media-strip__link:focus-visible {
+  outline: 2px solid var(--hp-gold, #c9a962);
+  outline-offset: -2px;
+}
+
 .hp-media-strip[hidden] {
   display: none !important;
 }
@@ -361,8 +373,9 @@ a.hp-stats__item--link:hover .hp-stats__label {
   aspect-ratio: 4 / 3;
   border-radius: 0.5rem;
   overflow: hidden;
-  display: block;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  user-select: none;
 }
 
 .hp-media-strip__item--video {

@@ -1462,9 +1462,15 @@ body.has-mobile-bar {
 }
 
 body.nav-open {
-  overflow: hidden;
+  /* scroll lock handled by givSetScrollLock in modal.js */
 }
 
 .giv-scroll-lock {
   overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html:has(.giv-scroll-lock) {
+  overflow: hidden;
+  overscroll-behavior: none;
 }

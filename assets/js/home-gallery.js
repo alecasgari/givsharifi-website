@@ -2,7 +2,7 @@
  * Homepage featured gallery strip — auto-scroll below hero stats.
  */
 (function () {
-  const STRIP_LIMIT = 6;
+  const STRIP_LIMIT = 4;
   const track = document.getElementById("home-gallery-track");
   if (!track) return;
 
@@ -18,6 +18,19 @@
     if (section) section.hidden = false;
   }
 
+  function renderItem(img, index) {
+    const src = u(img.strip || img.thumb || img.file);
+    const eager = index < 2 ? "eager" : "lazy";
+    return `
+      <div class="hp-media-strip__item" aria-hidden="true">
+        <img src="${escapeAttr(src)}" alt=""
+          width="280" height="210"
+          sizes="(max-width: 768px) 28vw, 16rem"
+          decoding="async" loading="${eager}">
+      </div>
+    `;
+  }
+
   async function init() {
     showSkeleton();
     try {
@@ -30,19 +43,7 @@
         return;
       }
 
-      const items = featured
-        .map(
-          (img) => `
-        <a class="hp-media-strip__item" href="gallery/" title="${escapeAttr(img.title || img.alt)}">
-          <img src="${escapeAttr(u(img.strip || img.thumb || img.file))}" alt="${escapeAttr(img.alt)}"
-            width="${img.width || 400}" height="${img.height || 300}"
-            sizes="(max-width: 768px) 28vw, 16rem"
-            decoding="async" fetchpriority="low" loading="eager">
-        </a>
-      `
-        )
-        .join("");
-
+      const items = featured.map((img, i) => renderItem(img, i)).join("");
       track.innerHTML = items + items;
       track.classList.add("is-ready");
       const section = document.getElementById("home-gallery-section");
