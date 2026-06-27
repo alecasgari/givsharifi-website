@@ -19,7 +19,7 @@ GLOBS = (
     ROOT / "components",
 )
 
-ROOT_ATTR = re.compile(r'\b(href|src|action)="/(?![/])')
+ROOT_ATTR = re.compile(r'\b(href|src|action|poster)="/(?![/])')
 HOME_HREF = re.compile(r'\bhref="/"')
 
 
