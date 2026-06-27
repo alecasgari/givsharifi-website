@@ -38,6 +38,9 @@ def main() -> int:
                 "-o",
                 str(OUT / "%(id)s.%(ext)s"),
                 "--write-info-json",
+                "--write-thumbnail",
+                "--convert-thumbnails",
+                "jpg",
                 url,
             ]
         )

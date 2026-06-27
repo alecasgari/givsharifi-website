@@ -65,6 +65,7 @@ def main() -> int:
         by_id[vid] = {
             "id": vid,
             "file": f"{vid}.mp4",
+            "poster": f"{vid}.jpg" if (LIBRARY / f"{vid}.jpg").is_file() else "",
             "title": title_from_meta(data),
             "description": clean_description(data.get("description") or ""),
             "date": date_iso,

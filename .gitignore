@@ -10,6 +10,7 @@
 /gallery/
 /video/
 /video/library/*.mp4
+/video/library/*.jpg
 /video/library/*.info.json
 /done/
 /404.html

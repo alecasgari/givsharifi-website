@@ -13,15 +13,18 @@
     return typeof window.siteUrl === 'function' ? window.siteUrl(path) : path;
   }
 
-  function videoUrl(config, file) {
+  function assetUrl(config, file) {
     const prefix = (config.pathPrefix || '').replace(/^\/|\/$/g, '');
     const name = String(file).replace(/^\//, '');
+    if (!name) return '';
     if (config.baseUrl) {
       const base = config.baseUrl.replace(/\/$/, '');
       return prefix ? base + '/' + prefix + '/' + name : base + '/' + name;
     }
     return prefix ? prefix + '/' + name : name;
   }
+
+  const videoUrl = assetUrl;
 
   let allVideos = [];
   let config = {};
@@ -79,7 +82,9 @@
       .map(
         (v) => `
       <article class="vid-card">
-        <video controls preload="none" playsinline>
+        <video controls preload="none" playsinline${
+          v.poster ? ` poster="${escapeAttr(assetUrl(config, v.poster))}"` : ''
+        }>
           <source src="${escapeAttr(videoUrl(config, v.file))}" type="video/mp4">
         </video>
         <div class="vid-card__body">
@@ -105,6 +110,9 @@
 
     if (window.GivVideoPlayback) {
       window.GivVideoPlayback.bindSingleVideoPlayback(grid);
+    }
+    if (window.GivVideoPoster) {
+      window.GivVideoPoster.bindVideoPosterFallback(grid);
     }
   }
 
