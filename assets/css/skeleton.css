@@ -96,6 +96,11 @@
   border-radius: 0.5rem;
 }
 
+.skeleton-strip-item--video {
+  width: clamp(6.5rem, 18vw, 9.5rem);
+  aspect-ratio: 9 / 16;
+}
+
 /* Video gallery page */
 .skeleton-vid-page {
   display: grid;
