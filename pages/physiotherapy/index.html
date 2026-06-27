@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <base href="./" id="site-base">
   <script>
-(function(){var r='/';if(/\.github\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\/\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\//,'');};var b=document.createElement('base');b.id='site-base';b.href=r;document.head.appendChild(b);})();
+(function(){var b=document.getElementById('site-base');var r='/';if(/\.github\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';b.href=r;}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\/\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\//,'');};})();
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Neurological Physiotherapy Dubai | Prof. Giv Sharifi — Post-Surgery Rehab</title>

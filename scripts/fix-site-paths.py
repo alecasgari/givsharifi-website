@@ -8,9 +8,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-INLINE_BASE = """<script>
-(function(){var r='/';if(/\\.github\\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\\/\\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\\//,'');};var b=document.createElement('base');b.id='site-base';b.href=r;document.head.appendChild(b);})();
+SITE_BASE_BLOCK = """<base href="/" id="site-base">
+  <script>
+(function(){var b=document.getElementById('site-base');var r='/';if(/\\.github\\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';b.href=r;}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\\/\\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\\//,'');};})();
 </script>"""
+
+OLD_BASE_SCRIPT = re.compile(
+    r'<script>\s*\(function\(\)\{var r=\'/\';if\(/\\\.github\\\.io\$.*?document\.head\.appendChild\(b\);\}\)\(\);\s*</script>',
+    re.DOTALL,
+)
 
 GLOBS = (
     ROOT / "index.html",
@@ -24,12 +30,14 @@ HOME_HREF = re.compile(r'\bhref="/"')
 
 
 def fix_html(text: str) -> str:
-    if 'id="site-base"' not in text and 'window.__SITE_ROOT__' not in text:
+    if OLD_BASE_SCRIPT.search(text):
+        text = OLD_BASE_SCRIPT.sub(SITE_BASE_BLOCK, text, count=1)
+    elif 'id="site-base"' not in text and 'window.__SITE_ROOT__' not in text:
         marker = '<meta charset="UTF-8">'
         if marker in text:
-            text = text.replace(marker, marker + "\n  " + INLINE_BASE, 1)
+            text = text.replace(marker, marker + "\n  " + SITE_BASE_BLOCK, 1)
         else:
-            text = text.replace("<head>", "<head>\n  " + INLINE_BASE, 1)
+            text = text.replace("<head>", "<head>\n  " + SITE_BASE_BLOCK, 1)
 
     text = HOME_HREF.sub('href="./"', text)
     text = ROOT_ATTR.sub(r'\1="', text)
