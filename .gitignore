@@ -11,6 +11,7 @@
 /video/
 /video/library/*.mp4
 /video/library/*.jpg
+/assets/images/gallery/_processed/
 /video/library/*.info.json
 /done/
 /404.html

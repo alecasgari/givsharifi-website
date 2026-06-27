@@ -1,0 +1,10 @@
+{
+  "_comment": "Optional. Keys = original filename in _incoming/. Remove this file or leave empty {} if not used yet.",
+  "example-photo.jpg": {
+    "slug": "prof-giv-sharifi-neurosurgery-clinic-dubai",
+    "alt": "Prof. Giv Sharifi at the neurosurgery clinic in Dubai City Walk",
+    "title": "Dubai clinic",
+    "category": "Clinic",
+    "featured": true
+  }
+}

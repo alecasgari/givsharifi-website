@@ -1,0 +1,278 @@
+/* Photo gallery + lightbox */
+
+.gal-page .gal-hero {
+  padding: 2.5rem 0 2rem;
+  background: var(--hp-cream, #f7f4ef);
+}
+
+.gal-hero h1 {
+  font-family: var(--hp-serif);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  margin: 0 0 0.75rem;
+}
+
+.gal-hero__lead {
+  font-family: var(--hp-sans);
+  color: rgba(15, 20, 25, 0.7);
+  max-width: 40rem;
+  line-height: 1.6;
+}
+
+.gal-hero__label {
+  font-family: var(--hp-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hp-gold, #c9a962);
+  margin: 0 0 0.75rem;
+}
+
+.gal-hero__meta {
+  font-family: var(--hp-sans);
+  font-size: 0.8125rem;
+  color: rgba(15, 20, 25, 0.5);
+  margin-top: 0.75rem;
+}
+
+.gal-toolbar {
+  padding: 1rem 0;
+  background: #fff;
+  border-bottom: 1px solid rgba(15, 20, 25, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.gal-toolbar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.gal-search {
+  flex: 1 1 14rem;
+}
+
+.gal-search input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgba(15, 20, 25, 0.12);
+  border-radius: 0.5rem;
+  font-family: var(--hp-sans);
+}
+
+.gal-count {
+  font-family: var(--hp-sans);
+  font-size: 0.8125rem;
+  color: rgba(15, 20, 25, 0.55);
+}
+
+.gal-list {
+  padding: 2rem 0 3rem;
+}
+
+.gal-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px) {
+  .gal-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .gal-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.gal-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: #e8e4dc;
+  aspect-ratio: 4 / 3;
+  text-align: left;
+}
+
+.gal-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.gal-card:hover .gal-card__img,
+.gal-card:focus-visible .gal-card__img {
+  transform: scale(1.05);
+}
+
+.gal-card__overlay {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 2rem 0.875rem 0.875rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  pointer-events: none;
+}
+
+.gal-card__title {
+  font-family: var(--hp-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.gal-card__cat {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--hp-gold, #c9a962);
+}
+
+.gal-loading,
+.gal-empty {
+  grid-column: 1 / -1;
+  font-family: var(--hp-sans);
+  color: rgba(15, 20, 25, 0.55);
+}
+
+/* Lightbox */
+.giv-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.giv-lightbox[hidden] {
+  display: none !important;
+}
+
+.giv-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 11, 16, 0.92);
+  cursor: zoom-out;
+}
+
+.giv-lightbox__panel {
+  position: relative;
+  z-index: 1;
+  max-width: min(1100px, 96vw);
+  max-height: 92vh;
+  width: 100%;
+}
+
+.giv-lightbox__close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.giv-lightbox__figure {
+  margin: 0;
+}
+
+.giv-lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(92vh - 3rem);
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 0.5rem;
+  object-fit: contain;
+}
+
+.giv-lightbox__caption {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-family: var(--hp-sans);
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.lightbox-open {
+  overflow: hidden;
+}
+
+/* Skeleton loaders (dynamic sections) */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 20, 25, 0.06) 25%,
+    rgba(15, 20, 25, 0.1) 50%,
+    rgba(15, 20, 25, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+.skeleton--dark {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 25%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 75%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+
+.skeleton-line {
+  height: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-line--short {
+  width: 60%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: rgba(15, 20, 25, 0.08);
+  }
+}

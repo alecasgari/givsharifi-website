@@ -7,27 +7,75 @@
 (function(){var b=document.getElementById('site-base');var r='/';if(/\.github\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';b.href=r;}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\/\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\//,'');};})();
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Photo Gallery | Prof. Giv Sharifi</title>
-  <meta name="description" content="Photo gallery — Prof. Giv Sharifi neurosurgery clinic and surgical team.">
-  <meta name="robots" content="noindex">
+  <title>Photo Gallery | Prof. Giv Sharifi — Neurosurgery Clinic &amp; Surgery</title>
+  <meta name="description" content="Clinical and surgical photo gallery — Prof. Giv Sharifi neurosurgery clinic in Dubai and Tehran, operating theatre, and patient care.">
+  <meta name="keywords" content="neurosurgery gallery, brain surgery photos, Prof Giv Sharifi clinic Dubai">
   <link rel="canonical" href="https://www.givsharifi.com/gallery/">
+  <meta property="og:title" content="Clinical &amp; Surgical Gallery — Prof. Giv Sharifi">
+  <meta property="og:description" content="Photos from the clinic, operating theatre, and neurosurgical care journey.">
+  <meta property="og:url" content="https://www.givsharifi.com/gallery/">
   <link rel="stylesheet" href="assets/css/site.bundle.css">
   <link rel="stylesheet" href="assets/css/pages.css">
+  <link rel="stylesheet" href="assets/css/gallery.css">
   <link rel="icon" href="assets/images/brand/favicon.svg" type="image/svg+xml">
 </head>
-<body class="site-page">
+<body class="site-page gal-page">
   <div id="site-header"></div>
-  <main class="pg-soon">
-    <div class="container pg-soon__box">
-      <span class="hp-label">Photo Gallery</span>
-      <h1>Clinical &amp; Surgical Gallery</h1>
-      <p>A curated collection of photographs from the clinic, operating theatre, and patient care journey is on the way.</p>
-      <p class="pg-soon__note">Coming soon.</p>
-      <a href="./" class="btn btn--primary">Back to Home</a>
+
+  <main>
+    <section class="gal-hero">
+      <div class="container">
+        <nav class="blog-breadcrumb" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="./">Home</a></li>
+            <li aria-current="page">Gallery</li>
+          </ol>
+        </nav>
+        <p class="gal-hero__label">Photo gallery</p>
+        <h1>Clinical &amp; Surgical Gallery</h1>
+        <p class="gal-hero__lead">Photographs from the clinic, operating theatre, and patient care — Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran.</p>
+        <p class="gal-hero__meta" id="gal-updated"></p>
+      </div>
+    </section>
+
+    <div class="gal-toolbar">
+      <div class="container gal-toolbar__inner">
+        <label class="gal-search">
+          <span class="visually-hidden">Search photos</span>
+          <input type="search" id="gal-search" placeholder="Search photos…" autocomplete="off">
+        </label>
+        <span class="gal-count" id="gal-count" aria-live="polite"></span>
+      </div>
     </div>
+
+    <section class="gal-list" aria-label="Photo gallery">
+      <div class="container">
+        <div class="gal-grid" id="gal-grid">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pg-cta" aria-label="Consultation">
+      <div class="container pg-cta__inner">
+        <h2>Book a consultation</h2>
+        <p>Discuss your condition with a board-certified neurosurgeon — Dubai, Tehran, or online.</p>
+        <div class="pg-cta__actions">
+          <button type="button" class="btn btn--primary btn--lg" data-open-consultation>Free Consultation</button>
+          <a href="videos/" class="btn btn--secondary btn--lg">Watch Videos</a>
+        </div>
+      </div>
+    </section>
   </main>
+
   <div id="site-footer"></div>
   <script src="assets/js/layout.js"></script>
+  <script src="assets/js/form.js"></script>
+  <script src="assets/js/lightbox.js"></script>
+  <script src="assets/js/gallery.js"></script>
   <script src="assets/js/analytics.js" defer></script>
 </body>
 </html>
