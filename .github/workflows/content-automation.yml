@@ -14,6 +14,8 @@ permissions:
 jobs:
   process-gallery:
     runs-on: ubuntu-latest
+    outputs:
+      changes_detected: ${{ steps.commit.outputs.changes_detected }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,7 +33,39 @@ jobs:
           fi
 
       - name: Commit processed gallery
+        id: commit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: process gallery images from n8n"
           file_pattern: "assets/images/gallery/** assets/data/gallery.json"
+
+  # GITHUB_TOKEN pushes do not trigger deploy.yml; publish here after processing.
+  deploy:
+    needs: process-gallery
+    if: needs.process-gallery.outputs.changes_detected == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build site
+        run: python scripts/publish.py
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
