@@ -252,6 +252,18 @@
       "featured": false,
       "width": 1280,
       "height": 853
+    },
+    {
+      "slug": "prof-giv-sharifi-neurosurgery-operating-room",
+      "file": "assets/images/gallery/prof-giv-sharifi-neurosurgery-operating-room.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-neurosurgery-operating-room-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-neurosurgery-operating-room-strip.webp",
+      "alt": "Prof. Giv Sharifi performing complex neurosurgical procedure in a modern operating room.",
+      "title": "Advanced Neurosurgical Procedures by Prof. Giv Sharifi",
+      "category": "Surgery,",
+      "featured": true,
+      "width": 1280,
+      "height": 853
     }
   ]
 }
