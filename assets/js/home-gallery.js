@@ -37,7 +37,11 @@
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
-      const featured = (data.images || []).filter((img) => img.featured).slice(0, STRIP_LIMIT);
+      const featured = (data.images || [])
+        .filter((img) => img.featured)
+        .slice()
+        .reverse()
+        .slice(0, STRIP_LIMIT);
       if (!featured.length) {
         track.closest(".hp-media-strip")?.remove();
         return;

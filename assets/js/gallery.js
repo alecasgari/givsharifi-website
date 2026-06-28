@@ -24,7 +24,7 @@
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
-      allImages = data.images || [];
+      allImages = (data.images || []).slice().reverse();
       if (updatedEl && data.updated) updatedEl.textContent = `Last updated ${data.updated}`;
       render();
       bindEvents();
@@ -51,6 +51,14 @@
     });
   }
 
+  function toLightboxItems(list) {
+    return list.map((img) => ({
+      src: u(img.file),
+      alt: img.alt || "",
+      caption: img.title || img.alt || "",
+    }));
+  }
+
   function render() {
     const list = getFiltered();
     if (countEl) {
@@ -68,8 +76,8 @@
 
     grid.innerHTML = list
       .map(
-        (img) => `
-      <button type="button" class="gal-card" data-lightbox
+        (img, index) => `
+      <button type="button" class="gal-card" data-lightbox data-lightbox-index="${index}"
         data-lightbox-src="${escapeAttr(u(img.file))}"
         data-lightbox-alt="${escapeAttr(img.alt)}"
         data-lightbox-caption="${escapeAttr(img.title || img.alt)}">
@@ -84,7 +92,9 @@
       )
       .join("");
 
-    if (window.GivLightbox) window.GivLightbox.bindLightbox(grid);
+    if (window.GivLightbox) {
+      window.GivLightbox.bindGalleryGrid(grid, toLightboxItems(list));
+    }
   }
 
   function escapeHtml(str) {

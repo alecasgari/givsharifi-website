@@ -170,30 +170,6 @@
       "strip": "assets/images/gallery/expert-surgical-team-operating-theatre-strip.webp"
     },
     {
-      "slug": "giv-sharifi-medical-team-clinic-group-photo",
-      "file": "assets/images/gallery/giv-sharifi-medical-team-clinic-group-photo.webp",
-      "thumb": "assets/images/gallery/giv-sharifi-medical-team-clinic-group-photo-thumb.webp",
-      "alt": "Prof. Giv Sharifi's medical and surgical team group photo at the clinic",
-      "title": "Medical team at the clinic",
-      "category": "Team",
-      "featured": true,
-      "width": 1280,
-      "height": 853,
-      "strip": "assets/images/gallery/giv-sharifi-medical-team-clinic-group-photo-strip.webp"
-    },
-    {
-      "slug": "giv-sharifi-surgical-team-operating-room-group",
-      "file": "assets/images/gallery/giv-sharifi-surgical-team-operating-room-group.webp",
-      "thumb": "assets/images/gallery/giv-sharifi-surgical-team-operating-room-group-thumb.webp",
-      "alt": "Prof. Giv Sharifi and the neurosurgery team in the operating room — group portrait",
-      "title": "Surgical team — operating room",
-      "category": "Team",
-      "featured": true,
-      "width": 1280,
-      "height": 853,
-      "strip": "assets/images/gallery/giv-sharifi-surgical-team-operating-room-group-strip.webp"
-    },
-    {
       "slug": "minimally-invasive-surgery-team-monitor",
       "file": "assets/images/gallery/minimally-invasive-surgery-team-monitor.webp",
       "thumb": "assets/images/gallery/minimally-invasive-surgery-team-monitor-thumb.webp",
@@ -216,30 +192,6 @@
       "width": 1280,
       "height": 853,
       "strip": "assets/images/gallery/neurosurgeon-laparoscopic-instruments-operating-room-strip.webp"
-    },
-    {
-      "slug": "prof-giv-sharifi-neurosurgery-team",
-      "file": "assets/images/gallery/prof-giv-sharifi-neurosurgery-team.webp",
-      "thumb": "assets/images/gallery/prof-giv-sharifi-neurosurgery-team-thumb.webp",
-      "strip": "assets/images/gallery/prof-giv-sharifi-neurosurgery-team-strip.webp",
-      "alt": "Prof. Giv Sharifi and his professional neurosurgical medical team in the operating room.",
-      "title": "Our Dedicated Neurosurgical Team",
-      "category": "Team",
-      "featured": true,
-      "width": 1280,
-      "height": 853
-    },
-    {
-      "slug": "tg-20260627-221917",
-      "file": "assets/images/gallery/tg-20260627-221917.webp",
-      "thumb": "assets/images/gallery/tg-20260627-221917-thumb.webp",
-      "strip": "assets/images/gallery/tg-20260627-221917-strip.webp",
-      "alt": "Prof. Giv Sharifi neurosurgery — tg-20260627-221917",
-      "title": "tg-20260627-221917",
-      "category": "Gallery",
-      "featured": false,
-      "width": 1280,
-      "height": 853
     },
     {
       "slug": "tg-20260627-222113",

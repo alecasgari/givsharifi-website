@@ -73,6 +73,42 @@
   padding: 2rem 0 3rem;
 }
 
+.gal-intro,
+.gal-outro {
+  padding: 0 0 1.5rem;
+  background: var(--hp-cream, #f7f4ef);
+}
+
+.gal-outro {
+  padding: 2.5rem 0 1rem;
+  border-top: 1px solid rgba(15, 20, 25, 0.06);
+}
+
+.gal-prose {
+  max-width: 48rem;
+}
+
+.gal-prose h2 {
+  font-family: var(--hp-serif);
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+}
+
+.gal-prose h3 {
+  font-family: var(--hp-serif);
+  font-size: 1.125rem;
+  margin-top: 1.75rem;
+}
+
+.gal-prose a {
+  color: var(--hp-navy, #0f1419);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.gal-prose a:hover {
+  color: var(--hp-gold, #c9a962);
+}
+
 .gal-grid {
   display: grid;
   gap: 1rem;
@@ -195,6 +231,55 @@
   font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
+  z-index: 2;
+}
+
+.giv-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.15rem;
+  transition: background 0.2s ease;
+}
+
+.giv-lightbox__nav:hover,
+.giv-lightbox__nav:focus-visible {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.giv-lightbox__nav--prev {
+  left: -0.25rem;
+}
+
+.giv-lightbox__nav--next {
+  right: -0.25rem;
+}
+
+.giv-lightbox__nav[hidden] {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .giv-lightbox__nav--prev {
+    left: -3.5rem;
+  }
+
+  .giv-lightbox__nav--next {
+    right: -3.5rem;
+  }
 }
 
 .giv-lightbox__figure {
@@ -218,6 +303,20 @@
   font-family: var(--hp-sans);
   font-size: 0.9375rem;
   color: rgba(255, 255, 255, 0.85);
+}
+
+.giv-lightbox__counter {
+  margin: 0.35rem 0 0;
+  text-align: center;
+  font-family: var(--hp-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.giv-lightbox__counter[hidden] {
+  display: none !important;
 }
 
 body.lightbox-open {
