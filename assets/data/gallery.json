@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-27",
+  "updated": "2026-06-28",
   "images": [
     {
       "slug": "prof-giv-sharifi-neurosurgery-microscope-operating-room",
@@ -216,6 +216,30 @@
       "width": 1280,
       "height": 853,
       "strip": "assets/images/gallery/neurosurgeon-laparoscopic-instruments-operating-room-strip.webp"
+    },
+    {
+      "slug": "prof-giv-sharifi-neurosurgery-team",
+      "file": "assets/images/gallery/prof-giv-sharifi-neurosurgery-team.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-neurosurgery-team-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-neurosurgery-team-strip.webp",
+      "alt": "Prof. Giv Sharifi and his professional neurosurgical medical team in the operating room.",
+      "title": "Our Dedicated Neurosurgical Team",
+      "category": "Team",
+      "featured": true,
+      "width": 1280,
+      "height": 853
+    },
+    {
+      "slug": "tg-20260627-221917",
+      "file": "assets/images/gallery/tg-20260627-221917.webp",
+      "thumb": "assets/images/gallery/tg-20260627-221917-thumb.webp",
+      "strip": "assets/images/gallery/tg-20260627-221917-strip.webp",
+      "alt": "Prof. Giv Sharifi neurosurgery — tg-20260627-221917",
+      "title": "tg-20260627-221917",
+      "category": "Gallery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
     }
   ]
 }
