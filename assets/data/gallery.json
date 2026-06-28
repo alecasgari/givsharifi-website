@@ -276,6 +276,18 @@
       "featured": true,
       "width": 1280,
       "height": 853
+    },
+    {
+      "slug": "mgn-surgery-dr-giv-sharifi",
+      "file": "assets/images/gallery/mgn-surgery-dr-giv-sharifi.webp",
+      "thumb": "assets/images/gallery/mgn-surgery-dr-giv-sharifi-thumb.webp",
+      "strip": "assets/images/gallery/mgn-surgery-dr-giv-sharifi-strip.webp",
+      "alt": "Prof. Giv Sharifi performing a Meningioma (MGN) neurosurgical procedure.",
+      "title": "MGN Surgery by Dr. Giv Sharifi",
+      "category": "Surgery",
+      "featured": true,
+      "width": 1280,
+      "height": 853
     }
   ]
 }
