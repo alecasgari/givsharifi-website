@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changes_detected: ${{ steps.commit.outputs.changes_detected }}
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,8 +56,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
+      - name: Checkout processed commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.process-gallery.outputs.commit_sha }}
 
       - name: Build site
         run: python scripts/publish.py
