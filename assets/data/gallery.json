@@ -240,6 +240,18 @@
       "featured": false,
       "width": 1280,
       "height": 853
+    },
+    {
+      "slug": "tg-20260627-222113",
+      "file": "assets/images/gallery/tg-20260627-222113.webp",
+      "thumb": "assets/images/gallery/tg-20260627-222113-thumb.webp",
+      "strip": "assets/images/gallery/tg-20260627-222113-strip.webp",
+      "alt": "Prof. Giv Sharifi neurosurgery — tg-20260627-222113",
+      "title": "tg-20260627-222113",
+      "category": "Gallery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
     }
   ]
 }
