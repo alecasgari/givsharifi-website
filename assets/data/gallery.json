@@ -264,6 +264,18 @@
       "featured": true,
       "width": 1280,
       "height": 853
+    },
+    {
+      "slug": "prof-giv-sharifi-neurosurgeon",
+      "file": "assets/images/gallery/prof-giv-sharifi-neurosurgeon.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-neurosurgeon-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-neurosurgeon-strip.webp",
+      "alt": "Prof. Giv Sharifi, expert neurosurgeon, in his professional medical attire.",
+      "title": "Prof. Giv Sharifi - Leading Neurosurgeon in Dubai and Tehran",
+      "category": "Team",
+      "featured": true,
+      "width": 1280,
+      "height": 853
     }
   ]
 }
