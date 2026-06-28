@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [process-gallery]
 
+concurrency:
+  group: content-automation
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
