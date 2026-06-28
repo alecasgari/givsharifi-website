@@ -10,13 +10,18 @@ concurrency:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  process-gallery:
+  process-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      changes_detected: ${{ steps.commit.outputs.changes_detected }}
-      commit_sha: ${{ steps.commit.outputs.commit_sha }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +30,7 @@ jobs:
         run: pip install Pillow
 
       - name: Process gallery images
+        id: process
         run: |
           FILE="${{ github.event.client_payload.filename || '' }}"
           if [ -n "$FILE" ]; then
@@ -40,35 +46,17 @@ jobs:
           commit_message: "chore: process gallery images from n8n"
           file_pattern: "assets/images/gallery/** assets/data/gallery.json"
 
-  # GITHUB_TOKEN pushes do not trigger deploy.yml; publish here after processing.
-  deploy:
-    needs: process-gallery
-    if: needs.process-gallery.outputs.changes_detected == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Checkout processed commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.process-gallery.outputs.commit_sha }}
-
       - name: Build site
+        if: steps.commit.outputs.changes_detected == 'true'
         run: python scripts/publish.py
 
       - name: Upload artifact
+        if: steps.commit.outputs.changes_detected == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
       - name: Deploy to GitHub Pages
+        if: steps.commit.outputs.changes_detected == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
