@@ -112,6 +112,11 @@ def main() -> int:
         action="store_true",
         help="Create 400px strip WebP from existing gallery images",
     )
+    parser.add_argument(
+        "--only",
+        metavar="FILENAME",
+        help="Process a single file in _incoming/ (e.g. tg-20260628-081150.jpg)",
+    )
     args = parser.parse_args()
 
     if args.regenerate_strips:
@@ -133,6 +138,13 @@ def main() -> int:
     sources = sorted(
         p for p in INCOMING.iterdir() if p.is_file() and p.suffix.lower() in RASTER
     )
+    if args.only:
+        only_path = INCOMING / args.only
+        if not only_path.is_file():
+            print(f"File not found in _incoming/: {args.only}")
+            return 1
+        sources = [only_path]
+
     if not sources:
         print("No images in assets/images/gallery/_incoming/")
         print("Drop JPG/PNG files there, then run again.")
@@ -190,6 +202,7 @@ def main() -> int:
         )
 
         shutil.move(str(src), str(PROCESSED / src.name))
+        manifest.pop(src.name, None)
 
     if args.dry_run:
         print(f"\nDry run: {len(sources)} image(s) would be processed.")
@@ -200,6 +213,11 @@ def main() -> int:
         gallery["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         DATA.write_text(json.dumps(gallery, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"\nAdded {len(new_entries)} image(s). Updated {DATA.relative_to(ROOT)}")
+
+    if not args.dry_run and sources:
+        MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"Updated {MANIFEST.relative_to(ROOT)}")
+
     return 0
 
 

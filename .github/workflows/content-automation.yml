@@ -22,7 +22,13 @@ jobs:
         run: pip install Pillow
 
       - name: Process gallery images
-        run: python scripts/process-gallery.py
+        run: |
+          FILE="${{ github.event.client_payload.filename || '' }}"
+          if [ -n "$FILE" ]; then
+            python scripts/process-gallery.py --only "$FILE"
+          else
+            python scripts/process-gallery.py
+          fi
 
       - name: Commit processed gallery
         uses: stefanzweifel/git-auto-commit-action@v5
