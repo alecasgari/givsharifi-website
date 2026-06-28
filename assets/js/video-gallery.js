@@ -106,7 +106,9 @@
             ${
               v.instagram
                 ? `<a class="vid-card__ig" href="${escapeAttr(v.instagram)}" target="_blank" rel="noopener noreferrer">View on Instagram ↗</a>`
-                : ''
+                : v.youtube
+                  ? `<a class="vid-card__ig" href="${escapeAttr(v.youtube)}" target="_blank" rel="noopener noreferrer">View on YouTube ↗</a>`
+                  : ''
             }
           </div>
         </div>
