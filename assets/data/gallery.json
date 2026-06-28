@@ -336,6 +336,18 @@
       "featured": true,
       "width": 1280,
       "height": 853
+    },
+    {
+      "slug": "cervical-disc-surgery-sharifi",
+      "file": "assets/images/gallery/cervical-disc-surgery-sharifi.webp",
+      "thumb": "assets/images/gallery/cervical-disc-surgery-sharifi-thumb.webp",
+      "strip": "assets/images/gallery/cervical-disc-surgery-sharifi-strip.webp",
+      "alt": "Prof. Giv Sharifi performing cervical disc surgery in a modern neurosurgical operating theater.",
+      "title": "Cervical Disc Surgery by Prof. Giv Sharifi",
+      "category": "Surgery",
+      "featured": false,
+      "width": 1280,
+      "height": 853
     }
   ]
 }
