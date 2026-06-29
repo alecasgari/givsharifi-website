@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-06-27",
+  "updated": "2026-06-29",
   "videos": [
+    {
+      "id": "cuomkatlVtg",
+      "file": "cuomkatlVtg.mp4",
+      "poster": "cuomkatlVtg.jpg",
+      "title": "Understanding Hemifacial Spasm: Diagnosis and Surgical Treatment Options",
+      "description": "In this educational video, Prof. Guive Sharifi explores the clinical presentation and management of Hemifacial Spasm. Using the case of a 40-year-old patient with hypertension, Prof. Sharifi highlights the importance of thorough diagnostic evaluation for this condition. He explains that while medications and injections may provide temporary relief, surgical intervention remains the only definitive, curative treatment for long-term resolution of hemifacial spasms. Learn about the neurosurgical approach to addressing this involuntary facial muscle contraction.",
+      "date": "2026-06-25",
+      "duration": "8:48",
+      "category": "Education",
+      "youtube": "https://www.youtube.com/watch?v=cuomkatlVtg"
+    },
     {
       "id": "DZ455nVtZ30",
       "file": "DZ455nVtZ30.mp4",
