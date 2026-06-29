@@ -530,7 +530,7 @@ def build_video_workflow() -> dict:
             "options": {"timeout": 600000},
         },
         type_version=4.2,
-        notes="Docker app giv-ytdlp on giv-ytdlp-net (internal only). No token — see apps/giv-ytdlp README.",
+        notes="Docker app giv-ytdlp on giv-ytdlp-net (internal only). See github.com/alecasgari/youtube-instagram-downloader",
     )
     nodes.append(ytdlp)
 

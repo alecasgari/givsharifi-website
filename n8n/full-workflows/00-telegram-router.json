@@ -8,7 +8,7 @@
           "callback_query"
         ]
       },
-      "id": "829d1af1-356a-4d17-87af-770a2cf4dd8a",
+      "id": "b8c755d5-1dc7-42eb-90c5-1eb169e372e8",
       "name": "Telegram Trigger",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
@@ -27,7 +27,7 @@
           },
           "conditions": [
             {
-              "id": "8314d1fc-f670-40c3-911e-8230d3140a5a",
+              "id": "7817acc6-326d-4b27-8700-40d8bf875cd4",
               "leftValue": "={{ String($json.message?.chat?.id || $json.callback_query?.message?.chat?.id) }}",
               "rightValue": "={{ $env.GIV_TELEGRAM_ALLOWED_CHAT_ID }}",
               "operator": {
@@ -39,7 +39,7 @@
           "combinator": "and"
         }
       },
-      "id": "a181f070-a678-488e-a33c-68a325052068",
+      "id": "91075ac8-edb7-4d3f-a83e-fcec217b836e",
       "name": "Authorized chat?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -162,7 +162,7 @@
           "fallbackOutput": "extra"
         }
       },
-      "id": "ab256a28-d018-41fb-9fc9-b384e997bdf4",
+      "id": "e6fc06e4-b53e-4270-b825-a75e13eb5dd2",
       "name": "Route message type",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
@@ -199,7 +199,7 @@
           ]
         }
       },
-      "id": "4d3950a9-2fda-4a8c-8f1c-c61aa52a7e11",
+      "id": "280fae61-1217-4e3c-b655-f4c93aaf4234",
       "name": "Send menu",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -214,19 +214,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "eb75ba29-710b-4619-83bc-3c1da84aa369",
+              "id": "85dbcbba-d415-43df-9c39-300e345dabdf",
               "name": "chat_id",
               "value": "={{ $json.message.chat.id }}",
               "type": "number"
             },
             {
-              "id": "8a5afc1a-9530-448a-9ef0-a16e2661075b",
+              "id": "80c36e9b-b719-4687-a55e-29cdbc8b11b6",
               "name": "photo_file_id",
               "value": "={{ $json.message.photo.slice(-1)[0].file_id }}",
               "type": "string"
             },
             {
-              "id": "56f5b3af-6919-4010-872a-023a90a0bab9",
+              "id": "f0492cc3-aff5-4c7a-b36b-4e252908be1d",
               "name": "caption",
               "value": "={{ $json.message.caption || '' }}",
               "type": "string"
@@ -234,7 +234,7 @@
           ]
         }
       },
-      "id": "9bbc9cc8-2e44-4053-9588-bf289a94f720",
+      "id": "eda3403a-49aa-47c0-a31d-b05ae2a0f3b0",
       "name": "Prepare photo payload",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -249,7 +249,7 @@
         "mode": "each",
         "options": {}
       },
-      "id": "86e0b833-0b87-45a8-97e7-395caeab694c",
+      "id": "30cfa72a-0b64-4c2b-a10c-d4f1aa6d4d82",
       "name": "Run publish photo",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
@@ -265,13 +265,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "1bdba328-cee3-487c-9ff5-5052f9f501df",
+              "id": "a8f7895d-80ab-404d-9176-7b9a99111402",
               "name": "chat_id",
               "value": "={{ $json.message.chat.id }}",
               "type": "number"
             },
             {
-              "id": "dce5c849-c996-432c-829e-8638f8701cc6",
+              "id": "aaf3afa2-0854-499e-b65a-57927b2edae1",
               "name": "video_url",
               "value": "={{ $json.message.text.trim() }}",
               "type": "string"
@@ -279,7 +279,7 @@
           ]
         }
       },
-      "id": "8156c40e-58e8-4663-8868-b13c55deba2e",
+      "id": "21001a86-47f1-4d8e-a372-7d1a33b9e081",
       "name": "Prepare video payload",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -294,7 +294,7 @@
         "mode": "each",
         "options": {}
       },
-      "id": "b17fd91d-d92b-4318-ac72-f7bd3731c663",
+      "id": "27f6bf71-29c4-4d88-92b6-fd52f06ba4cd",
       "name": "Run publish video",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
@@ -310,19 +310,19 @@
         "assignments": {
           "assignments": [
             {
-              "id": "28b78266-d68c-410d-b4a9-d0bc8d69d6c5",
+              "id": "e5334f56-d227-41fb-85bd-68bb3b6df3fd",
               "name": "chat_id",
               "value": "={{ $json.message.chat.id }}",
               "type": "number"
             },
             {
-              "id": "ccd70140-ea10-49f5-a108-d91d33536225",
+              "id": "e1422546-5888-49f0-9ebf-9a2f2a9e076c",
               "name": "draft_text",
               "value": "={{ $json.message.text.replace(/^\\/blog\\s*/i, '').trim() }}",
               "type": "string"
             },
             {
-              "id": "7c63c753-f822-465e-850a-8acf11f0b8e6",
+              "id": "be4fe150-6740-46f5-b3d8-fc334ae46d1e",
               "name": "photo_file_id",
               "value": "={{ $json.message.photo ? $json.message.photo.slice(-1)[0].file_id : '' }}",
               "type": "string"
@@ -330,7 +330,7 @@
           ]
         }
       },
-      "id": "6fff0214-a62d-4f90-8a18-8a50ff78c260",
+      "id": "8ea138a8-cbcb-4b59-848f-7934f658cc9f",
       "name": "Prepare blog payload",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -345,7 +345,7 @@
         "mode": "each",
         "options": {}
       },
-      "id": "6dc4e407-bfae-4488-b317-2779db820b9b",
+      "id": "79cbde7a-fa86-4a20-8a4d-6451b269f514",
       "name": "Run publish blog",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
@@ -360,7 +360,7 @@
         "chatId": "={{ $json.message.chat.id }}",
         "text": "Send:\n• Photo (with optional caption)\n• Instagram reel or YouTube link\n• /blog Your article draft…"
       },
-      "id": "507f5ff9-e925-4fb7-be3a-e5570f55f792",
+      "id": "31f8d8d2-74cf-43d5-8490-3f0f159fb204",
       "name": "Send help",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -374,7 +374,7 @@
         "chatId": "={{ $json.message?.chat?.id || $json.callback_query?.message?.chat?.id }}",
         "text": "Unauthorized."
       },
-      "id": "0989a490-3fee-484a-97d8-b11f47e387c0",
+      "id": "6540df25-7827-4b29-ab2d-09c35fd46a05",
       "name": "Unauthorized",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -387,7 +387,7 @@
       "parameters": {
         "content": "## Telegram router\nImport sub-workflows first. Copy their workflow IDs into env vars:\n`GIV_WF_PHOTO_ID`, `GIV_WF_VIDEO_ID`, `GIV_WF_BLOG_ID`\n\nOr replace Execute Workflow nodes with manual workflow picker after import."
       },
-      "id": "bd62f719-5fb7-4fed-8154-7721f4f46b73",
+      "id": "7674fe29-d611-480c-97de-0388d30279c4",
       "name": "Note: Router",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -505,7 +505,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "92955163-cd28-4bff-baa7-6b6b80c33018",
+  "versionId": "7c7234fc-8e13-4c30-94ab-398d01473b35",
   "meta": {
     "templateCredsSetupCompleted": false
   },

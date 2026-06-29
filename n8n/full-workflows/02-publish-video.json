@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "c56e8102-cc91-498b-8383-40257815a6ed",
+      "id": "6daec467-98b6-403a-9512-c9f69d428067",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -18,13 +18,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "fc81de00-ed06-457e-9e67-abb6fb5fad77",
+              "id": "9bbf55e5-cf47-4c68-b909-05ac5d3567f8",
               "name": "video_url",
               "value": "={{ $json.video_url }}",
               "type": "string"
             },
             {
-              "id": "db9c9923-8db5-49d4-b906-941b5044f056",
+              "id": "532f35a8-f87f-40c7-844b-a374c0adb74c",
               "name": "chat_id",
               "value": "={{ $json.chat_id }}",
               "type": "number"
@@ -32,7 +32,7 @@
           ]
         }
       },
-      "id": "2cbb0b7a-c068-4662-9fce-3da1fba3c711",
+      "id": "33e4f1ce-2738-4fd8-b0ec-c23b883e552f",
       "name": "Set video context",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -52,7 +52,7 @@
           "timeout": 600000
         }
       },
-      "id": "360717be-d76b-4af5-a022-5e3604d288ba",
+      "id": "7e68918e-5061-4d0d-9920-af1daff10d93",
       "name": "Download via yt-dlp service",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -60,13 +60,13 @@
         440,
         0
       ],
-      "notes": "Docker app giv-ytdlp on giv-ytdlp-net (internal only). No token — see apps/giv-ytdlp README."
+      "notes": "Docker app giv-ytdlp on giv-ytdlp-net (internal only). See github.com/alecasgari/youtube-instagram-downloader"
     },
     {
       "parameters": {
         "jsCode": "const item = $input.first().json;\nconst body = item.body ?? item;\nconst data = typeof body === 'string' ? JSON.parse(body) : body;\nif (!data.ok) {\n  throw new Error(data.error || 'yt-dlp service failed');\n}\nif (!data.r2?.mp4_key) {\n  throw new Error('R2 upload missing from giv-ytdlp response');\n}\nreturn [{\n  json: {\n    video_id: data.video_id,\n    source: data.source,\n    video_meta: data.video_meta,\n    r2: data.r2,\n  },\n}];\n"
       },
-      "id": "a1624597-0517-4964-a46b-94e1f7fe3c86",
+      "id": "85dcfb6a-3259-4e1c-ad29-7b43528f5b2d",
       "name": "Parse download response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
           "temperature": 0.3
         }
       },
-      "id": "2280a3b0-f06f-470e-8256-ffdbcec7c7e4",
+      "id": "082f5bc0-74d8-4fd1-a6fb-bc14b47eeaff",
       "name": "Gemini video model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -95,7 +95,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"title\": \"English video title max 80 chars\",\n  \"description\": \"English description max 160 chars\",\n  \"category\": \"Patient Stories\"\n}"
       },
-      "id": "de20ec47-edbc-4b2a-8274-7a1a670895cd",
+      "id": "0799be4f-f661-4079-8520-43adb9206509",
       "name": "Video copy parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -113,7 +113,7 @@
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "a50fd818-221d-4b77-b625-27b6ed8c379f",
+      "id": "7f6d0d35-310f-467b-ad92-58f722b83681",
       "name": "Gemini video copy",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -139,7 +139,7 @@
         },
         "options": {}
       },
-      "id": "f2985fb8-9d4c-4fc2-a409-42f9d0d9189b",
+      "id": "a3b8a8f6-4f03-4957-8d0d-38b22729b5d1",
       "name": "Get video-library.json",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -153,7 +153,7 @@
       "parameters": {
         "jsCode": "const ghItem = $('Get video-library.json').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n} else if (raw && !String(raw).trim().startsWith('{')) {\n  try {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } catch {\n    /* keep raw */\n  }\n}\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `GitHub file content empty — assign GitHub API credential on the Get node. Fields: ${Object.keys(github).join(', ')}`\n  );\n}\nlet lib;\ntry {\n  lib = JSON.parse(raw);\n} catch (e) {\n  throw new Error(`video-library.json is not valid JSON: ${e.message}`);\n}\nconst parsed = $('Parse download response').first().json;\nconst id = parsed.video_id;\nconst meta = $('Gemini video copy').first().json.output;\nconst m = parsed.video_meta;\nconst d = m.upload_date || '';\nconst date = d.length === 8\n  ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`\n  : new Date().toISOString().slice(0, 10);\nconst sourceUrl = m.webpage_url || $('Set video context').first().json.video_url;\nconst entry = {\n  id,\n  file: `${id}.mp4`,\n  poster: `${id}.jpg`,\n  title: meta.title,\n  description: meta.description,\n  date,\n  duration: m.duration_string || '',\n  category: meta.category || 'Patient Stories',\n};\nif (sourceUrl.includes('instagram.com')) entry.instagram = sourceUrl;\nelse if (sourceUrl.includes('youtube.com') || sourceUrl.includes('youtu.be')) entry.youtube = sourceUrl;\nif (!Array.isArray(lib.videos)) lib.videos = [];\nlib.videos = [entry, ...lib.videos];\nlib.updated = new Date().toISOString().slice(0, 10);\nreturn [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n', library_sha: github.sha || '' } }];\n"
       },
-      "id": "7d5fc028-776b-4f80-a411-c97ac050cd45",
+      "id": "a0b63ae5-87b2-4fe2-800f-69d2ec53acd1",
       "name": "Prepend new video entry",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -188,7 +188,7 @@
           "sha": "={{ $json.library_sha }}"
         }
       },
-      "id": "f1290e51-b369-480f-b2d9-f9e79b11267e",
+      "id": "7c28e629-41ac-4b65-870d-aef6836b90dd",
       "name": "Update video-library.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -202,7 +202,7 @@
         "chatId": "={{ $('When called by router').item.json.chat_id }}",
         "text": "=Video published.\\n\\n{{ $('Gemini video copy').item.json.output.title }}\\n\\nhttps://www.givsharifi.com/videos/"
       },
-      "id": "21837edd-1d85-4eaa-ba6d-bcc886623f8b",
+      "id": "4c05ab00-4968-41f7-b4dd-ce24f0fa0f36",
       "name": "Telegram success",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -215,7 +215,7 @@
       "parameters": {
         "content": "## Video publish (Instagram + YouTube)\nHTTP → `giv-ytdlp` Docker app (download + R2 upload) → Gemini → GitHub.\n\nService: `http://giv-ytdlp:9876` | Bucket: `givsharifi-videos` | Site: https://www.givsharifi.com\nn8n env: not required (service is internal Docker network only)."
       },
-      "id": "2bfc691b-fc14-49a6-bcda-fad28c10d9f6",
+      "id": "3bb661dd-f124-414b-b5e2-3b111c4893cb",
       "name": "Note: Video flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -342,7 +342,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a6a95663-0709-4f1b-99e6-eb224d3bd43c",
+  "versionId": "4574194a-5e00-4edd-9dcf-1b7a35218529",
   "meta": {
     "templateCredsSetupCompleted": false
   },

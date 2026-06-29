@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "63b88bac-18c2-400b-8a89-9377ce1d0585",
+      "id": "be688735-d4f1-4c8b-9275-b0f5779bc052",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -22,7 +22,7 @@
           },
           "conditions": [
             {
-              "id": "c3619114-eb54-4c71-b38d-0811ac7f1b8f",
+              "id": "b4813e3d-2108-47ae-a1a8-8d9e438134fc",
               "leftValue": "={{ $json.photo_file_id }}",
               "rightValue": "",
               "operator": {
@@ -34,7 +34,7 @@
           "combinator": "and"
         }
       },
-      "id": "c1d3b1e6-1d5a-4a69-90b9-be0fb20fc8e9",
+      "id": "c9a7463b-7d4f-431d-b18d-735d7b0132e7",
       "name": "Has featured image?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -48,7 +48,7 @@
         "resource": "file",
         "fileId": "={{ $('When called by router').item.json.photo_file_id }}"
       },
-      "id": "d304280d-18bc-460e-a972-a63eadcc4e08",
+      "id": "5db2c5c8-02af-4323-bee4-73a37f90fb36",
       "name": "Download featured image",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -64,7 +64,7 @@
           "temperature": 0.3
         }
       },
-      "id": "f67725fe-31f0-4fc3-bc41-7eafd2a3eeef",
+      "id": "e8081e98-260b-46a2-a6d6-64e8e751f192",
       "name": "Gemini blog model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -77,7 +77,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"slug\": \"example-blog-slug\",\n  \"title\": \"Article title\",\n  \"metaDescription\": \"SEO meta description max 155 chars\",\n  \"excerpt\": \"Card excerpt 2 sentences\",\n  \"date\": \"2026-06-27\",\n  \"category\": \"Neurosurgery\",\n  \"tags\": [\n    \"brain surgery\",\n    \"neurosurgery Dubai\"\n  ],\n  \"readingTimeMinutes\": 6,\n  \"featuredImagePath\": \"assets/images/blog/example.webp\",\n  \"content\": [\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Opening paragraph.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Section heading\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Body text.\"\n    }\n  ]\n}"
       },
-      "id": "8c4ab2ae-c7de-4883-882e-cec8995ececd",
+      "id": "f7e7a878-8fd8-4dc8-b38d-668390946ec4",
       "name": "Blog JSON parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -95,7 +95,7 @@
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "75aca434-30fd-4dda-aaa2-a782194bf6b4",
+      "id": "7d35eb21-8c16-400c-9808-8ec8c68d29d0",
       "name": "Gemini blog writer",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -125,7 +125,7 @@
         "branch": "main",
         "filePath": "blog/_post-shell.html"
       },
-      "id": "9856cb1f-3bb0-4f2e-8cd2-b77ec9523ea4",
+      "id": "53f2d7cb-3d82-4bcf-bf2e-5613b0230410",
       "name": "Get post HTML shell",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -138,7 +138,7 @@
       "parameters": {
         "jsCode": "const p = $('Gemini blog writer').first().json.output;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n' } }];\n"
       },
-      "id": "0414bf84-d34b-4e7c-87af-17408976a6f1",
+      "id": "2bbd1cfa-25b0-4452-8bb6-ccb991dffe0d",
       "name": "Build post JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -170,7 +170,7 @@
         "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
         "commitMessage": "content: add blog post via Telegram bot"
       },
-      "id": "5d4cdbcf-20ad-48ca-9533-18f3d26ac838",
+      "id": "1007b945-cc2e-46e4-8fc2-72e54f920963",
       "name": "Create post JSON",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -202,7 +202,7 @@
         "fileContent": "={{ $('Get post HTML shell').item.json.content }}",
         "commitMessage": "content: add blog page shell via Telegram bot"
       },
-      "id": "a8f3651b-9400-4949-812a-aa41ae7ece8c",
+      "id": "1823647c-ff41-4bc1-904f-8da5db1bfd85",
       "name": "Create blog HTML page",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -232,7 +232,7 @@
         "branch": "main",
         "filePath": "posts/data/index.json"
       },
-      "id": "d6e12a6d-9bf8-4030-940a-1b379d480dd5",
+      "id": "8ae3a7e3-3096-4698-b525-c119f6725eb9",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -245,7 +245,7 @@
       "parameters": {
         "jsCode": "const ghItem = $('Get posts index').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n} else if (raw && !String(raw).trim().startsWith('{')) {\n  try {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } catch {\n    /* keep raw */\n  }\n}\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `GitHub file content empty — assign GitHub API credential on the Get node. Fields: ${Object.keys(github).join(', ')}`\n  );\n}\nconst idx = JSON.parse(raw);\nconst p = $('Gemini blog writer').first().json.output;\nidx.posts = [{\n  slug: p.slug,\n  title: p.title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${p.featuredImagePath}`,\n}, ...(idx.posts || [])];\nreturn [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n', index_sha: github.sha || '' } }];\n"
       },
-      "id": "2f5ca20d-b06d-4f83-b484-9bf495e56b0b",
+      "id": "4d2285bc-b4c3-4dce-b23d-82396373c83c",
       "name": "Prepend to index",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -280,7 +280,7 @@
           "sha": "={{ $json.index_sha }}"
         }
       },
-      "id": "0cf671a1-911d-490f-bc9c-aba8bd34f507",
+      "id": "881272ba-6103-4646-825e-4435c1bf0e8c",
       "name": "Update posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -294,7 +294,7 @@
         "chatId": "={{ $('When called by router').item.json.chat_id }}",
         "text": "=Blog post published.\n\n{{ $('Gemini blog writer').item.json.output.title }}\n\n{{ $env.GIV_SITE_URL }}/blog/{{ $('Gemini blog writer').item.json.output.slug }}/"
       },
-      "id": "2fc4d940-0ffe-4cb1-96a3-657800574664",
+      "id": "bdd99c3f-3419-4ea8-b1c8-0936002855da",
       "name": "Telegram success",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -307,7 +307,7 @@
       "parameters": {
         "content": "## Blog publish\nDraft text → Gemini (full JSON) → GitHub post JSON + HTML shell + index.json.\n\nOptional: upload featured WebP to `assets/images/blog/` via GitHub node on the **true** branch of If."
       },
-      "id": "2b01de58-96e5-486b-b8b4-d832453f545d",
+      "id": "793674dc-5d47-4750-9617-1afe3f8f4c63",
       "name": "Note: Blog flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -479,7 +479,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7db96e69-77c0-491e-8dec-02f418bbe356",
+  "versionId": "4daf4c03-e117-4e0f-b927-ba01dcdc1079",
   "meta": {
     "templateCredsSetupCompleted": false
   },

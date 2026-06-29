@@ -1,9 +1,9 @@
-# Apps
+# Apps (external repositories)
 
-Self-hosted services that support the givsharifi-website automation stack (n8n, GitHub Actions, etc.). Each app lives in its own folder with its own `docker-compose.yml` so it can run on the VPS **without** modifying the n8n container or compose.
+Self-hosted services for the givsharifi automation stack live in **separate GitHub repos** and deploy independently on the VPS. They are not tracked in this website repository.
 
-| App | Purpose |
-|-----|---------|
-| [giv-ytdlp](giv-ytdlp/) | Download Instagram / YouTube videos via yt-dlp; optional upload to Cloudflare R2 |
+| Service | Repository | VPS path (example) |
+|---------|------------|-------------------|
+| YouTube / Instagram downloader (yt-dlp + R2 + UI) | [youtube-instagram-downloader](https://github.com/alecasgari/youtube-instagram-downloader) | `/home/alecadmin/youtube-instagram-downloader` |
 
-Deploy apps on the server under e.g. `/home/alecadmin/giv-ytdlp/` (copy or clone the app folder). See each app's `README.md` for steps.
+n8n workflow `02-publish-video` calls the Docker service at `http://giv-ytdlp:9876/download` on network `giv-ytdlp-net`. See the downloader repo README for setup.

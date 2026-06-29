@@ -44,7 +44,7 @@ All **Google Gemini Chat Model** sub-nodes use:
 
 ### 4. giv-ytdlp service (video workflow)
 
-Workflow `02` calls the **giv-ytdlp** Docker app (see `apps/giv-ytdlp/`). It downloads Instagram/YouTube videos and uploads MP4 + poster to R2 — n8n no longer needs S3 or Read/Write File nodes for video.
+Workflow `02` calls the **giv-ytdlp** Docker app ([youtube-instagram-downloader](https://github.com/alecasgari/youtube-instagram-downloader)). It downloads Instagram/YouTube videos and uploads MP4 + poster to R2 — n8n no longer needs S3 or Read/Write File nodes for video.
 
 **Server setup (already done if health checks passed):**
 
