@@ -21,5 +21,7 @@ PLAYGROUND/
 __pycache__/
 *.pyc
 .env
+apps/giv-ytdlp/cookies.txt
+docs/
 .DS_Store
 Thumbs.db

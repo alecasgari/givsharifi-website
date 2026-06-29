@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "a0b1f3f7-6901-40a8-a387-931a590f407a",
+      "id": "f84a3b2a-4cec-40d0-92e9-fc2119ddbab4",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -17,7 +17,7 @@
         "resource": "file",
         "fileId": "={{ $json.photo_file_id }}"
       },
-      "id": "2d11d09d-9c5d-406e-bcdb-6947fed05cff",
+      "id": "70b41216-52cd-4620-beeb-ab1ebea19ca1",
       "name": "Download Telegram photo",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -28,24 +28,40 @@
     },
     {
       "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "data",
+        "destinationKey": "photo_base64",
+        "options": {}
+      },
+      "id": "a219c6d9-7969-4db5-8041-1f1228962a21",
+      "name": "Extract photo base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        330,
+        0
+      ]
+    },
+    {
+      "parameters": {
         "mode": "manual",
         "duplicateItem": false,
         "assignments": {
           "assignments": [
             {
-              "id": "65cdf3a4-3503-4623-9c06-73ef70d21412",
+              "id": "38658768-3e30-4654-a951-f4538a8384ed",
               "name": "incoming_name",
               "value": "={{ 'tg-' + $now.toFormat('yyyyMMdd-HHmmss') + '.jpg' }}",
               "type": "string"
             },
             {
-              "id": "0a34432e-90dc-404b-a49b-a052af374f38",
+              "id": "59b98cc1-6d8d-46d3-9876-c30d2d097f20",
               "name": "chat_id",
               "value": "={{ $('When called by router').item.json.chat_id }}",
               "type": "number"
             },
             {
-              "id": "e4fd2286-eca5-4d63-9a20-a82680e921db",
+              "id": "8e904a65-28a1-42e2-80fb-b0a5f6540f6b",
               "name": "caption",
               "value": "={{ $('When called by router').item.json.caption || '' }}",
               "type": "string"
@@ -53,7 +69,7 @@
           ]
         }
       },
-      "id": "3755c73c-3f3d-4bfc-aa30-2ffc519a9a68",
+      "id": "c715e5c6-e481-44ae-991b-68da2ca15e53",
       "name": "Set incoming filename",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -64,11 +80,12 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-flash-lite-latest",
         "options": {
           "temperature": 0.3
         }
       },
-      "id": "12d26fd6-9b78-443d-96e2-3f3f18c7fcf8",
+      "id": "e82b5434-5a6f-49b3-a276-0b9ccca4a66a",
       "name": "Gemini photo model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -81,7 +98,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"slug\": \"prof-giv-sharifi-neurosurgery-clinic\",\n  \"alt\": \"Descriptive alt text for SEO\",\n  \"title\": \"Short gallery title\",\n  \"category\": \"Surgery\",\n  \"featured\": false\n}"
       },
-      "id": "7c7a6065-8af2-48d4-b86c-1202b0c91537",
+      "id": "6ccd117f-3173-46b3-a8e4-a4eba790297a",
       "name": "Photo metadata parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -99,7 +116,7 @@
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "4000d201-b1d5-4a8e-a7f4-715c39cc5ff7",
+      "id": "ecfe2ab3-f2f7-4d40-b531-1677ab7b9cd4",
       "name": "Gemini photo metadata",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -112,12 +129,24 @@
       "parameters": {
         "resource": "file",
         "operation": "get",
-        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-        "repository": "={{ $env.GIV_GITHUB_REPO }}",
-        "filePath": "assets/images/gallery/_incoming/manifest.json",
-        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "assets/images/gallery/_incoming/manifest.json"
       },
-      "id": "42d50034-4725-427d-9113-3eef2f75b066",
+      "id": "fcc9876d-ebb9-454c-8b20-43405fca2ae4",
       "name": "Get manifest.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -128,9 +157,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const github = $input.first().json;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nlet manifest = {};\ntry {\n  manifest = JSON.parse(raw || '{}');\n} catch {\n  manifest = {};\n}\nconst fileName = $('Set incoming filename').first().json.incoming_name;\nconst meta = $('Gemini photo metadata').first().json.output;\nmanifest[fileName] = meta;\nreturn [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n', manifest_sha: github.sha || '' } }];\n"
+        "jsCode": "const ghItem = $('Get manifest.json').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n} else if (raw && !String(raw).trim().startsWith('{')) {\n  try {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } catch {\n    /* keep raw */\n  }\n}\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `GitHub file content empty — assign GitHub API credential on the Get node. Fields: ${Object.keys(github).join(', ')}`\n  );\n}\nlet manifest = {};\ntry {\n  manifest = JSON.parse(raw || '{}');\n} catch {\n  manifest = {};\n}\nconst fileName = $('Set incoming filename').first().json.incoming_name;\nconst meta = $('Gemini photo metadata').first().json.output;\nmanifest[fileName] = meta;\nreturn [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n', manifest_sha: github.sha || '' } }];\n"
       },
-      "id": "56531d9e-070e-4625-8f90-0f15fc3074f4",
+      "id": "514a4746-b317-40ad-a5e3-ed20a471d61d",
       "name": "Merge manifest entry",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -141,29 +170,28 @@
     },
     {
       "parameters": {
-        "jsCode": "const photoItem = $('Download Telegram photo').first();\nconst buffer = await this.helpers.getBinaryDataBuffer(photoItem, 'data');\n\nreturn [{\n  json: {\n    manifest_json: $input.first().json.manifest_json,\n    photo_base64: buffer.toString('base64'),\n  },\n}];\n"
-      },
-      "id": "b2278922-1ad9-4a92-8685-ec6ffc0a3722",
-      "name": "Prepare photo base64",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1210,
-        -80
-      ]
-    },
-    {
-      "parameters": {
         "resource": "file",
         "operation": "create",
-        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-        "repository": "={{ $env.GIV_GITHUB_REPO }}",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
         "filePath": "={{ 'assets/images/gallery/_incoming/' + $('Set incoming filename').item.json.incoming_name }}",
-        "fileContent": "={{ $json.photo_base64 }}",
-        "commitMessage": "content: add gallery photo via Telegram bot",
-        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+        "fileContent": "={{ $('Extract photo base64').item.json.photo_base64 }}",
+        "commitMessage": "content: add gallery photo via Telegram bot"
       },
-      "id": "71759e1a-71e5-4a26-81b0-559ad985d8df",
+      "id": "b7e65d44-eec5-47bd-bf36-35ce4b8403e1",
       "name": "Upload photo to _incoming",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -176,17 +204,29 @@
       "parameters": {
         "resource": "file",
         "operation": "edit",
-        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-        "repository": "={{ $env.GIV_GITHUB_REPO }}",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
         "filePath": "assets/images/gallery/_incoming/manifest.json",
         "fileContent": "={{ $('Merge manifest entry').item.json.manifest_json }}",
         "commitMessage": "content: update gallery manifest via Telegram bot",
-        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         "additionalParameters": {
           "sha": "={{ $('Merge manifest entry').item.json.manifest_sha }}"
         }
       },
-      "id": "660f3245-01a4-467d-bdfa-4128b32cab07",
+      "id": "47ede2ad-f63e-4d58-8499-021facce9ba2",
       "name": "Update manifest.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -198,14 +238,14 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.github.com/repos/{{ $env.GIV_GITHUB_OWNER }}/{{ $env.GIV_GITHUB_REPO }}/dispatches",
+        "url": "=https://api.github.com/repos/alecasgari/givsharifi-website/dispatches",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "githubApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"event_type\":\"process-gallery\",\"client_payload\":{\"source\":\"n8n\"}}"
+        "jsonBody": "={{ { event_type: 'process-gallery', client_payload: { source: 'n8n', filename: $('Set incoming filename').item.json.incoming_name } } }}"
       },
-      "id": "06efceeb-2354-4221-86c4-27049bb6165f",
+      "id": "adbe9eb1-9f10-4cb7-a47f-e90f4ce79d9b",
       "name": "Dispatch process-gallery",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -220,7 +260,7 @@
         "chatId": "={{ $('When called by router').item.json.chat_id }}",
         "text": "=Photo queued for processing.\n\nTitle: {{ $('Gemini photo metadata').item.json.output.title }}\nSlug: {{ $('Gemini photo metadata').item.json.output.slug }}\n\nGallery will update in ~2 min: {{ $env.GIV_SITE_URL }}/gallery/"
       },
-      "id": "70185b19-7587-4213-be9a-77272e751065",
+      "id": "27dfc8e2-3cb1-4c14-ae63-2196a23265ec",
       "name": "Telegram success",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -231,9 +271,9 @@
     },
     {
       "parameters": {
-        "content": "## Photo publish\nTelegram photo → Gemini (alt/slug) → GitHub `_incoming/` + manifest → `repository_dispatch` → `process-gallery.py` → WebP + gallery.json → GitHub Pages deploy."
+        "content": "## Photo publish\nTelegram photo → Gemini (alt/slug) → GitHub photo then manifest (sequential) → single `repository_dispatch` → `process-gallery.py` → WebP + gallery.json → GitHub Pages deploy."
       },
-      "id": "bb4efc5a-39bf-4ec6-b7bb-aa8a8a5fc988",
+      "id": "19d9123c-620e-4264-bd75-b5e2aa3e40ac",
       "name": "Note: Photo flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -256,6 +296,17 @@
       ]
     },
     "Download Telegram photo": {
+      "main": [
+        [
+          {
+            "node": "Extract photo base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract photo base64": {
       "main": [
         [
           {
@@ -325,22 +376,6 @@
       "main": [
         [
           {
-            "node": "Prepare photo base64",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Update manifest.json",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare photo base64": {
-      "main": [
-        [
-          {
             "node": "Upload photo to _incoming",
             "type": "main",
             "index": 0
@@ -352,7 +387,7 @@
       "main": [
         [
           {
-            "node": "Dispatch process-gallery",
+            "node": "Update manifest.json",
             "type": "main",
             "index": 0
           }
@@ -387,7 +422,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "633d18f9-e682-424a-8bdd-0b20cbdcd1bb",
+  "versionId": "903490f0-aab0-4e68-821b-0bea239c8c53",
   "meta": {
     "templateCredsSetupCompleted": false
   },

@@ -9,6 +9,42 @@ from pathlib import Path
 
 OUT = Path(__file__).resolve().parent / "full-workflows"
 
+GITHUB_OWNER = "alecasgari"
+GITHUB_REPO = "givsharifi-website"
+GITHUB_BRANCH = "main"
+GEMINI_MODEL = "models/gemini-flash-lite-latest"
+R2_BUCKET = "givsharifi-videos"
+SITE_URL = "https://www.givsharifi.com"
+
+
+def gh_owner() -> dict:
+    return {
+        "__rl": True,
+        "value": GITHUB_OWNER,
+        "mode": "list",
+        "cachedResultName": GITHUB_OWNER,
+        "cachedResultUrl": f"https://github.com/{GITHUB_OWNER}",
+    }
+
+
+def gh_repo() -> dict:
+    return {
+        "__rl": True,
+        "value": GITHUB_REPO,
+        "mode": "list",
+        "cachedResultName": GITHUB_REPO,
+        "cachedResultUrl": f"https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}",
+    }
+
+
+def gh_repo_params(**extra: object) -> dict:
+    return {
+        "owner": gh_owner(),
+        "repository": gh_repo(),
+        "branch": GITHUB_BRANCH,
+        **extra,
+    }
+
 
 def nid() -> str:
     return str(uuid.uuid4())
@@ -69,7 +105,10 @@ def gemini_stack(
         model_name,
         "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         [position_x, 200],
-        {"options": {"temperature": 0.3}},
+        {
+            "modelName": GEMINI_MODEL,
+            "options": {"temperature": 0.3},
+        },
         type_version=1,
     )
     parser = node(
@@ -110,17 +149,38 @@ def code_node(name: str, position: list[int], js_code: str) -> dict:
     )
 
 
+def github_file_source_expr(node_name: str) -> str:
+    """JS: load GitHub Contents API payload from a named upstream node."""
+    return f"""const ghItem = $('{node_name}').first().json;
+const github = ghItem.body ?? ghItem;
+if (github.message && !github.content) {{
+  throw new Error(`GitHub API: ${{github.message}}`);
+}}
+"""
+
+
 def github_raw_content_expr() -> str:
     """JS snippet: decode GitHub file get response into `raw` string."""
     return """let raw = github.content ?? '';
 if (github.encoding === 'base64' && raw) {
   raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');
+} else if (raw && !String(raw).trim().startsWith('{')) {
+  try {
+    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');
+  } catch {
+    /* keep raw */
+  }
 }
-raw = String(raw).trim();"""
+raw = String(raw).trim();
+if (!raw) {
+  throw new Error(
+    `GitHub file content empty — assign GitHub API credential on the Get node. Fields: ${Object.keys(github).join(', ')}`
+  );
+}"""
 
 
 MERGE_MANIFEST_CODE = (
-    "const github = $input.first().json;\n"
+    github_file_source_expr("Get manifest.json")
     + github_raw_content_expr()
     + """
 let manifest = {};
@@ -136,35 +196,46 @@ return [{ json: { manifest_json: JSON.stringify(manifest, null, 2) + '\\n', mani
 """
 )
 
-PREPARE_PHOTO_UPLOAD_CODE = """const photoItem = $('Download Telegram photo').first();
-const buffer = await this.helpers.getBinaryDataBuffer(photoItem, 'data');
+YTDLP_SERVICE_URL = "http://giv-ytdlp:9876/download"
 
+PARSE_DOWNLOAD_RESPONSE_CODE = """const item = $input.first().json;
+const body = item.body ?? item;
+const data = typeof body === 'string' ? JSON.parse(body) : body;
+if (!data.ok) {
+  throw new Error(data.error || 'yt-dlp service failed');
+}
+if (!data.r2?.mp4_key) {
+  throw new Error('R2 upload missing from giv-ytdlp response');
+}
 return [{
   json: {
-    manifest_json: $input.first().json.manifest_json,
-    photo_base64: buffer.toString('base64'),
+    video_id: data.video_id,
+    source: data.source,
+    video_meta: data.video_meta,
+    r2: data.r2,
   },
 }];
 """
 
-PARSE_REEL_CODE = """const item = $input.first().json;
-const payload = item.data ?? item.json ?? item.content;
-const reel = typeof payload === 'string' ? JSON.parse(payload) : payload;
-return [{ json: { reel_meta: reel, video_id: reel.id } }];
-"""
-
 PREPEND_VIDEO_CODE = (
-    "const github = $input.first().json;\n"
+    github_file_source_expr("Get video-library.json")
     + github_raw_content_expr()
     + """
-const lib = JSON.parse(raw);
-const id = $('Parse reel metadata').first().json.video_id;
+let lib;
+try {
+  lib = JSON.parse(raw);
+} catch (e) {
+  throw new Error(`video-library.json is not valid JSON: ${e.message}`);
+}
+const parsed = $('Parse download response').first().json;
+const id = parsed.video_id;
 const meta = $('Gemini video copy').first().json.output;
-const m = $('Parse reel metadata').first().json.reel_meta;
+const m = parsed.video_meta;
 const d = m.upload_date || '';
 const date = d.length === 8
   ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
   : new Date().toISOString().slice(0, 10);
+const sourceUrl = m.webpage_url || $('Set video context').first().json.video_url;
 const entry = {
   id,
   file: `${id}.mp4`,
@@ -173,12 +244,14 @@ const entry = {
   description: meta.description,
   date,
   duration: m.duration_string || '',
-  instagram: m.webpage_url || $('Set reel URL').first().json.reel_url,
   category: meta.category || 'Patient Stories',
 };
-lib.videos = [entry, ...(lib.videos || [])];
+if (sourceUrl.includes('instagram.com')) entry.instagram = sourceUrl;
+else if (sourceUrl.includes('youtube.com') || sourceUrl.includes('youtu.be')) entry.youtube = sourceUrl;
+if (!Array.isArray(lib.videos)) lib.videos = [];
+lib.videos = [entry, ...lib.videos];
 lib.updated = new Date().toISOString().slice(0, 10);
-return [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n' } }];
+return [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n', library_sha: github.sha || '' } }];
 """
 )
 
@@ -196,7 +269,7 @@ return [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n' } }];
 """
 
 PREPEND_INDEX_CODE = (
-    "const github = $input.first().json;\n"
+    github_file_source_expr("Get posts index")
     + github_raw_content_expr()
     + """
 const idx = JSON.parse(raw);
@@ -209,7 +282,7 @@ idx.posts = [{
   category: p.category,
   image: `/${p.featuredImagePath}`,
 }, ...(idx.posts || [])];
-return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n' } }];
+return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n', index_sha: github.sha || '' } }];
 """
 )
 
@@ -265,6 +338,20 @@ def build_photo_workflow() -> dict:
     )
     nodes.append(dl)
 
+    extract_photo = node(
+        "Extract photo base64",
+        "n8n-nodes-base.extractFromFile",
+        [330, 0],
+        {
+            "operation": "binaryToPropery",
+            "binaryPropertyName": "data",
+            "destinationKey": "photo_base64",
+            "options": {},
+        },
+        type_version=1.1,
+    )
+    nodes.append(extract_photo)
+
     fname = node(
         "Set incoming filename",
         "n8n-nodes-base.set",
@@ -307,10 +394,8 @@ def build_photo_workflow() -> dict:
         {
             "resource": "file",
             "operation": "get",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "assets/images/gallery/_incoming/manifest.json",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
         type_version=1.1,
     )
@@ -319,9 +404,6 @@ def build_photo_workflow() -> dict:
     merge_manifest = code_node("Merge manifest entry", [1100, 0], MERGE_MANIFEST_CODE)
     nodes.append(merge_manifest)
 
-    prepare_photo = code_node("Prepare photo base64", [1210, -80], PREPARE_PHOTO_UPLOAD_CODE)
-    nodes.append(prepare_photo)
-
     gh_upload = node(
         "Upload photo to _incoming",
         "n8n-nodes-base.github",
@@ -329,12 +411,10 @@ def build_photo_workflow() -> dict:
         {
             "resource": "file",
             "operation": "create",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "={{ 'assets/images/gallery/_incoming/' + $('Set incoming filename').item.json.incoming_name }}",
-            "fileContent": "={{ $json.photo_base64 }}",
+            "fileContent": "={{ $('Extract photo base64').item.json.photo_base64 }}",
             "commitMessage": "content: add gallery photo via Telegram bot",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
         type_version=1.1,
     )
@@ -347,12 +427,10 @@ def build_photo_workflow() -> dict:
         {
             "resource": "file",
             "operation": "edit",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "assets/images/gallery/_incoming/manifest.json",
             "fileContent": "={{ $('Merge manifest entry').item.json.manifest_json }}",
             "commitMessage": "content: update gallery manifest via Telegram bot",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
             "additionalParameters": {
                 "sha": "={{ $('Merge manifest entry').item.json.manifest_sha }}",
             },
@@ -367,12 +445,12 @@ def build_photo_workflow() -> dict:
         [1540, 0],
         {
             "method": "POST",
-            "url": "=https://api.github.com/repos/{{ $env.GIV_GITHUB_OWNER }}/{{ $env.GIV_GITHUB_REPO }}/dispatches",
+            "url": f"=https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/dispatches",
             "authentication": "predefinedCredentialType",
             "nodeCredentialType": "githubApi",
             "sendBody": True,
             "specifyBody": "json",
-            "jsonBody": '={"event_type":"process-gallery","client_payload":{"source":"n8n"}}',
+            "jsonBody": "={{ { event_type: 'process-gallery', client_payload: { source: 'n8n', filename: $('Set incoming filename').item.json.incoming_name } } }}",
         },
         type_version=4.2,
         notes="Requires GitHub credential. Triggers GitHub Actions to run scripts/process-gallery.py",
@@ -392,14 +470,13 @@ def build_photo_workflow() -> dict:
     nodes.append(notify)
 
     connect(c, "When called by router", "Download Telegram photo")
-    connect(c, "Download Telegram photo", "Set incoming filename")
+    connect(c, "Download Telegram photo", "Extract photo base64")
+    connect(c, "Extract photo base64", "Set incoming filename")
     wire_agent(c, "Gemini photo metadata", "Gemini photo model", "Photo metadata parser", "Set incoming filename")
     connect(c, "Gemini photo metadata", "Get manifest.json")
     connect(c, "Get manifest.json", "Merge manifest entry")
-    connect(c, "Merge manifest entry", "Prepare photo base64")
-    connect(c, "Merge manifest entry", "Update manifest.json")
-    connect(c, "Prepare photo base64", "Upload photo to _incoming")
-    connect(c, "Upload photo to _incoming", "Dispatch process-gallery")
+    connect(c, "Merge manifest entry", "Upload photo to _incoming")
+    connect(c, "Upload photo to _incoming", "Update manifest.json")
     connect(c, "Update manifest.json", "Dispatch process-gallery")
     connect(c, "Dispatch process-gallery", "Telegram success")
 
@@ -408,7 +485,7 @@ def build_photo_workflow() -> dict:
             "Note: Photo flow",
             "n8n-nodes-base.stickyNote",
             [-40, -180],
-            {"content": "## Photo publish\nTelegram photo → Gemini (alt/slug) → GitHub `_incoming/` + manifest → `repository_dispatch` → `process-gallery.py` → WebP + gallery.json → GitHub Pages deploy."},
+            {"content": "## Photo publish\nTelegram photo → Gemini (alt/slug) → GitHub photo then manifest (sequential) → single `repository_dispatch` → `process-gallery.py` → WebP + gallery.json → GitHub Pages deploy."},
             type_version=1,
         )
     )
@@ -423,56 +500,50 @@ def build_video_workflow() -> dict:
     trigger = node("When called by router", "n8n-nodes-base.executeWorkflowTrigger", [0, 0], type_version=1.1)
     nodes.append(trigger)
 
-    extract = node(
-        "Set reel URL",
+    ctx = node(
+        "Set video context",
         "n8n-nodes-base.set",
         [220, 0],
         {
             "mode": "manual",
             "assignments": {
                 "assignments": [
-                    {"id": nid(), "name": "reel_url", "value": "={{ $json.reel_url }}", "type": "string"},
+                    {"id": nid(), "name": "video_url", "value": "={{ $json.video_url }}", "type": "string"},
                     {"id": nid(), "name": "chat_id", "value": "={{ $json.chat_id }}", "type": "number"},
-                    {"id": nid(), "name": "work_dir", "value": "=/tmp/giv-video-{{ $execution.id }}", "type": "string"},
                 ]
             },
         },
         type_version=3.4,
     )
-    nodes.append(extract)
+    nodes.append(ctx)
 
     ytdlp = node(
-        "yt-dlp download",
-        "n8n-nodes-base.executeCommand",
+        "Download via yt-dlp service",
+        "n8n-nodes-base.httpRequest",
         [440, 0],
         {
-            "command": "=mkdir -p {{ $json.work_dir }} && yt-dlp --no-playlist -f 'mp4/best' -o '{{ $json.work_dir }}/%(id)s.%(ext)s' --write-info-json --write-thumbnail --convert-thumbnails jpg '{{ $json.reel_url }}'",
+            "method": "POST",
+            "url": YTDLP_SERVICE_URL,
+            "sendBody": True,
+            "specifyBody": "json",
+            "jsonBody": "={{ { url: $json.video_url, work_id: String($execution.id), upload_r2: true } }}",
+            "options": {"timeout": 600000},
         },
-        type_version=1,
-        notes="Self-hosted n8n only. Installs: pip install yt-dlp",
+        type_version=4.2,
+        notes="Docker app giv-ytdlp on giv-ytdlp-net (internal only). No token — see apps/giv-ytdlp README.",
     )
     nodes.append(ytdlp)
 
-    read_meta = node(
-        "Read info JSON",
-        "n8n-nodes-base.readWriteFile",
-        [660, 0],
-        {
-            "operation": "read",
-            "fileSelector": "={{ $json.work_dir + '/*.info.json' }}",
-            "options": {},
-        },
-        type_version=1,
-    )
-    nodes.append(read_meta)
-
-    parse_meta = code_node("Parse reel metadata", [880, 0], PARSE_REEL_CODE)
+    parse_meta = code_node("Parse download response", [660, 0], PARSE_DOWNLOAD_RESPONSE_CODE)
     nodes.append(parse_meta)
 
     prompt = (
-        "=Original Instagram description:\n{{ $json.reel_meta.description || $json.reel_meta.title }}\n\n"
-        "Write English title and description for a neurosurgery patient-education video page. "
-        "No Persian. Professional tone. category: Patient Stories."
+        "=Source platform: {{ $json.source }}\n"
+        "Original URL: {{ $('Set video context').item.json.video_url }}\n"
+        "Original title: {{ $json.video_meta.title || '' }}\n"
+        "Original description:\n{{ $json.video_meta.description || $json.video_meta.title || '' }}\n\n"
+        "Write English title and description for a neurosurgery patient-education video page on Prof. Giv Sharifi's website. "
+        "No Persian. Professional SEO tone. category must be one of: Patient Stories, Surgery, Education, Clinic."
     )
     stack, agent, model, parser = gemini_stack(
         "Gemini video copy",
@@ -480,72 +551,49 @@ def build_video_workflow() -> dict:
         "Video copy parser",
         prompt,
         VIDEO_META_SCHEMA,
-        1100,
+        880,
     )
     nodes.extend(stack)
 
-    s3_video = node(
-        "Upload MP4 to R2",
-        "n8n-nodes-base.awsS3",
-        [1320, -80],
-        {
-            "operation": "upload",
-            "bucketName": "={{ $env.GIV_R2_BUCKET }}",
-            "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.mp4",
-            "additionalFields": {},
-            "binaryPropertyName": "data",
-        },
-        type_version=2,
-        notes="AWS credential → R2 endpoint. Read MP4 via Read/Write File node before this if needed.",
-    )
-    nodes.append(s3_video)
-
-    s3_poster = node(
-        "Upload poster to R2",
-        "n8n-nodes-base.awsS3",
-        [1320, 80],
-        {
-            "operation": "upload",
-            "bucketName": "={{ $env.GIV_R2_BUCKET }}",
-            "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.jpg",
-            "additionalFields": {},
-        },
-        type_version=2,
-    )
-    nodes.append(s3_poster)
-
     gh_get = node(
         "Get video-library.json",
-        "n8n-nodes-base.github",
-        [1540, 0],
+        "n8n-nodes-base.httpRequest",
+        [1100, 0],
         {
-            "resource": "file",
-            "operation": "get",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
-            "filePath": "assets/data/video-library.json",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
+            "method": "GET",
+            "url": f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/contents/assets/data/video-library.json",
+            "authentication": "predefinedCredentialType",
+            "nodeCredentialType": "githubApi",
+            "sendQuery": True,
+            "queryParameters": {
+                "parameters": [
+                    {"name": "ref", "value": GITHUB_BRANCH},
+                ]
+            },
+            "options": {},
         },
-        type_version=1.1,
+        type_version=4.2,
+        notes="GitHub Contents API — returns base64 content + sha for edit.",
     )
     nodes.append(gh_get)
 
-    build_json = code_node("Prepend new video entry", [1760, 0], PREPEND_VIDEO_CODE)
+    build_json = code_node("Prepend new video entry", [1320, 0], PREPEND_VIDEO_CODE)
     nodes.append(build_json)
 
     gh_put = node(
         "Update video-library.json",
         "n8n-nodes-base.github",
-        [1980, 0],
+        [1540, 0],
         {
             "resource": "file",
             "operation": "edit",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "assets/data/video-library.json",
             "fileContent": "={{ $json.library_json }}",
             "commitMessage": "content: add video via Telegram bot",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
+            "additionalParameters": {
+                "sha": "={{ $json.library_sha }}",
+            },
         },
         type_version=1.1,
     )
@@ -554,25 +602,22 @@ def build_video_workflow() -> dict:
     notify = node(
         "Telegram success",
         "n8n-nodes-base.telegram",
-        [2200, 0],
+        [1760, 0],
         {
             "chatId": "={{ $('When called by router').item.json.chat_id }}",
-            "text": "=Video published.\n\n{{ $('Gemini video copy').item.json.output.title }}\n\n{{ $env.GIV_SITE_URL }}/videos/",
+            "text": f"=Video published.\\n\\n{{{{ $('Gemini video copy').item.json.output.title }}}}\\n\\n{SITE_URL}/videos/",
         },
         type_version=1.2,
     )
     nodes.append(notify)
 
-    connect(c, "When called by router", "Set reel URL")
-    connect(c, "Set reel URL", "yt-dlp download")
-    connect(c, "yt-dlp download", "Read info JSON")
-    connect(c, "Read info JSON", "Parse reel metadata")
-    wire_agent(c, "Gemini video copy", "Gemini video model", "Video copy parser", "Parse reel metadata")
+    connect(c, "When called by router", "Set video context")
+    connect(c, "Set video context", "Download via yt-dlp service")
+    connect(c, "Download via yt-dlp service", "Parse download response")
+    wire_agent(c, "Gemini video copy", "Gemini video model", "Video copy parser", "Parse download response")
     connect(c, "Gemini video copy", "Get video-library.json")
     connect(c, "Get video-library.json", "Prepend new video entry")
     connect(c, "Prepend new video entry", "Update video-library.json")
-    connect(c, "Gemini video copy", "Upload MP4 to R2")
-    connect(c, "Gemini video copy", "Upload poster to R2")
     connect(c, "Update video-library.json", "Telegram success")
 
     nodes.append(
@@ -580,7 +625,12 @@ def build_video_workflow() -> dict:
             "Note: Video flow",
             "n8n-nodes-base.stickyNote",
             [-40, -180],
-            {"content": "## Video publish\nInstagram URL → yt-dlp → Gemini English copy → R2 `library/` (S3 node) → `video-library.json` on GitHub.\n\nAdd **Read/Write File** nodes for MP4/JPG binaries before S3 uploads if Execute Command output needs wiring."},
+            {
+                "content": "## Video publish (Instagram + YouTube)\n"
+                "HTTP → `giv-ytdlp` Docker app (download + R2 upload) → Gemini → GitHub.\n\n"
+                f"Service: `http://giv-ytdlp:9876` | Bucket: `{R2_BUCKET}` | Site: {SITE_URL}\n"
+                "n8n env: not required (service is internal Docker network only)."
+            },
             type_version=1,
         )
     )
@@ -653,10 +703,8 @@ def build_blog_workflow() -> dict:
         {
             "resource": "file",
             "operation": "get",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "blog/_post-shell.html",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
         type_version=1.1,
     )
@@ -672,12 +720,10 @@ def build_blog_workflow() -> dict:
         {
             "resource": "file",
             "operation": "create",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "={{ 'posts/data/' + $('Gemini blog writer').item.json.output.slug + '.json' }}",
             "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
             "commitMessage": "content: add blog post via Telegram bot",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
         type_version=1.1,
     )
@@ -690,12 +736,10 @@ def build_blog_workflow() -> dict:
         {
             "resource": "file",
             "operation": "create",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "={{ 'blog/' + $('Gemini blog writer').item.json.output.slug + '/index.html' }}",
             "fileContent": "={{ $('Get post HTML shell').item.json.content }}",
             "commitMessage": "content: add blog page shell via Telegram bot",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
         type_version=1.1,
     )
@@ -708,10 +752,8 @@ def build_blog_workflow() -> dict:
         {
             "resource": "file",
             "operation": "get",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "posts/data/index.json",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
         },
         type_version=1.1,
     )
@@ -727,12 +769,13 @@ def build_blog_workflow() -> dict:
         {
             "resource": "file",
             "operation": "edit",
-            "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-            "repository": "={{ $env.GIV_GITHUB_REPO }}",
+            **gh_repo_params(),
             "filePath": "posts/data/index.json",
             "fileContent": "={{ $json.index_json }}",
             "commitMessage": "content: update blog index via Telegram bot",
-            "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}",
+            "additionalParameters": {
+                "sha": "={{ $json.index_sha }}",
+            },
         },
         type_version=1.1,
     )
@@ -859,9 +902,19 @@ def build_router_workflow() -> dict:
                                     "leftValue": "={{ $json.message?.text || '' }}",
                                     "rightValue": "instagram.com",
                                     "operator": {"type": "string", "operation": "contains"},
-                                }
+                                },
+                                {
+                                    "leftValue": "={{ $json.message?.text || '' }}",
+                                    "rightValue": "youtube.com",
+                                    "operator": {"type": "string", "operation": "contains"},
+                                },
+                                {
+                                    "leftValue": "={{ $json.message?.text || '' }}",
+                                    "rightValue": "youtu.be",
+                                    "operator": {"type": "string", "operation": "contains"},
+                                },
                             ],
-                            "combinator": "and",
+                            "combinator": "or",
                         },
                         "renameOutput": True,
                         "outputKey": "video",
@@ -895,7 +948,7 @@ def build_router_workflow() -> dict:
         [660, -200],
         {
             "chatId": "={{ $json.message.chat.id }}",
-            "text": "Prof. Giv Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel URL → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
+            "text": "Prof. Giv Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel or YouTube link → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
             "replyMarkup": "inlineKeyboard",
             "inlineKeyboard": {
                 "rows": [
@@ -946,7 +999,7 @@ def build_router_workflow() -> dict:
             "assignments": {
                 "assignments": [
                     {"id": nid(), "name": "chat_id", "value": "={{ $json.message.chat.id }}", "type": "number"},
-                    {"id": nid(), "name": "reel_url", "value": "={{ $json.message.text.trim() }}", "type": "string"},
+                    {"id": nid(), "name": "video_url", "value": "={{ $json.message.text.trim() }}", "type": "string"},
                 ]
             },
         },
@@ -998,7 +1051,7 @@ def build_router_workflow() -> dict:
         [660, 480],
         {
             "chatId": "={{ $json.message.chat.id }}",
-            "text": "Send:\n• Photo (with optional caption)\n• Instagram reel link\n• /blog Your article draft…",
+            "text": "Send:\n• Photo (with optional caption)\n• Instagram reel or YouTube link\n• /blog Your article draft…",
         },
         type_version=1.2,
     )

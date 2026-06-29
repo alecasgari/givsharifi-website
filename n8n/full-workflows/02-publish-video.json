@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "0f71139c-ca92-4ecb-9df1-0655238e32a9",
+      "id": "c56e8102-cc91-498b-8383-40257815a6ed",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -18,28 +18,22 @@
         "assignments": {
           "assignments": [
             {
-              "id": "0d560bed-b21e-47ef-ba97-598393df7bf6",
-              "name": "reel_url",
-              "value": "={{ $json.reel_url }}",
+              "id": "fc81de00-ed06-457e-9e67-abb6fb5fad77",
+              "name": "video_url",
+              "value": "={{ $json.video_url }}",
               "type": "string"
             },
             {
-              "id": "d5c18afc-c543-4080-b6d3-df655871fbff",
+              "id": "db9c9923-8db5-49d4-b906-941b5044f056",
               "name": "chat_id",
               "value": "={{ $json.chat_id }}",
               "type": "number"
-            },
-            {
-              "id": "e3f87983-f527-4198-8a40-c5f2fdd21834",
-              "name": "work_dir",
-              "value": "=/tmp/giv-video-{{ $execution.id }}",
-              "type": "string"
             }
           ]
         }
       },
-      "id": "42e36934-0a0b-4ee7-8f9d-9595799ed7a2",
-      "name": "Set reel URL",
+      "id": "2cbb0b7a-c068-4662-9fce-3da1fba3c711",
+      "name": "Set video context",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
@@ -49,28 +43,33 @@
     },
     {
       "parameters": {
-        "command": "=mkdir -p {{ $json.work_dir }} && yt-dlp --no-playlist -f 'mp4/best' -o '{{ $json.work_dir }}/%(id)s.%(ext)s' --write-info-json --write-thumbnail --convert-thumbnails jpg '{{ $json.reel_url }}'"
+        "method": "POST",
+        "url": "http://giv-ytdlp:9876/download",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { url: $json.video_url, work_id: String($execution.id), upload_r2: true } }}",
+        "options": {
+          "timeout": 600000
+        }
       },
-      "id": "b10e22b4-0f27-4566-858d-2421021eafc4",
-      "name": "yt-dlp download",
-      "type": "n8n-nodes-base.executeCommand",
-      "typeVersion": 1,
+      "id": "360717be-d76b-4af5-a022-5e3604d288ba",
+      "name": "Download via yt-dlp service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         440,
         0
       ],
-      "notes": "Self-hosted n8n only. Installs: pip install yt-dlp"
+      "notes": "Docker app giv-ytdlp on giv-ytdlp-net (internal only). No token — see apps/giv-ytdlp README."
     },
     {
       "parameters": {
-        "operation": "read",
-        "fileSelector": "={{ $json.work_dir + '/*.info.json' }}",
-        "options": {}
+        "jsCode": "const item = $input.first().json;\nconst body = item.body ?? item;\nconst data = typeof body === 'string' ? JSON.parse(body) : body;\nif (!data.ok) {\n  throw new Error(data.error || 'yt-dlp service failed');\n}\nif (!data.r2?.mp4_key) {\n  throw new Error('R2 upload missing from giv-ytdlp response');\n}\nreturn [{\n  json: {\n    video_id: data.video_id,\n    source: data.source,\n    video_meta: data.video_meta,\n    r2: data.r2,\n  },\n}];\n"
       },
-      "id": "449e5592-3a99-47d8-8101-8844f822b499",
-      "name": "Read info JSON",
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
+      "id": "a1624597-0517-4964-a46b-94e1f7fe3c86",
+      "name": "Parse download response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         660,
         0
@@ -78,29 +77,17 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nconst payload = item.data ?? item.json ?? item.content;\nconst reel = typeof payload === 'string' ? JSON.parse(payload) : payload;\nreturn [{ json: { reel_meta: reel, video_id: reel.id } }];\n"
-      },
-      "id": "a05b14ae-6fd6-4d87-8eb0-88931edefb53",
-      "name": "Parse reel metadata",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        880,
-        0
-      ]
-    },
-    {
-      "parameters": {
+        "modelName": "models/gemini-flash-lite-latest",
         "options": {
           "temperature": 0.3
         }
       },
-      "id": "9a77cdfe-2627-44c3-9f9e-68ae17e35d00",
+      "id": "2280a3b0-f06f-470e-8256-ffdbcec7c7e4",
       "name": "Gemini video model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        1100,
+        880,
         200
       ]
     },
@@ -108,78 +95,101 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"title\": \"English video title max 80 chars\",\n  \"description\": \"English description max 160 chars\",\n  \"category\": \"Patient Stories\"\n}"
       },
-      "id": "950719f4-334e-4d34-b724-b6b703a0e188",
+      "id": "de20ec47-edbc-4b2a-8274-7a1a670895cd",
       "name": "Video copy parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        1100,
+        880,
         400
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Original Instagram description:\n{{ $json.reel_meta.description || $json.reel_meta.title }}\n\nWrite English title and description for a neurosurgery patient-education video page. No Persian. Professional tone. category: Patient Stories.",
+        "text": "=Source platform: {{ $json.source }}\nOriginal URL: {{ $('Set video context').item.json.video_url }}\nOriginal title: {{ $json.video_meta.title || '' }}\nOriginal description:\n{{ $json.video_meta.description || $json.video_meta.title || '' }}\n\nWrite English title and description for a neurosurgery patient-education video page on Prof. Giv Sharifi's website. No Persian. Professional SEO tone. category must be one of: Patient Stories, Surgery, Education, Clinic.",
         "hasOutputParser": true,
         "options": {
           "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
-      "id": "d3086caa-8686-4a2e-9f36-c0dedb062fbe",
+      "id": "a50fd818-221d-4b77-b625-27b6ed8c379f",
       "name": "Gemini video copy",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
       "position": [
-        1100,
+        880,
         0
       ]
     },
     {
       "parameters": {
-        "operation": "upload",
-        "bucketName": "={{ $env.GIV_R2_BUCKET }}",
-        "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.mp4",
-        "additionalFields": {},
-        "binaryPropertyName": "data"
+        "method": "GET",
+        "url": "https://api.github.com/repos/alecasgari/givsharifi-website/contents/assets/data/video-library.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "main"
+            }
+          ]
+        },
+        "options": {}
       },
-      "id": "b44ee50e-3948-46c6-9f6b-95153391e7fa",
-      "name": "Upload MP4 to R2",
-      "type": "n8n-nodes-base.awsS3",
-      "typeVersion": 2,
+      "id": "f2985fb8-9d4c-4fc2-a409-42f9d0d9189b",
+      "name": "Get video-library.json",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
-        1320,
-        -80
+        1100,
+        0
       ],
-      "notes": "AWS credential → R2 endpoint. Read MP4 via Read/Write File node before this if needed."
+      "notes": "GitHub Contents API — returns base64 content + sha for edit."
     },
     {
       "parameters": {
-        "operation": "upload",
-        "bucketName": "={{ $env.GIV_R2_BUCKET }}",
-        "fileName": "=library/{{ $('Parse reel metadata').item.json.video_id }}.jpg",
-        "additionalFields": {}
+        "jsCode": "const ghItem = $('Get video-library.json').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n} else if (raw && !String(raw).trim().startsWith('{')) {\n  try {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } catch {\n    /* keep raw */\n  }\n}\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `GitHub file content empty — assign GitHub API credential on the Get node. Fields: ${Object.keys(github).join(', ')}`\n  );\n}\nlet lib;\ntry {\n  lib = JSON.parse(raw);\n} catch (e) {\n  throw new Error(`video-library.json is not valid JSON: ${e.message}`);\n}\nconst parsed = $('Parse download response').first().json;\nconst id = parsed.video_id;\nconst meta = $('Gemini video copy').first().json.output;\nconst m = parsed.video_meta;\nconst d = m.upload_date || '';\nconst date = d.length === 8\n  ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`\n  : new Date().toISOString().slice(0, 10);\nconst sourceUrl = m.webpage_url || $('Set video context').first().json.video_url;\nconst entry = {\n  id,\n  file: `${id}.mp4`,\n  poster: `${id}.jpg`,\n  title: meta.title,\n  description: meta.description,\n  date,\n  duration: m.duration_string || '',\n  category: meta.category || 'Patient Stories',\n};\nif (sourceUrl.includes('instagram.com')) entry.instagram = sourceUrl;\nelse if (sourceUrl.includes('youtube.com') || sourceUrl.includes('youtu.be')) entry.youtube = sourceUrl;\nif (!Array.isArray(lib.videos)) lib.videos = [];\nlib.videos = [entry, ...lib.videos];\nlib.updated = new Date().toISOString().slice(0, 10);\nreturn [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n', library_sha: github.sha || '' } }];\n"
       },
-      "id": "12418677-02cf-450f-a8bf-f42c3a9c9ac9",
-      "name": "Upload poster to R2",
-      "type": "n8n-nodes-base.awsS3",
+      "id": "7d5fc028-776b-4f80-a411-c97ac050cd45",
+      "name": "Prepend new video entry",
+      "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         1320,
-        80
+        0
       ]
     },
     {
       "parameters": {
         "resource": "file",
-        "operation": "get",
-        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-        "repository": "={{ $env.GIV_GITHUB_REPO }}",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
         "filePath": "assets/data/video-library.json",
-        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+        "fileContent": "={{ $json.library_json }}",
+        "commitMessage": "content: add video via Telegram bot",
+        "additionalParameters": {
+          "sha": "={{ $json.library_sha }}"
+        }
       },
-      "id": "bbad0efa-6a16-4d60-b35c-5d9bb1f13c30",
-      "name": "Get video-library.json",
+      "id": "f1290e51-b369-480f-b2d9-f9e79b11267e",
+      "name": "Update video-library.json",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
@@ -189,12 +199,13 @@
     },
     {
       "parameters": {
-        "jsCode": "const github = $input.first().json;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nconst lib = JSON.parse(raw);\nconst id = $('Parse reel metadata').first().json.video_id;\nconst meta = $('Gemini video copy').first().json.output;\nconst m = $('Parse reel metadata').first().json.reel_meta;\nconst d = m.upload_date || '';\nconst date = d.length === 8\n  ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`\n  : new Date().toISOString().slice(0, 10);\nconst entry = {\n  id,\n  file: `${id}.mp4`,\n  poster: `${id}.jpg`,\n  title: meta.title,\n  description: meta.description,\n  date,\n  duration: m.duration_string || '',\n  instagram: m.webpage_url || $('Set reel URL').first().json.reel_url,\n  category: meta.category || 'Patient Stories',\n};\nlib.videos = [entry, ...(lib.videos || [])];\nlib.updated = new Date().toISOString().slice(0, 10);\nreturn [{ json: { library_json: JSON.stringify(lib, null, 2) + '\\n' } }];\n"
+        "chatId": "={{ $('When called by router').item.json.chat_id }}",
+        "text": "=Video published.\\n\\n{{ $('Gemini video copy').item.json.output.title }}\\n\\nhttps://www.givsharifi.com/videos/"
       },
-      "id": "8fcb61f3-2ce0-4d9d-8398-b065277e4531",
-      "name": "Prepend new video entry",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "21837edd-1d85-4eaa-ba6d-bcc886623f8b",
+      "name": "Telegram success",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
       "position": [
         1760,
         0
@@ -202,43 +213,9 @@
     },
     {
       "parameters": {
-        "resource": "file",
-        "operation": "edit",
-        "owner": "={{ $env.GIV_GITHUB_OWNER }}",
-        "repository": "={{ $env.GIV_GITHUB_REPO }}",
-        "filePath": "assets/data/video-library.json",
-        "fileContent": "={{ $json.library_json }}",
-        "commitMessage": "content: add video via Telegram bot",
-        "branch": "={{ $env.GIV_GITHUB_BRANCH || 'main' }}"
+        "content": "## Video publish (Instagram + YouTube)\nHTTP → `giv-ytdlp` Docker app (download + R2 upload) → Gemini → GitHub.\n\nService: `http://giv-ytdlp:9876` | Bucket: `givsharifi-videos` | Site: https://www.givsharifi.com\nn8n env: not required (service is internal Docker network only)."
       },
-      "id": "6cd60e47-e900-44df-9729-2f742182b82a",
-      "name": "Update video-library.json",
-      "type": "n8n-nodes-base.github",
-      "typeVersion": 1.1,
-      "position": [
-        1980,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('When called by router').item.json.chat_id }}",
-        "text": "=Video published.\n\n{{ $('Gemini video copy').item.json.output.title }}\n\n{{ $env.GIV_SITE_URL }}/videos/"
-      },
-      "id": "95e14023-8dcb-41e4-bde1-e2bebc5e3916",
-      "name": "Telegram success",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        2200,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## Video publish\nInstagram URL → yt-dlp → Gemini English copy → R2 `library/` (S3 node) → `video-library.json` on GitHub.\n\nAdd **Read/Write File** nodes for MP4/JPG binaries before S3 uploads if Execute Command output needs wiring."
-      },
-      "id": "df5d8e2a-c471-4071-8dc0-28071dd4ce8e",
+      "id": "2bfc691b-fc14-49a6-bcda-fad28c10d9f6",
       "name": "Note: Video flow",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -253,47 +230,36 @@
       "main": [
         [
           {
-            "node": "Set reel URL",
+            "node": "Set video context",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set reel URL": {
+    "Set video context": {
       "main": [
         [
           {
-            "node": "yt-dlp download",
+            "node": "Download via yt-dlp service",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "yt-dlp download": {
+    "Download via yt-dlp service": {
       "main": [
         [
           {
-            "node": "Read info JSON",
+            "node": "Parse download response",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Read info JSON": {
-      "main": [
-        [
-          {
-            "node": "Parse reel metadata",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse reel metadata": {
+    "Parse download response": {
       "main": [
         [
           {
@@ -331,16 +297,6 @@
         [
           {
             "node": "Get video-library.json",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Upload MP4 to R2",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Upload poster to R2",
             "type": "main",
             "index": 0
           }
@@ -386,7 +342,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7cb0cb1f-cb6e-4c52-8e95-65c49216c593",
+  "versionId": "a6a95663-0709-4f1b-99e6-eb224d3bd43c",
   "meta": {
     "templateCredsSetupCompleted": false
   },

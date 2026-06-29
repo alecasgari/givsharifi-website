@@ -1,0 +1,25 @@
+# Standalone stack — does NOT touch n8n compose or volumes.
+# After first start, connect n8n: docker network connect giv-ytdlp-net n8n-app
+
+services:
+  giv-ytdlp:
+    build: .
+    image: giv-ytdlp:latest
+    container_name: giv-ytdlp
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - giv-ytdlp-data:/data
+    networks:
+      - giv-ytdlp-net
+# Optional: mount host cookies so they survive container recreate (create file first)
+    # - ./cookies.txt:/data/cookies.txt:ro
+
+networks:
+  giv-ytdlp-net:
+    name: giv-ytdlp-net
+    driver: bridge
+
+volumes:
+  giv-ytdlp-data:
+    name: giv-ytdlp-data
