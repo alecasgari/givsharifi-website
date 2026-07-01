@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-06-29",
+  "updated": "2026-07-01",
   "videos": [
+    {
+      "id": "dc8O4gSUvDM",
+      "file": "dc8O4gSUvDM.mp4",
+      "poster": "dc8O4gSUvDM.jpg",
+      "title": "Vestibular Schwannoma Microsurgery: Facial Nerve Preservation Techniques",
+      "description": "This surgical case features Prof. Guive Sharifi and Dr. Ali Eftekharian performing a microsurgical resection of a vestibular schwannoma (acoustic neuroma) in a 69-year-old patient. The video highlights advanced microsurgical techniques, with a specific focus on the critical preservation of the facial nerve. By utilizing intraoperative nerve monitoring, the surgical team successfully maintained the functional integrity of the facial nerve, ensuring optimal patient outcomes. This demonstration serves as an educational resource for understanding the complexities of skull base surgery and the importance of nerve-sparing techniques in tumor removal.",
+      "date": "2026-06-27",
+      "duration": "2:37",
+      "category": "Surgery",
+      "youtube": "https://www.youtube.com/watch?v=dc8O4gSUvDM"
+    },
     {
       "id": "DaKkYKPNxBQ",
       "file": "DaKkYKPNxBQ.mp4",
