@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "74546a9f-bf53-44b4-be39-561bf7fc8a17",
+      "id": "38083d9f-94d6-4917-a9f6-e1b5b72e0733",
       "name": "When called by scheduler",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -33,7 +33,7 @@
         "branch": "main",
         "filePath": "posts/data/index.json"
       },
-      "id": "86aa8497-d208-4d88-af3a-edfbe3dff39f",
+      "id": "33467d5c-5559-46ef-876b-07ac2c593cdd",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -46,7 +46,7 @@
       "parameters": {
         "jsCode": "const ghItem = $('Get posts index').first().json;\nconst github = ghItem.body ?? ghItem;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nconst idx = JSON.parse(String(raw).trim() || '{\"posts\":[]}');\nconst titles = (idx.posts || []).map((p) => `- ${p.slug}: ${p.title}`).join('\\n');\nreturn [{ json: { existing_posts: titles } }];\n"
       },
-      "id": "6b6b95af-1a29-4cfb-8aa7-c383a2ca7178",
+      "id": "e398e28a-3d03-4375-b609-af6b94948012",
       "name": "Build existing keywords context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -59,10 +59,11 @@
       "parameters": {
         "modelName": "models/gemini-flash-lite-latest",
         "options": {
-          "temperature": 0.35
+          "temperature": 0.45,
+          "maxOutputTokens": 8192
         }
       },
-      "id": "568943d1-85fb-488a-9d42-10485f477b2e",
+      "id": "9f73f630-6144-4cf1-8ea9-43bd581bd7f7",
       "name": "Gemini blog model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -73,9 +74,9 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"slug\": \"lumbar-disc-herniation-treatment\",\n  \"title\": \"Article title 50-60 chars with primary keyword\",\n  \"metaDescription\": \"SEO meta 150-155 chars with primary keyword and soft CTA\",\n  \"excerpt\": \"Two-sentence card excerpt different from meta description\",\n  \"date\": \"2026-06-30\",\n  \"category\": \"Spinal Surgery\",\n  \"tags\": [\n    \"lumbar disc herniation\",\n    \"microdiscectomy\",\n    \"neurosurgery Dubai\",\n    \"spine surgeon Tehran\"\n  ],\n  \"readingTimeMinutes\": 8,\n  \"featuredImagePath\": \"assets/images/blog/lumbar-disc-herniation-treatment.webp\",\n  \"primaryKeyword\": \"lumbar disc herniation treatment\",\n  \"wordCountEstimate\": 1200,\n  \"content\": [\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Opening paragraph with primary keyword in first 100 words.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"What Is a Herniated Disc?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Educational body text in simple B2 English.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Symptoms and When to See a Specialist\"\n    },\n    {\n      \"type\": \"list\",\n      \"items\": [\n        \"Item one\",\n        \"Item two\",\n        \"Item three\"\n      ]\n    },\n    {\n      \"type\": \"cta\",\n      \"text\": \"Explore spinal surgery services\",\n      \"href\": \"/spinal-surgery/\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Frequently Asked Questions\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 3,\n      \"text\": \"How long is recovery after microdiscectomy?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"FAQ answer paragraph.\"\n    }\n  ]\n}"
+        "jsonSchemaExample": "{\n  \"slug\": \"brain-tumour-surgery-dubai\",\n  \"title\": \"Brain Tumour Surgery Dubai: Types, Process and Recovery\",\n  \"metaDescription\": \"Considering brain tumour surgery in Dubai? Learn types of surgery, what happens before and after, and when to seek a specialist. Speak with Prof. Giv Sharifi.\",\n  \"excerpt\": \"A clear guide to brain tumour surgery in Dubai \\u2014 surgical types, the hospital pathway, and realistic recovery expectations for patients and families.\",\n  \"date\": \"2026-07-02\",\n  \"category\": \"Brain Surgery\",\n  \"tags\": [\n    \"brain tumour surgery Dubai\",\n    \"neurosurgeon Dubai\",\n    \"neurosurgery Dubai\",\n    \"glioma surgery\",\n    \"brain cancer treatment\",\n    \"neurosurgeon Tehran\"\n  ],\n  \"readingTimeMinutes\": 8,\n  \"featuredImagePath\": \"assets/images/blog/brain-tumour-surgery-dubai.webp\",\n  \"content\": [\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Brain tumour surgery in Dubai is a major decision that patients and families often face after an MRI or CT scan shows a growth inside the skull. The goal of surgery is to remove all or part of the tumour while protecting healthy brain tissue, nerves, and blood vessels. Prof. Giv Sharifi explains each step in plain language so you know what tests are needed, what happens in the operating room, and how recovery usually progresses. This article covers common tumour types, surgical options, and when a second opinion may help.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"What Is a Brain Tumour?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"A brain tumour is an abnormal mass of cells within the brain or its coverings. Some tumours are benign and grow slowly; others are malignant and may spread more quickly. Symptoms can include headaches, seizures, weakness, speech changes, or vision problems, depending on the tumour location. Imaging with MRI is the main tool for diagnosis. Your neurosurgeon will also review your medical history and neurological examination before recommending surgery, observation, or other treatments.\"\n    },\n    {\n      \"type\": \"list\",\n      \"items\": [\n        \"Persistent headaches that worsen over weeks\",\n        \"New seizures in an adult\",\n        \"Weakness or numbness on one side of the body\",\n        \"Personality or memory changes\"\n      ]\n    },\n    {\n      \"type\": \"cta\",\n      \"text\": \"Explore brain surgery services\",\n      \"href\": \"/brain-surgery/\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Frequently Asked Questions\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 3,\n      \"text\": \"How long is hospital stay after brain tumour surgery?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Most patients stay in hospital for several days after craniotomy, but the exact length depends on the tumour type, surgery complexity, and recovery from anaesthesia. Some people go to a high-dependency unit for closer monitoring. Your team will check speech, movement, and wound healing before discharge. Physiotherapy and follow-up scans are often arranged. Prof. Giv Sharifi discusses expected timelines during your pre-operative consultation so you can plan work and family support.\"\n    }\n  ]\n}"
       },
-      "id": "20eb3e56-cb00-4a18-8e7c-993f22568ba6",
+      "id": "cba84ad7-e2f2-4270-8f0c-42f7c989c16c",
       "name": "Blog JSON parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -87,13 +88,13 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a full SEO blog post JSON for Prof. Giv Sharifi's website.\\nRULES:\\n- English only, B2 level, short clear sentences\\n- MINIMUM 1000 words in content blocks combined\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-60 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- category: use calendar category value\\n- content: 20+ blocks \u2014 intro, 5-6 H2 sections, bullet lists, 2+ cta blocks linking pillar_url and /\\n- FAQ: H2 'Frequently Asked Questions' then 5x H3 question + paragraph answers\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- Include primary_keyword in first paragraph and one H2\\n- featuredImagePath: assets/images/blog/{slug}.webp",
+        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\nscheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a COMPLETE long-form SEO blog post JSON for Prof. Giv Sharifi's website.\\n\\nCRITICAL \u2014 FULL ARTICLE, NOT AN OUTLINE:\\n- Minimum 1000 words in paragraph + list text combined\\n- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n- Do NOT output section titles only. Every H2 section needs 2+ full paragraphs.\\n- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n- NEVER use type text. NEVER use heading level 1.\\n- heading level 2 = main sections; level 3 = FAQ questions only\\n- Structure: intro paragraph (120+ words) \u2192 5-6 H2 sections (each with 2 paragraphs + optional list) \u2192 2 cta blocks (href=pillar_url and href=/) \u2192 H2 FAQ \u2192 5x (H3 question + paragraph answer 80+ words)\\n- date: use scheduled_date from calendar row\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-65 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- featuredImagePath: assets/images/blog/{slug}.webp",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an expert medical SEO content writer for Prof. Giv Sharifi, board-certified neurosurgeon in Dubai and Tehran. Output valid JSON only. Simple English for general readers. Never use Persian."
+          "systemMessage": "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. Write FULL prose paragraphs \u2014 never bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. If you cannot reach 1000 words, add more paragraph blocks before returning JSON."
         }
       },
-      "id": "108154f0-4b43-449c-82f7-ef7f0498b570",
+      "id": "01fa722f-8856-4a1c-88bb-ce7e97004252",
       "name": "Gemini blog writer",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -104,9 +105,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const out = $('Gemini blog writer').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nconst text = JSON.stringify(out.content || []);\nconst words = text.replace(/[{}\"\\[\\],:]/g, ' ').split(/\\s+/).filter(Boolean).length;\nif (words < 1000) {\n  throw new Error(`Article too short: ~${words} words (minimum 1000). Regenerate.`);\n}\n\nout.slug = slug;\nout.featuredImagePath = `assets/images/blog/${slug}.webp`;\nout.date = out.date || new Date().toISOString().slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    image_prompt: `Professional medical illustration for a patient education article titled \"${out.title}\". `\n      + `Topic: ${row.primary_keyword}. Style: clean modern healthcare illustration, soft blue and white tones, `\n      + `abstract anatomy or MRI scan motif. No blood, no surgery scenes, no patient faces, no text, no logos. 16:9.`,\n  },\n}];\n"
+        "jsCode": "const out = $('Gemini blog writer').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nfunction countBodyWords(blocks) {\n  let n = 0;\n  for (const b of blocks || []) {\n    if (b.type === 'paragraph' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n    if ((b.type === 'list' || b.type === 'ordered-list') && Array.isArray(b.items)) {\n      for (const item of b.items) {\n        n += String(item).split(/\\s+/).filter(Boolean).length;\n      }\n    }\n    if (b.type === 'blockquote' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n  }\n  return n;\n}\n\nfunction normalizeBlocks(blocks) {\n  const outBlocks = [];\n  for (const b of blocks || []) {\n    if (!b || typeof b !== 'object') continue;\n    if (b.type === 'text' || b.type === 'paragraph') {\n      const t = String(b.text || '').trim();\n      if (!t) continue;\n      if (t.split(/\\s+/).length < 15 && !t.includes('.')) {\n        outBlocks.push({ type: 'heading', level: b.level === 3 ? 3 : 2, text: t });\n      } else {\n        outBlocks.push({ type: 'paragraph', text: t });\n      }\n      continue;\n    }\n    if (b.type === 'heading') {\n      const level = b.level === 1 ? 2 : (b.level || 2);\n      outBlocks.push({ type: 'heading', level, text: String(b.text || '').trim() });\n      continue;\n    }\n    if (['list', 'ordered-list', 'cta', 'blockquote', 'image', 'html'].includes(b.type)) {\n      outBlocks.push(b);\n    }\n  }\n  return outBlocks;\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nout.content = normalizeBlocks(out.content);\nconst paragraphCount = out.content.filter((b) => b.type === 'paragraph').length;\nconst words = countBodyWords(out.content);\n\nif (paragraphCount < 10) {\n  throw new Error(\n    `Gemini returned an outline, not a full article: only ${paragraphCount} paragraph blocks. `\n    + 'Regenerate. Need 10+ paragraph blocks with 70+ words each.'\n  );\n}\nif (words < 1000) {\n  throw new Error(\n    `Article too short: ~${words} words in paragraphs (minimum 1000). Regenerate with full prose.`\n  );\n}\n\nout.slug = slug;\nout.featuredImagePath = `assets/images/blog/${slug}.webp`;\nout.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\ndelete out.primaryKeyword;\ndelete out.wordCountEstimate;\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    paragraph_count: paragraphCount,\n    image_prompt: `Professional medical illustration for a patient education article titled \"${out.title}\". `\n      + `Topic: ${row.primary_keyword}. Style: clean modern healthcare illustration, soft blue and white tones, `\n      + `abstract anatomy or MRI scan motif. No blood, no surgery scenes, no patient faces, no text, no logos. 16:9.`,\n  },\n}];\n"
       },
-      "id": "f145cd70-9a36-4ec0-a4b0-a055a0e93504",
+      "id": "ef5ec9ea-4f4c-44d9-809f-dbde5d49d13f",
       "name": "Normalize blog output",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -125,7 +126,7 @@
         "specifyBody": "json",
         "jsonBody": "={{ { model: 'dall-e-3', prompt: $json.image_prompt, n: 1, size: '1792x1024', response_format: 'b64_json' } }}"
       },
-      "id": "c8fcd64f-db50-44d3-9116-909950ffb3f5",
+      "id": "b96cb37c-cf53-44e0-98bd-b35d3674eef8",
       "name": "Generate featured image",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -139,7 +140,7 @@
       "parameters": {
         "jsCode": "const body = $input.first().json;\nconst b64 = body.data?.[0]?.b64_json;\nif (!b64) throw new Error('No image returned from OpenAI');\nconst row = $('Normalize blog output').first().json;\nreturn [{ json: { ...row, image_base64: b64 } }];\n"
       },
-      "id": "82e8fae0-036f-41fc-9cc6-0f0d4a866e20",
+      "id": "c70b77ef-69da-4bcf-a3e9-da2284641a54",
       "name": "Extract image base64",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -171,7 +172,7 @@
         "fileContent": "={{ JSON.stringify($('Extract image base64').item.json, null, 2) }}",
         "commitMessage": "=blog: save draft {{ $('Extract image base64').item.json.normalized.slug }}"
       },
-      "id": "8148cecd-e296-4ea6-9182-859159a83a34",
+      "id": "969c4a81-ba99-49b0-a074-79f611e438b2",
       "name": "Save draft JSON GitHub",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -185,7 +186,7 @@
       "parameters": {
         "jsCode": "const row = $('Extract image base64').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\nconst cal = $('When called by scheduler').first().json;\nconst chatId = cal.chat_id || cal.telegram_chat_id;\nif (!chatId) {\n  throw new Error('chat_id missing on scheduler payload \u2014 set in workflow 01 Set calendar row');\n}\nreturn [{\n  json: {\n    chat_id: chatId,\n    row_id: row.id,\n    slug: p.slug,\n    image_base64: row.image_base64,\n    preview_message:\n      `\ud83d\udccb <b>Blog preview</b> (row ${row.id})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}\u2026`,\n    callback_publish: `blog_publish_${row.id}`,\n    callback_regen_article: `blog_regen_article_${row.id}`,\n    callback_regen_image: `blog_regen_image_${row.id}`,\n    callback_skip: `blog_skip_${row.id}`,\n  },\n}];\n"
       },
-      "id": "b050ea8c-66b2-4f92-b5f6-060c02be6a81",
+      "id": "23b76a15-02d6-4563-bf14-141d2d36ec71",
       "name": "Build preview message",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -198,7 +199,7 @@
       "parameters": {
         "jsCode": "const item = $input.first().json;\nconst b64 = item.image_base64;\nif (!b64) throw new Error('No image_base64 for Telegram photo');\nreturn [{\n  json: item,\n  binary: {\n    data: {\n      data: b64,\n      mimeType: 'image/png',\n      fileName: `${item.slug}.png`,\n      encoding: 'base64',\n    },\n  },\n}];\n"
       },
-      "id": "ce7e6946-4c92-4232-8303-ca42b6317e62",
+      "id": "66761f3e-accb-4d15-ba0b-b608702098d8",
       "name": "Pack image binary",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -217,7 +218,7 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "561b56cf-0a81-457d-b829-0dcc3c258a79",
+      "id": "d32419e2-4db6-41aa-bcc2-4b890ecb9898",
       "name": "Send preview photo",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -277,7 +278,7 @@
           ]
         }
       },
-      "id": "d62443b9-ad71-4816-b20b-bc90bc432d67",
+      "id": "98444d3d-6d47-4c21-99b1-8b0e7e1b4294",
       "name": "Send approve buttons",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -316,7 +317,7 @@
         },
         "options": {}
       },
-      "id": "6b28566b-dd89-481b-8a0f-867808043888",
+      "id": "5c8918b5-a9d2-4337-9ab0-219e3ac0aa3c",
       "name": "Sheet status preview",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -329,7 +330,7 @@
       "parameters": {
         "content": "## Draft + preview\nGemini 1000+ words \u2192 slug normalize \u2192 DALL-E image \u2192 Telegram preview \u2192 Sheet status=preview\n\nAfter import: connect binary image path to Send preview photo (Convert to File node if needed)."
       },
-      "id": "14a86029-bb1b-4cfc-b972-89a434611774",
+      "id": "1642617f-2265-4415-96df-ded22d87aeaf",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -494,7 +495,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "35bd7e86-2dd8-4685-a6fb-897e9bdb8051",
+  "versionId": "75859418-6f19-4b7c-a922-83379471ab41",
   "meta": {
     "templateCredsSetupCompleted": false
   },

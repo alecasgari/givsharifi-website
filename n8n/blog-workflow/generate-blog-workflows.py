@@ -130,27 +130,64 @@ def sticky(content: str, pos: list[int]) -> dict:
 
 
 BLOG_SCHEMA = {
-    "slug": "lumbar-disc-herniation-treatment",
-    "title": "Article title 50-60 chars with primary keyword",
-    "metaDescription": "SEO meta 150-155 chars with primary keyword and soft CTA",
-    "excerpt": "Two-sentence card excerpt different from meta description",
-    "date": "2026-06-30",
-    "category": "Spinal Surgery",
-    "tags": ["lumbar disc herniation", "microdiscectomy", "neurosurgery Dubai", "spine surgeon Tehran"],
+    "slug": "brain-tumour-surgery-dubai",
+    "title": "Brain Tumour Surgery Dubai: Types, Process and Recovery",
+    "metaDescription": "Considering brain tumour surgery in Dubai? Learn types of surgery, what happens before and after, and when to seek a specialist. Speak with Prof. Giv Sharifi.",
+    "excerpt": "A clear guide to brain tumour surgery in Dubai — surgical types, the hospital pathway, and realistic recovery expectations for patients and families.",
+    "date": "2026-07-02",
+    "category": "Brain Surgery",
+    "tags": [
+        "brain tumour surgery Dubai",
+        "neurosurgeon Dubai",
+        "neurosurgery Dubai",
+        "glioma surgery",
+        "brain cancer treatment",
+        "neurosurgeon Tehran",
+    ],
     "readingTimeMinutes": 8,
-    "featuredImagePath": "assets/images/blog/lumbar-disc-herniation-treatment.webp",
-    "primaryKeyword": "lumbar disc herniation treatment",
-    "wordCountEstimate": 1200,
+    "featuredImagePath": "assets/images/blog/brain-tumour-surgery-dubai.webp",
     "content": [
-        {"type": "paragraph", "text": "Opening paragraph with primary keyword in first 100 words."},
-        {"type": "heading", "level": 2, "text": "What Is a Herniated Disc?"},
-        {"type": "paragraph", "text": "Educational body text in simple B2 English."},
-        {"type": "heading", "level": 2, "text": "Symptoms and When to See a Specialist"},
-        {"type": "list", "items": ["Item one", "Item two", "Item three"]},
-        {"type": "cta", "text": "Explore spinal surgery services", "href": "/spinal-surgery/"},
-        {"type": "heading", "level": 2, "text": "Frequently Asked Questions"},
-        {"type": "heading", "level": 3, "text": "How long is recovery after microdiscectomy?"},
-        {"type": "paragraph", "text": "FAQ answer paragraph."},
+        {
+            "type": "paragraph",
+            "text": "Brain tumour surgery in Dubai is a major decision that patients and families often face after an MRI or CT scan shows a growth inside the skull. The goal of surgery is to remove all or part of the tumour while protecting healthy brain tissue, nerves, and blood vessels. Prof. Giv Sharifi explains each step in plain language so you know what tests are needed, what happens in the operating room, and how recovery usually progresses. This article covers common tumour types, surgical options, and when a second opinion may help.",
+        },
+        {
+            "type": "heading",
+            "level": 2,
+            "text": "What Is a Brain Tumour?",
+        },
+        {
+            "type": "paragraph",
+            "text": "A brain tumour is an abnormal mass of cells within the brain or its coverings. Some tumours are benign and grow slowly; others are malignant and may spread more quickly. Symptoms can include headaches, seizures, weakness, speech changes, or vision problems, depending on the tumour location. Imaging with MRI is the main tool for diagnosis. Your neurosurgeon will also review your medical history and neurological examination before recommending surgery, observation, or other treatments.",
+        },
+        {
+            "type": "list",
+            "items": [
+                "Persistent headaches that worsen over weeks",
+                "New seizures in an adult",
+                "Weakness or numbness on one side of the body",
+                "Personality or memory changes",
+            ],
+        },
+        {
+            "type": "cta",
+            "text": "Explore brain surgery services",
+            "href": "/brain-surgery/",
+        },
+        {
+            "type": "heading",
+            "level": 2,
+            "text": "Frequently Asked Questions",
+        },
+        {
+            "type": "heading",
+            "level": 3,
+            "text": "How long is hospital stay after brain tumour surgery?",
+        },
+        {
+            "type": "paragraph",
+            "text": "Most patients stay in hospital for several days after craniotomy, but the exact length depends on the tumour type, surgery complexity, and recovery from anaesthesia. Some people go to a high-dependency unit for closer monitoring. Your team will check speech, movement, and wound healing before discharge. Physiotherapy and follow-up scans are often arranged. Prof. Giv Sharifi discusses expected timelines during your pre-operative consultation so you can plan work and family support.",
+        },
     ],
 }
 
@@ -174,25 +211,82 @@ function slugify(s) {
     .slice(0, 60);
 }
 
+function countBodyWords(blocks) {
+  let n = 0;
+  for (const b of blocks || []) {
+    if (b.type === 'paragraph' && b.text) {
+      n += String(b.text).split(/\s+/).filter(Boolean).length;
+    }
+    if ((b.type === 'list' || b.type === 'ordered-list') && Array.isArray(b.items)) {
+      for (const item of b.items) {
+        n += String(item).split(/\s+/).filter(Boolean).length;
+      }
+    }
+    if (b.type === 'blockquote' && b.text) {
+      n += String(b.text).split(/\s+/).filter(Boolean).length;
+    }
+  }
+  return n;
+}
+
+function normalizeBlocks(blocks) {
+  const outBlocks = [];
+  for (const b of blocks || []) {
+    if (!b || typeof b !== 'object') continue;
+    if (b.type === 'text' || b.type === 'paragraph') {
+      const t = String(b.text || '').trim();
+      if (!t) continue;
+      if (t.split(/\s+/).length < 15 && !t.includes('.')) {
+        outBlocks.push({ type: 'heading', level: b.level === 3 ? 3 : 2, text: t });
+      } else {
+        outBlocks.push({ type: 'paragraph', text: t });
+      }
+      continue;
+    }
+    if (b.type === 'heading') {
+      const level = b.level === 1 ? 2 : (b.level || 2);
+      outBlocks.push({ type: 'heading', level, text: String(b.text || '').trim() });
+      continue;
+    }
+    if (['list', 'ordered-list', 'cta', 'blockquote', 'image', 'html'].includes(b.type)) {
+      outBlocks.push(b);
+    }
+  }
+  return outBlocks;
+}
+
 const slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);
 if (!slug) throw new Error('Could not build SEO slug');
 
-const text = JSON.stringify(out.content || []);
-const words = text.replace(/[{}"\[\],:]/g, ' ').split(/\s+/).filter(Boolean).length;
+out.content = normalizeBlocks(out.content);
+const paragraphCount = out.content.filter((b) => b.type === 'paragraph').length;
+const words = countBodyWords(out.content);
+
+if (paragraphCount < 10) {
+  throw new Error(
+    `Gemini returned an outline, not a full article: only ${paragraphCount} paragraph blocks. `
+    + 'Regenerate. Need 10+ paragraph blocks with 70+ words each.'
+  );
+}
 if (words < 1000) {
-  throw new Error(`Article too short: ~${words} words (minimum 1000). Regenerate.`);
+  throw new Error(
+    `Article too short: ~${words} words in paragraphs (minimum 1000). Regenerate with full prose.`
+  );
 }
 
 out.slug = slug;
 out.featuredImagePath = `assets/images/blog/${slug}.webp`;
-out.date = out.date || new Date().toISOString().slice(0, 10);
+out.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);
 out.readingTimeMinutes = Math.max(8, Math.round(words / 200));
+delete out.primaryKeyword;
+delete out.wordCountEstimate;
 
 return [{
   json: {
     ...row,
     normalized: out,
     word_count: words,
+    paragraph_count: paragraphCount,
     image_prompt: `Professional medical illustration for a patient education article titled "${out.title}". `
       + `Topic: ${row.primary_keyword}. Style: clean modern healthcare illustration, soft blue and white tones, `
       + `abstract anatomy or MRI scan motif. No blood, no surgery scenes, no patient faces, no text, no logos. 16:9.`,
@@ -836,7 +930,7 @@ return [{ json: { existing_posts: titles } }];
         "Gemini blog model",
         "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         [440, 120],
-        {"modelName": GEMINI_MODEL, "options": {"temperature": 0.35}},
+        {"modelName": GEMINI_MODEL, "options": {"temperature": 0.45, "maxOutputTokens": 8192}},
         type_version=1,
     )
     nodes.append(model)
@@ -860,22 +954,26 @@ return [{ json: { existing_posts: titles } }];
         "proposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\n"
         "proposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\n"
         "secondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\n"
-        "category: {{ $('When called by scheduler').item.json.category }}\\n\\n"
+        "category: {{ $('When called by scheduler').item.json.category }}\\n"
+        "scheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\n"
         "Already published (avoid duplicate intent):\\n"
         "{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\n"
-        "Write a full SEO blog post JSON for Prof. Giv Sharifi's website.\\n"
-        "RULES:\\n"
-        "- English only, B2 level, short clear sentences\\n"
-        "- MINIMUM 1000 words in content blocks combined\\n"
+        "Write a COMPLETE long-form SEO blog post JSON for Prof. Giv Sharifi's website.\\n\\n"
+        "CRITICAL — FULL ARTICLE, NOT AN OUTLINE:\\n"
+        "- Minimum 1000 words in paragraph + list text combined\\n"
+        "- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n"
+        "- Do NOT output section titles only. Every H2 section needs 2+ full paragraphs.\\n"
+        "- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n"
+        "- NEVER use type text. NEVER use heading level 1.\\n"
+        "- heading level 2 = main sections; level 3 = FAQ questions only\\n"
+        "- Structure: intro paragraph (120+ words) → 5-6 H2 sections (each with 2 paragraphs + optional list) "
+        "→ 2 cta blocks (href=pillar_url and href=/) → H2 FAQ → 5x (H3 question + paragraph answer 80+ words)\\n"
+        "- date: use scheduled_date from calendar row\\n"
         "- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n"
-        "- title: 50-60 chars, primary keyword near start\\n"
+        "- title: 50-65 chars, primary keyword near start\\n"
         "- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n"
         "- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n"
-        "- category: use calendar category value\\n"
-        "- content: 20+ blocks — intro, 5-6 H2 sections, bullet lists, 2+ cta blocks linking pillar_url and /\\n"
-        "- FAQ: H2 'Frequently Asked Questions' then 5x H3 question + paragraph answers\\n"
         "- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n"
-        "- Include primary_keyword in first paragraph and one H2\\n"
         "- featuredImagePath: assets/images/blog/{slug}.webp"
     )
 
@@ -889,9 +987,10 @@ return [{ json: { existing_posts: titles } }];
             "hasOutputParser": True,
             "options": {
                 "systemMessage": (
-                    "You are an expert medical SEO content writer for Prof. Giv Sharifi, "
-                    "board-certified neurosurgeon in Dubai and Tehran. Output valid JSON only. "
-                    "Simple English for general readers. Never use Persian."
+                    "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. "
+                    "Output valid JSON only via the parser. Write FULL prose paragraphs — never bullet-point outlines "
+                    "disguised as headings. Simple B2 English. Never use Persian. If you cannot reach 1000 words, "
+                    "add more paragraph blocks before returning JSON."
                 )
             },
         },
