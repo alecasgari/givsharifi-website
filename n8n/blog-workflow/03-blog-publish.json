@@ -1,0 +1,580 @@
+{
+  "name": "GivSharifi Blog \u2014 03 Publish",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a23cbf7a-7180-4dec-8794-3ccfb71b449f",
+      "name": "When called by router",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms",
+          "mode": "list",
+          "cachedResultName": "giv-content-calendar-template",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 521343457,
+          "mode": "list",
+          "cachedResultName": "content-calendar-template",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms/edit#gid=521343457"
+        },
+        "options": {}
+      },
+      "id": "9433c801-3cba-4484-8488-69b931cf41e5",
+      "name": "Read sheet row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rowId = String($('When called by router').first().json.row_id);\nconst row = $input.all().map((i) => i.json).find((r) => String(r.id) === rowId);\nif (!row) throw new Error('Sheet row not found: ' + rowId);\nif (!row.published_slug) throw new Error('No published_slug on row \u2014 run draft first');\nreturn [{ json: row }];\n"
+      },
+      "id": "f2e2ec25-2260-4a40-873e-17e235a45ad9",
+      "name": "Find row by id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "={{ 'posts/data/_drafts/' + $json.published_slug + '.json' }}"
+      },
+      "id": "16035706-ab70-48ca-b843-3b91c339aba0",
+      "name": "Get draft JSON",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const gh = $input.first().json;\nlet raw = gh.content ?? '';\nif (gh.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nconst draft = JSON.parse(String(raw).trim());\nconst p = draft.normalized;\nif (!p) throw new Error('Draft missing normalized post');\nreturn [{ json: { row: $('Find row by id').first().json, normalized: p, image_base64: draft.image_base64 || '' } }];\n"
+      },
+      "id": "2675ac3d-6c43-447a-a2af-f9d1021532b4",
+      "name": "Parse draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $('Parse draft').first().json.normalized;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\ndelete post.primaryKeyword;\ndelete post.wordCountEstimate;\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n', slug: p.slug } }];\n"
+      },
+      "id": "d334591a-4841-4d4a-bd10-adee9b2a5e6c",
+      "name": "Build post JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "blog/_post-shell.html"
+      },
+      "id": "2d38a590-0149-4c20-90ec-2904900c44a2",
+      "name": "Get post HTML shell",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "create",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "={{ 'posts/data/' + $('Parse draft').item.json.normalized.slug + '.json' }}",
+        "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
+        "commitMessage": "=content: publish blog {{ $('Parse draft').item.json.normalized.slug }}"
+      },
+      "id": "190bbb75-c86a-4f09-ba79-b6432a71fd13",
+      "name": "Create post JSON",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "create",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "={{ 'blog/' + $('Parse draft').item.json.normalized.slug + '/index.html' }}",
+        "fileContent": "={{ $('Get post HTML shell').item.json.content }}",
+        "commitMessage": "=content: add blog shell {{ $('Parse draft').item.json.normalized.slug }}"
+      },
+      "id": "be36ad83-a331-4ace-93a4-0664137c9c4b",
+      "name": "Create blog HTML page",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "create",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "={{ $('Parse draft').item.json.normalized.featuredImagePath }}",
+        "fileContent": "={{ $('Parse draft').item.json.image_base64 }}",
+        "commitMessage": "=content: add blog image {{ $('Parse draft').item.json.normalized.slug }}"
+      },
+      "id": "207b8685-93e9-489c-b32e-2e30be39c87b",
+      "name": "Upload featured WebP",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        160
+      ],
+      "notes": "Prefer WebP via Convert to File node before upload \u2014 wire after import"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "posts/data/index.json"
+      },
+      "id": "7075f285-126f-430f-8c47-733e60c16a72",
+      "name": "Get posts index",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ghItem = $('Get posts index').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nif (!raw) throw new Error('posts/data/index.json content empty');\nconst idx = JSON.parse(raw);\nconst p = $('Parse draft').first().json.normalized;\nidx.posts = [{\n  slug: p.slug,\n  title: p.title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${p.featuredImagePath}`,\n}, ...(idx.posts || [])];\nreturn [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n', index_sha: github.sha || '' } }];\n"
+      },
+      "id": "a480768d-8863-4165-abe9-25d831984cb7",
+      "name": "Prepend to index",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "alecasgari",
+          "mode": "list",
+          "cachedResultName": "alecasgari",
+          "cachedResultUrl": "https://github.com/alecasgari"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "givsharifi-website",
+          "mode": "list",
+          "cachedResultName": "givsharifi-website",
+          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
+        },
+        "branch": "main",
+        "filePath": "posts/data/index.json",
+        "fileContent": "={{ $json.index_json }}",
+        "commitMessage": "=content: update blog index {{ $('Parse draft').item.json.normalized.slug }}",
+        "additionalParameters": {
+          "sha": "={{ $json.index_sha }}"
+        }
+      },
+      "id": "7361983c-d7cf-488a-9f4c-c6cf48fe1687",
+      "name": "Update posts index",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1980,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms",
+          "mode": "list",
+          "cachedResultName": "giv-content-calendar-template",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 521343457,
+          "mode": "list",
+          "cachedResultName": "content-calendar-template",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms/edit#gid=521343457"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Parse draft').item.json.row.id }}",
+            "status": "published",
+            "published_url": "={{ 'https://www.givsharifi.com/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}"
+          },
+          "matchingColumns": [
+            "id"
+          ]
+        },
+        "options": {}
+      },
+      "id": "49d756c1-7fc0-4a5a-8c2a-4732bab57038",
+      "name": "Sheet status published",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('When called by router').item.json.chat_id || $env.GIV_TELEGRAM_ALLOWED_CHAT_ID }}",
+        "text": "={{ '\u2705 Blog published\\n\\n' + $('Parse draft').item.json.normalized.title + '\\n\\n' + $env.GIV_SITE_URL + '/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            [
+              {
+                "row": {
+                  "buttons": [
+                    {
+                      "text": "Open on website",
+                      "additionalFields": {
+                        "url": "={{ $env.GIV_SITE_URL + '/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          ]
+        }
+      },
+      "id": "01407af8-f098-42de-856d-60b3125eb5b9",
+      "name": "Telegram published",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Publish on approve\nLoads draft from `posts/data/_drafts/{slug}.json` \u2192 GitHub post + shell + image + index \u2192 Sheet published"
+      },
+      "id": "92b9ba60-c9ee-40d1-b17a-4b3816c46b95",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -180
+      ]
+    }
+  ],
+  "connections": {
+    "When called by router": {
+      "main": [
+        [
+          {
+            "node": "Read sheet row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read sheet row": {
+      "main": [
+        [
+          {
+            "node": "Find row by id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find row by id": {
+      "main": [
+        [
+          {
+            "node": "Get draft JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get draft JSON": {
+      "main": [
+        [
+          {
+            "node": "Parse draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse draft": {
+      "main": [
+        [
+          {
+            "node": "Build post JSON",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get post HTML shell",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload featured WebP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build post JSON": {
+      "main": [
+        [
+          {
+            "node": "Create post JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get post HTML shell": {
+      "main": [
+        [
+          {
+            "node": "Create blog HTML page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create post JSON": {
+      "main": [
+        [
+          {
+            "node": "Get posts index",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get posts index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create blog HTML page": {
+      "main": [
+        [
+          {
+            "node": "Get posts index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get posts index": {
+      "main": [
+        [
+          {
+            "node": "Prepend to index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepend to index": {
+      "main": [
+        [
+          {
+            "node": "Update posts index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update posts index": {
+      "main": [
+        [
+          {
+            "node": "Sheet status published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet status published": {
+      "main": [
+        [
+          {
+            "node": "Telegram published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bdebd946-c0b2-473f-86c3-c7bf19f46fed",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    {
+      "name": "givsharifi"
+    },
+    {
+      "name": "blog"
+    }
+  ]
+}
