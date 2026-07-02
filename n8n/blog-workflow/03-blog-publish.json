@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "a23cbf7a-7180-4dec-8794-3ccfb71b449f",
+      "id": "732a4001-864e-4a73-93b6-19b99bbc2d97",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -31,7 +31,7 @@
         },
         "options": {}
       },
-      "id": "9433c801-3cba-4484-8488-69b931cf41e5",
+      "id": "966aaa12-9b54-4e82-b10a-34fd6764e3df",
       "name": "Read sheet row",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -44,7 +44,7 @@
       "parameters": {
         "jsCode": "const rowId = String($('When called by router').first().json.row_id);\nconst row = $input.all().map((i) => i.json).find((r) => String(r.id) === rowId);\nif (!row) throw new Error('Sheet row not found: ' + rowId);\nif (!row.published_slug) throw new Error('No published_slug on row \u2014 run draft first');\nreturn [{ json: row }];\n"
       },
-      "id": "f2e2ec25-2260-4a40-873e-17e235a45ad9",
+      "id": "23ce10bb-6333-4c85-b9fd-b59a59ee4c8c",
       "name": "Find row by id",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -74,7 +74,7 @@
         "branch": "main",
         "filePath": "={{ 'posts/data/_drafts/' + $json.published_slug + '.json' }}"
       },
-      "id": "16035706-ab70-48ca-b843-3b91c339aba0",
+      "id": "12b0399c-7510-4054-9847-ec0c95e05941",
       "name": "Get draft JSON",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -87,7 +87,7 @@
       "parameters": {
         "jsCode": "const gh = $input.first().json;\nlet raw = gh.content ?? '';\nif (gh.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nconst draft = JSON.parse(String(raw).trim());\nconst p = draft.normalized;\nif (!p) throw new Error('Draft missing normalized post');\nreturn [{ json: { row: $('Find row by id').first().json, normalized: p, image_base64: draft.image_base64 || '' } }];\n"
       },
-      "id": "2675ac3d-6c43-447a-a2af-f9d1021532b4",
+      "id": "1198b7ec-a504-45b4-8b1d-47c10e35dbeb",
       "name": "Parse draft",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -100,7 +100,7 @@
       "parameters": {
         "jsCode": "const p = $('Parse draft').first().json.normalized;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\ndelete post.primaryKeyword;\ndelete post.wordCountEstimate;\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n', slug: p.slug } }];\n"
       },
-      "id": "d334591a-4841-4d4a-bd10-adee9b2a5e6c",
+      "id": "7b8fd551-b648-4362-b0fa-5aa930567ab7",
       "name": "Build post JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -130,7 +130,7 @@
         "branch": "main",
         "filePath": "blog/_post-shell.html"
       },
-      "id": "2d38a590-0149-4c20-90ec-2904900c44a2",
+      "id": "548395e6-b3b7-4664-a7ee-2d3584771eb6",
       "name": "Get post HTML shell",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -162,7 +162,7 @@
         "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
         "commitMessage": "=content: publish blog {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "190bbb75-c86a-4f09-ba79-b6432a71fd13",
+      "id": "1c08f271-cd1a-43b9-8cf1-ccddc57fd7ea",
       "name": "Create post JSON",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -194,7 +194,7 @@
         "fileContent": "={{ $('Get post HTML shell').item.json.content }}",
         "commitMessage": "=content: add blog shell {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "be36ad83-a331-4ace-93a4-0664137c9c4b",
+      "id": "84a53e5b-bdc8-4ecb-9d98-b0c3346132a9",
       "name": "Create blog HTML page",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -226,7 +226,7 @@
         "fileContent": "={{ $('Parse draft').item.json.image_base64 }}",
         "commitMessage": "=content: add blog image {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "207b8685-93e9-489c-b32e-2e30be39c87b",
+      "id": "9282b7eb-ede3-449d-b021-8e1c7345b4dd",
       "name": "Upload featured WebP",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -257,7 +257,7 @@
         "branch": "main",
         "filePath": "posts/data/index.json"
       },
-      "id": "7075f285-126f-430f-8c47-733e60c16a72",
+      "id": "00d73173-738b-4df3-a241-59b40256c75a",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -270,7 +270,7 @@
       "parameters": {
         "jsCode": "const ghItem = $('Get posts index').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nif (!raw) throw new Error('posts/data/index.json content empty');\nconst idx = JSON.parse(raw);\nconst p = $('Parse draft').first().json.normalized;\nidx.posts = [{\n  slug: p.slug,\n  title: p.title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${p.featuredImagePath}`,\n}, ...(idx.posts || [])];\nreturn [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n', index_sha: github.sha || '' } }];\n"
       },
-      "id": "a480768d-8863-4165-abe9-25d831984cb7",
+      "id": "cff74731-897a-457a-8e48-0eb50021a5c2",
       "name": "Prepend to index",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -305,7 +305,7 @@
           "sha": "={{ $json.index_sha }}"
         }
       },
-      "id": "7361983c-d7cf-488a-9f4c-c6cf48fe1687",
+      "id": "329539ea-5a00-4d36-8fd8-5ae16d6d57a4",
       "name": "Update posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -344,7 +344,7 @@
         },
         "options": {}
       },
-      "id": "49d756c1-7fc0-4a5a-8c2a-4732bab57038",
+      "id": "2fbf2533-97c7-4cf2-8ab5-d408ca8dbffa",
       "name": "Sheet status published",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -377,7 +377,7 @@
           ]
         }
       },
-      "id": "01407af8-f098-42de-856d-60b3125eb5b9",
+      "id": "833b3419-7a5f-4b85-9257-fea75cdd57e7",
       "name": "Telegram published",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -390,7 +390,7 @@
       "parameters": {
         "content": "## Publish on approve\nLoads draft from `posts/data/_drafts/{slug}.json` \u2192 GitHub post + shell + image + index \u2192 Sheet published"
       },
-      "id": "92b9ba60-c9ee-40d1-b17a-4b3816c46b95",
+      "id": "1495e755-f439-4b22-ab7c-516a6ebad07d",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -565,7 +565,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "bdebd946-c0b2-473f-86c3-c7bf19f46fed",
+  "versionId": "67837971-b848-475e-8d93-8e843f3b8f1f",
   "meta": {
     "templateCredsSetupCompleted": false
   },

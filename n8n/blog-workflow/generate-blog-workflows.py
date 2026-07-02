@@ -242,15 +242,21 @@ return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\n', index_sha: gi
 """
 
 
-PREVIEW_TEXT_CODE = r"""const row = $('Normalize blog output').first().json;
+PREVIEW_TEXT_CODE = r"""const row = $('Extract image base64').first().json;
 const p = row.normalized;
 const blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);
 const preview = blocks.map((b) => b.text).join('\n\n').slice(0, 400);
+const cal = $('When called by scheduler').first().json;
+const chatId = cal.chat_id || cal.telegram_chat_id;
+if (!chatId) {
+  throw new Error('chat_id missing on scheduler payload — set in workflow 01 Set calendar row');
+}
 return [{
   json: {
-    chat_id: $env.GIV_TELEGRAM_ALLOWED_CHAT_ID,
+    chat_id: chatId,
     row_id: row.id,
     slug: p.slug,
+    image_base64: row.image_base64,
     preview_message:
       `📋 <b>Blog preview</b> (row ${row.id})\n\n`
       + `<b>Title:</b> ${p.title}\n`
@@ -679,7 +685,7 @@ def build_scheduler() -> dict:
         {
             "jsCode": """const today = $('Set today ISO').first().json.today;
 const rows = $input.all().map((i) => i.json);
-const match = rows.find((r) => r.status === 'queued' && r.scheduled_date === today);
+const match = rows.find((r) => r.status === 'queued' && String(r.scheduled_date).trim() === today);
 if (!match) {
   return [{ json: { found: false, today, message: `No queued row for ${today}` } }];
 }
@@ -689,6 +695,29 @@ return [{ json: { found: true, ...match } }];
         type_version=2,
     )
     nodes.append(pick)
+
+    attach_chat = node(
+        "Set calendar row",
+        "n8n-nodes-base.set",
+        [880, 0],
+        {
+            "mode": "manual",
+            "assignments": {
+                "assignments": [
+                    {
+                        "id": nid(),
+                        "name": "chat_id",
+                        "value": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+                        "type": "string",
+                    }
+                ]
+            },
+            "includeOtherFields": True,
+        },
+        type_version=3.4,
+        notes="Replace chat_id with your numeric Telegram chat ID (same as router allowed chat).",
+    )
+    nodes.append(attach_chat)
 
     found = node(
         "Row found?",
@@ -759,9 +788,10 @@ return [{ json: { found: true, ...match } }];
     connect(c, "Set today ISO", "Read calendar")
     connect(c, "Read calendar", "Pick today queued row")
     connect(c, "Pick today queued row", "Row found?")
-    connect(c, "Row found?", "Sheet status drafting", 0)
+    connect(c, "Row found?", "Set calendar row", 0)
     connect(c, "Row found?", "Telegram no row", 1)
-    connect(c, "Sheet status drafting", "Run draft and preview")
+    connect(c, "Set calendar row", "Sheet status drafting")
+    connect(c, "Set calendar row", "Run draft and preview")
 
     return workflow("GivSharifi Blog — 01 Scheduler", nodes, c)
 
@@ -822,15 +852,15 @@ return [{ json: { existing_posts: titles } }];
 
     blog_prompt = (
         "=Calendar row:\\n"
-        "id: {{ $json.id }}\\n"
-        "cluster: {{ $json.cluster }}\\n"
-        "pillar_url: {{ $json.pillar_url }}\\n"
-        "primary_keyword: {{ $json.primary_keyword }}\\n"
-        "search_intent: {{ $json.search_intent }}\\n"
-        "proposed_title: {{ $json.proposed_title }}\\n"
-        "proposed_slug: {{ $json.proposed_slug }}\\n"
-        "secondary_keywords: {{ $json.secondary_keywords }}\\n"
-        "category: {{ $json.category }}\\n\\n"
+        "id: {{ $('When called by scheduler').item.json.id }}\\n"
+        "cluster: {{ $('When called by scheduler').item.json.cluster }}\\n"
+        "pillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\n"
+        "primary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\n"
+        "search_intent: {{ $('When called by scheduler').item.json.search_intent }}\\n"
+        "proposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\n"
+        "proposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\n"
+        "secondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\n"
+        "category: {{ $('When called by scheduler').item.json.category }}\\n\\n"
         "Already published (avoid duplicate intent):\\n"
         "{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\n"
         "Write a full SEO blog post JSON for Prof. Giv Sharifi's website.\\n"
@@ -909,22 +939,47 @@ return [{ json: { ...row, image_base64: b64 } }];
     save_draft = node(
         "Save draft JSON GitHub",
         "n8n-nodes-base.github",
-        [1100, 80],
+        [1540, 0],
         {
             "resource": "file",
             "operation": "create",
             **gh_repo_params(),
-            "filePath": "={{ 'posts/data/_drafts/' + $('Normalize blog output').item.json.normalized.slug + '.json' }}",
-            "fileContent": "={{ JSON.stringify($('Normalize blog output').item.json, null, 2) }}",
-            "commitMessage": "=blog: save draft {{ $('Normalize blog output').item.json.normalized.slug }}",
+            "filePath": "={{ 'posts/data/_drafts/' + $('Extract image base64').item.json.normalized.slug + '.json' }}",
+            "fileContent": "={{ JSON.stringify($('Extract image base64').item.json, null, 2) }}",
+            "commitMessage": "=blog: save draft {{ $('Extract image base64').item.json.normalized.slug }}",
         },
         type_version=1.1,
-        notes="Uses edit operation on re-run — update manually if slug exists",
+        notes="On re-run change operation to edit if file exists",
     )
     nodes.append(save_draft)
 
-    preview = node("Build preview message", "n8n-nodes-base.code", [1540, 0], {"jsCode": PREVIEW_TEXT_CODE}, type_version=2)
+    preview = node("Build preview message", "n8n-nodes-base.code", [1760, 0], {"jsCode": PREVIEW_TEXT_CODE}, type_version=2)
     nodes.append(preview)
+
+    pack_binary = node(
+        "Pack image binary",
+        "n8n-nodes-base.code",
+        [1980, -80],
+        {
+            "jsCode": """const item = $input.first().json;
+const b64 = item.image_base64;
+if (!b64) throw new Error('No image_base64 for Telegram photo');
+return [{
+  json: item,
+  binary: {
+    data: {
+      data: b64,
+      mimeType: 'image/png',
+      fileName: `${item.slug}.png`,
+      encoding: 'base64',
+    },
+  },
+}];
+"""
+        },
+        type_version=2,
+    )
+    nodes.append(pack_binary)
 
     send_photo = node(
         "Send preview photo",
@@ -976,7 +1031,7 @@ return [{ json: { ...row, image_base64: b64 } }];
     sheet_preview = node(
         "Sheet status preview",
         "n8n-nodes-base.googleSheets",
-        [1980, 0],
+        [2420, 80],
         sheets_update_params({
             "id": "={{ $('When called by scheduler').item.json.id }}",
             "status": "preview",
@@ -1002,12 +1057,12 @@ return [{ json: { ...row, image_base64: b64 } }];
     connect(c, "Blog JSON parser", "Gemini blog writer", ctype="ai_outputParser")
     connect(c, "Gemini blog writer", "Normalize blog output")
     connect(c, "Normalize blog output", "Generate featured image")
-    connect(c, "Normalize blog output", "Save draft JSON GitHub")
     connect(c, "Generate featured image", "Extract image base64")
-    connect(c, "Extract image base64", "Build preview message")
+    connect(c, "Extract image base64", "Save draft JSON GitHub")
     connect(c, "Save draft JSON GitHub", "Build preview message")
-    connect(c, "Build preview message", "Send preview photo")
+    connect(c, "Build preview message", "Pack image binary")
     connect(c, "Build preview message", "Send approve buttons")
+    connect(c, "Pack image binary", "Send preview photo")
     connect(c, "Send approve buttons", "Sheet status preview")
 
     return workflow("GivSharifi Blog — 02 Draft and Preview", nodes, c)

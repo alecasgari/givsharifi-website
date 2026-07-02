@@ -12,7 +12,7 @@
           ]
         }
       },
-      "id": "d6d8332e-3b7b-4275-aa0b-fad9988e8d7d",
+      "id": "ec899847-4a3f-483f-aaa8-a27884adeb78",
       "name": "Mon Wed Fri 9am",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -24,7 +24,7 @@
     },
     {
       "parameters": {},
-      "id": "da6064a1-7df6-41dd-9534-9e780f171b12",
+      "id": "b2cdf289-3ccf-4d7b-bdca-2c73136a15ce",
       "name": "When called manually",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -39,7 +39,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "8f3671ed-873d-4a42-b639-ba7b70bc5de6",
+              "id": "2c0414df-53a2-4e2b-8aaa-2187db0391e5",
               "name": "today",
               "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
               "type": "string"
@@ -47,7 +47,7 @@
           ]
         }
       },
-      "id": "41f2e17e-1c73-4d50-855f-586b45902435",
+      "id": "3989a98b-a5ad-4c86-8ead-a3caed016af3",
       "name": "Set today ISO",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -75,7 +75,7 @@
         },
         "options": {}
       },
-      "id": "a373e835-5f13-4abc-9409-f7e592fca113",
+      "id": "e0253e41-8f06-45c1-afdc-4425b1fe9fa8",
       "name": "Read calendar",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -86,9 +86,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const today = $('Set today ISO').first().json.today;\nconst rows = $input.all().map((i) => i.json);\nconst match = rows.find((r) => r.status === 'queued' && r.scheduled_date === today);\nif (!match) {\n  return [{ json: { found: false, today, message: `No queued row for ${today}` } }];\n}\nreturn [{ json: { found: true, ...match } }];\n"
+        "jsCode": "const today = $('Set today ISO').first().json.today;\nconst rows = $input.all().map((i) => i.json);\nconst match = rows.find((r) => r.status === 'queued' && String(r.scheduled_date).trim() === today);\nif (!match) {\n  return [{ json: { found: false, today, message: `No queued row for ${today}` } }];\n}\nreturn [{ json: { found: true, ...match } }];\n"
       },
-      "id": "4d995032-71e9-4f52-b89a-e428def6296d",
+      "id": "4cc5d0ad-ddc5-4511-ad19-446709b10079",
       "name": "Pick today queued row",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -96,6 +96,31 @@
         660,
         100
       ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c96bef0-b68d-4b02-a24e-f62a69acdd54",
+              "name": "chat_id",
+              "value": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "id": "1086e2e9-cf64-473e-92a3-002caabfd280",
+      "name": "Set calendar row",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        0
+      ],
+      "notes": "Replace chat_id with your numeric Telegram chat ID (same as router allowed chat)."
     },
     {
       "parameters": {
@@ -118,7 +143,7 @@
           "combinator": "and"
         }
       },
-      "id": "b452bfec-8c92-4bdc-ba99-49562d230e1f",
+      "id": "cf9b3167-c74a-414e-85f6-b01b40a20af1",
       "name": "Row found?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -156,7 +181,7 @@
         },
         "options": {}
       },
-      "id": "31f5cadf-6c8f-4323-9d35-babba9c0af98",
+      "id": "986afd27-c718-4a67-ad6d-1fe16864546d",
       "name": "Sheet status drafting",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -172,7 +197,7 @@
         "mode": "each",
         "options": {}
       },
-      "id": "16fdbc4e-f655-41a9-8a64-8c4f88e79e0b",
+      "id": "9951fbbc-19af-4ef0-ae3c-271d6e03cb24",
       "name": "Run draft and preview",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
@@ -186,7 +211,7 @@
         "chatId": "={{ $env.GIV_TELEGRAM_ALLOWED_CHAT_ID }}",
         "text": "={{ 'Blog scheduler: ' + $json.message }}"
       },
-      "id": "6a9558cb-213c-4d64-ad6f-b4fa915ea7a0",
+      "id": "6b54b869-6af7-4641-9900-e478c36c8d06",
       "name": "Telegram no row",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -199,7 +224,7 @@
       "parameters": {
         "content": "## Blog scheduler\nReads Google Sheet `content-calendar-template.csv` \u2192 finds `status=queued` + `scheduled_date=today` \u2192 runs draft workflow.\n\nImport `content-calendar-template.csv` into Google Sheets tab named `Calendar`."
       },
-      "id": "42557d34-11c6-451f-ac57-f989252ebf93",
+      "id": "0ad8ccc3-8e7f-484d-80f2-abe24342a787",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -269,7 +294,7 @@
       "main": [
         [
           {
-            "node": "Sheet status drafting",
+            "node": "Set calendar row",
             "type": "main",
             "index": 0
           }
@@ -283,9 +308,14 @@
         ]
       ]
     },
-    "Sheet status drafting": {
+    "Set calendar row": {
       "main": [
         [
+          {
+            "node": "Sheet status drafting",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Run draft and preview",
             "type": "main",
@@ -300,7 +330,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "06d51fb5-43ea-4fb6-b45b-1c94f2c5e667",
+  "versionId": "985fe132-0974-4560-8c02-b8f7159f549f",
   "meta": {
     "templateCredsSetupCompleted": false
   },

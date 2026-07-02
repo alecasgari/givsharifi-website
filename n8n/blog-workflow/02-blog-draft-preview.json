@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "e2497c3e-b794-4df4-9e83-a7b44219690c",
+      "id": "74546a9f-bf53-44b4-be39-561bf7fc8a17",
       "name": "When called by scheduler",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -33,7 +33,7 @@
         "branch": "main",
         "filePath": "posts/data/index.json"
       },
-      "id": "16eadc67-f5b4-4d36-81b4-987491246475",
+      "id": "86aa8497-d208-4d88-af3a-edfbe3dff39f",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -46,7 +46,7 @@
       "parameters": {
         "jsCode": "const ghItem = $('Get posts index').first().json;\nconst github = ghItem.body ?? ghItem;\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nconst idx = JSON.parse(String(raw).trim() || '{\"posts\":[]}');\nconst titles = (idx.posts || []).map((p) => `- ${p.slug}: ${p.title}`).join('\\n');\nreturn [{ json: { existing_posts: titles } }];\n"
       },
-      "id": "4c6c2066-281e-4abb-aa39-d2b6560d3be5",
+      "id": "6b6b95af-1a29-4cfb-8aa7-c383a2ca7178",
       "name": "Build existing keywords context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -62,7 +62,7 @@
           "temperature": 0.35
         }
       },
-      "id": "6de16b57-195d-4cc6-bd32-46112a7a4f12",
+      "id": "568943d1-85fb-488a-9d42-10485f477b2e",
       "name": "Gemini blog model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -75,7 +75,7 @@
       "parameters": {
         "jsonSchemaExample": "{\n  \"slug\": \"lumbar-disc-herniation-treatment\",\n  \"title\": \"Article title 50-60 chars with primary keyword\",\n  \"metaDescription\": \"SEO meta 150-155 chars with primary keyword and soft CTA\",\n  \"excerpt\": \"Two-sentence card excerpt different from meta description\",\n  \"date\": \"2026-06-30\",\n  \"category\": \"Spinal Surgery\",\n  \"tags\": [\n    \"lumbar disc herniation\",\n    \"microdiscectomy\",\n    \"neurosurgery Dubai\",\n    \"spine surgeon Tehran\"\n  ],\n  \"readingTimeMinutes\": 8,\n  \"featuredImagePath\": \"assets/images/blog/lumbar-disc-herniation-treatment.webp\",\n  \"primaryKeyword\": \"lumbar disc herniation treatment\",\n  \"wordCountEstimate\": 1200,\n  \"content\": [\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Opening paragraph with primary keyword in first 100 words.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"What Is a Herniated Disc?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Educational body text in simple B2 English.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Symptoms and When to See a Specialist\"\n    },\n    {\n      \"type\": \"list\",\n      \"items\": [\n        \"Item one\",\n        \"Item two\",\n        \"Item three\"\n      ]\n    },\n    {\n      \"type\": \"cta\",\n      \"text\": \"Explore spinal surgery services\",\n      \"href\": \"/spinal-surgery/\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Frequently Asked Questions\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 3,\n      \"text\": \"How long is recovery after microdiscectomy?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"FAQ answer paragraph.\"\n    }\n  ]\n}"
       },
-      "id": "723ac210-cc2d-4ce0-85c1-298f420918e7",
+      "id": "20eb3e56-cb00-4a18-8e7c-993f22568ba6",
       "name": "Blog JSON parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -87,13 +87,13 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Calendar row:\\nid: {{ $json.id }}\\ncluster: {{ $json.cluster }}\\npillar_url: {{ $json.pillar_url }}\\nprimary_keyword: {{ $json.primary_keyword }}\\nsearch_intent: {{ $json.search_intent }}\\nproposed_title: {{ $json.proposed_title }}\\nproposed_slug: {{ $json.proposed_slug }}\\nsecondary_keywords: {{ $json.secondary_keywords }}\\ncategory: {{ $json.category }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a full SEO blog post JSON for Prof. Giv Sharifi's website.\\nRULES:\\n- English only, B2 level, short clear sentences\\n- MINIMUM 1000 words in content blocks combined\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-60 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- category: use calendar category value\\n- content: 20+ blocks \u2014 intro, 5-6 H2 sections, bullet lists, 2+ cta blocks linking pillar_url and /\\n- FAQ: H2 'Frequently Asked Questions' then 5x H3 question + paragraph answers\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- Include primary_keyword in first paragraph and one H2\\n- featuredImagePath: assets/images/blog/{slug}.webp",
+        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a full SEO blog post JSON for Prof. Giv Sharifi's website.\\nRULES:\\n- English only, B2 level, short clear sentences\\n- MINIMUM 1000 words in content blocks combined\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-60 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- category: use calendar category value\\n- content: 20+ blocks \u2014 intro, 5-6 H2 sections, bullet lists, 2+ cta blocks linking pillar_url and /\\n- FAQ: H2 'Frequently Asked Questions' then 5x H3 question + paragraph answers\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- Include primary_keyword in first paragraph and one H2\\n- featuredImagePath: assets/images/blog/{slug}.webp",
         "hasOutputParser": true,
         "options": {
           "systemMessage": "You are an expert medical SEO content writer for Prof. Giv Sharifi, board-certified neurosurgeon in Dubai and Tehran. Output valid JSON only. Simple English for general readers. Never use Persian."
         }
       },
-      "id": "3d9596e4-a3dc-4385-bcb5-fd1a5669bed4",
+      "id": "108154f0-4b43-449c-82f7-ef7f0498b570",
       "name": "Gemini blog writer",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -106,7 +106,7 @@
       "parameters": {
         "jsCode": "const out = $('Gemini blog writer').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nconst text = JSON.stringify(out.content || []);\nconst words = text.replace(/[{}\"\\[\\],:]/g, ' ').split(/\\s+/).filter(Boolean).length;\nif (words < 1000) {\n  throw new Error(`Article too short: ~${words} words (minimum 1000). Regenerate.`);\n}\n\nout.slug = slug;\nout.featuredImagePath = `assets/images/blog/${slug}.webp`;\nout.date = out.date || new Date().toISOString().slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    image_prompt: `Professional medical illustration for a patient education article titled \"${out.title}\". `\n      + `Topic: ${row.primary_keyword}. Style: clean modern healthcare illustration, soft blue and white tones, `\n      + `abstract anatomy or MRI scan motif. No blood, no surgery scenes, no patient faces, no text, no logos. 16:9.`,\n  },\n}];\n"
       },
-      "id": "5f477cd0-f5f7-41bc-8241-dba8757ee61a",
+      "id": "f145cd70-9a36-4ec0-a4b0-a055a0e93504",
       "name": "Normalize blog output",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -125,7 +125,7 @@
         "specifyBody": "json",
         "jsonBody": "={{ { model: 'dall-e-3', prompt: $json.image_prompt, n: 1, size: '1792x1024', response_format: 'b64_json' } }}"
       },
-      "id": "877d4ffe-642c-4c79-b337-3636f774dbd7",
+      "id": "c8fcd64f-db50-44d3-9116-909950ffb3f5",
       "name": "Generate featured image",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -139,7 +139,7 @@
       "parameters": {
         "jsCode": "const body = $input.first().json;\nconst b64 = body.data?.[0]?.b64_json;\nif (!b64) throw new Error('No image returned from OpenAI');\nconst row = $('Normalize blog output').first().json;\nreturn [{ json: { ...row, image_base64: b64 } }];\n"
       },
-      "id": "fd0f672c-581f-403c-821c-9d05d485ccd6",
+      "id": "82e8fae0-036f-41fc-9cc6-0f0d4a866e20",
       "name": "Extract image base64",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -167,31 +167,44 @@
           "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
         },
         "branch": "main",
-        "filePath": "={{ 'posts/data/_drafts/' + $('Normalize blog output').item.json.normalized.slug + '.json' }}",
-        "fileContent": "={{ JSON.stringify($('Normalize blog output').item.json, null, 2) }}",
-        "commitMessage": "=blog: save draft {{ $('Normalize blog output').item.json.normalized.slug }}"
+        "filePath": "={{ 'posts/data/_drafts/' + $('Extract image base64').item.json.normalized.slug + '.json' }}",
+        "fileContent": "={{ JSON.stringify($('Extract image base64').item.json, null, 2) }}",
+        "commitMessage": "=blog: save draft {{ $('Extract image base64').item.json.normalized.slug }}"
       },
-      "id": "29c9ebe2-7b32-4889-a06e-768a50b8fdde",
+      "id": "8148cecd-e296-4ea6-9182-859159a83a34",
       "name": "Save draft JSON GitHub",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        1100,
-        80
+        1540,
+        0
       ],
-      "notes": "Uses edit operation on re-run \u2014 update manually if slug exists"
+      "notes": "On re-run change operation to edit if file exists"
     },
     {
       "parameters": {
-        "jsCode": "const row = $('Normalize blog output').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\nreturn [{\n  json: {\n    chat_id: $env.GIV_TELEGRAM_ALLOWED_CHAT_ID,\n    row_id: row.id,\n    slug: p.slug,\n    preview_message:\n      `\ud83d\udccb <b>Blog preview</b> (row ${row.id})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}\u2026`,\n    callback_publish: `blog_publish_${row.id}`,\n    callback_regen_article: `blog_regen_article_${row.id}`,\n    callback_regen_image: `blog_regen_image_${row.id}`,\n    callback_skip: `blog_skip_${row.id}`,\n  },\n}];\n"
+        "jsCode": "const row = $('Extract image base64').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\nconst cal = $('When called by scheduler').first().json;\nconst chatId = cal.chat_id || cal.telegram_chat_id;\nif (!chatId) {\n  throw new Error('chat_id missing on scheduler payload \u2014 set in workflow 01 Set calendar row');\n}\nreturn [{\n  json: {\n    chat_id: chatId,\n    row_id: row.id,\n    slug: p.slug,\n    image_base64: row.image_base64,\n    preview_message:\n      `\ud83d\udccb <b>Blog preview</b> (row ${row.id})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}\u2026`,\n    callback_publish: `blog_publish_${row.id}`,\n    callback_regen_article: `blog_regen_article_${row.id}`,\n    callback_regen_image: `blog_regen_image_${row.id}`,\n    callback_skip: `blog_skip_${row.id}`,\n  },\n}];\n"
       },
-      "id": "9d35df40-b84a-4691-a4e8-d341494f6d6e",
+      "id": "b050ea8c-66b2-4f92-b5f6-060c02be6a81",
       "name": "Build preview message",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1540,
+        1760,
         0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst b64 = item.image_base64;\nif (!b64) throw new Error('No image_base64 for Telegram photo');\nreturn [{\n  json: item,\n  binary: {\n    data: {\n      data: b64,\n      mimeType: 'image/png',\n      fileName: `${item.slug}.png`,\n      encoding: 'base64',\n    },\n  },\n}];\n"
+      },
+      "id": "ce7e6946-4c92-4232-8303-ca42b6317e62",
+      "name": "Pack image binary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        -80
       ]
     },
     {
@@ -204,7 +217,7 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "81c3c842-eb82-444a-a63d-c38c410ac052",
+      "id": "561b56cf-0a81-457d-b829-0dcc3c258a79",
       "name": "Send preview photo",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -264,7 +277,7 @@
           ]
         }
       },
-      "id": "482dab2b-0189-45ab-b775-726eea59d535",
+      "id": "d62443b9-ad71-4816-b20b-bc90bc432d67",
       "name": "Send approve buttons",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -303,20 +316,20 @@
         },
         "options": {}
       },
-      "id": "dde56198-dbe5-48ff-9bc8-391c5b710721",
+      "id": "6b28566b-dd89-481b-8a0f-867808043888",
       "name": "Sheet status preview",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        1980,
-        0
+        2420,
+        80
       ]
     },
     {
       "parameters": {
         "content": "## Draft + preview\nGemini 1000+ words \u2192 slug normalize \u2192 DALL-E image \u2192 Telegram preview \u2192 Sheet status=preview\n\nAfter import: connect binary image path to Send preview photo (Convert to File node if needed)."
       },
-      "id": "7cd347dc-86de-412b-ada1-4129aa656da3",
+      "id": "14a86029-bb1b-4cfc-b972-89a434611774",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -400,11 +413,6 @@
             "node": "Generate featured image",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "Save draft JSON GitHub",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -424,7 +432,7 @@
       "main": [
         [
           {
-            "node": "Build preview message",
+            "node": "Save draft JSON GitHub",
             "type": "main",
             "index": 0
           }
@@ -446,12 +454,23 @@
       "main": [
         [
           {
-            "node": "Send preview photo",
+            "node": "Pack image binary",
             "type": "main",
             "index": 0
           },
           {
             "node": "Send approve buttons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pack image binary": {
+      "main": [
+        [
+          {
+            "node": "Send preview photo",
             "type": "main",
             "index": 0
           }
@@ -475,7 +494,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6b176370-e96d-4acb-af56-3b1bc54f2555",
+  "versionId": "35bd7e86-2dd8-4685-a6fb-897e9bdb8051",
   "meta": {
     "templateCredsSetupCompleted": false
   },
