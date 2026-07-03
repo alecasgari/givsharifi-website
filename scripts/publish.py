@@ -24,6 +24,15 @@ PUBLISH_DIRS = (
 
 SKIP_NAMES = frozenset({"README.md"})
 
+SITE_ROOT_FILES = ("index.html", "404.html", "CNAME", "robots.txt", "sitemap.xml")
+SITE_DIRS = (
+    "assets",
+    "blog",
+    "components",
+    *PUBLISH_DIRS,
+)
+SITE_OUTPUT = ROOT / "_site"
+
 
 def should_publish(rel: Path) -> bool:
     if rel.name in SKIP_NAMES:
@@ -58,6 +67,61 @@ def sync_blog_post_shells() -> int:
         print(f"  blog shell: {dest.relative_to(ROOT)}")
         created += 1
     return created
+
+
+def copy_tree(src: Path, dest: Path) -> int:
+    """Copy file or directory tree; return number of files copied."""
+    if not src.exists():
+        return 0
+    count = 0
+    if src.is_file():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+        return 1
+    for item in sorted(src.rglob("*")):
+        if not item.is_file():
+            continue
+        rel = item.relative_to(src)
+        if any(part.startswith("_") for part in rel.parts):
+            continue
+        out = dest / rel
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(item, out)
+        count += 1
+    return count
+
+
+def copy_posts_data(dest_root: Path) -> int:
+    """Copy published post JSON only (exclude _drafts/)."""
+    src = ROOT / "posts" / "data"
+    if not src.is_dir():
+        return 0
+    count = 0
+    for item in sorted(src.glob("*.json")):
+        out = dest_root / "posts" / "data" / item.name
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(item, out)
+        count += 1
+    return count
+
+
+def build_pages_artifact() -> int:
+    """Stage a slim GitHub Pages artifact (no n8n, drafts, or source pages/)."""
+    if SITE_OUTPUT.exists():
+        shutil.rmtree(SITE_OUTPUT)
+    SITE_OUTPUT.mkdir(parents=True)
+
+    count = 0
+    for name in SITE_ROOT_FILES:
+        count += copy_tree(ROOT / name, SITE_OUTPUT / name)
+    for name in SITE_DIRS:
+        count += copy_tree(ROOT / name, SITE_OUTPUT / name)
+    count += copy_posts_data(SITE_OUTPUT)
+
+    (SITE_OUTPUT / ".nojekyll").write_text("", encoding="utf-8")
+    count += 1
+    print(f"\nStaged {count} file(s) in {SITE_OUTPUT.relative_to(ROOT)}/ for GitHub Pages.")
+    return count
 
 
 def main() -> int:
@@ -111,6 +175,7 @@ def main() -> int:
         count += 1
 
     print(f"\nPublished {count} file(s) from pages/ to site root.")
+    build_pages_artifact()
     return 0
 
 
