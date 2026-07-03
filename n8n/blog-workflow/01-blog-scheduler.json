@@ -12,7 +12,7 @@
           ]
         }
       },
-      "id": "ec899847-4a3f-483f-aaa8-a27884adeb78",
+      "id": "4b53a664-30f0-4fbd-b72a-894e83e49737",
       "name": "Mon Wed Fri 9am",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
@@ -24,7 +24,7 @@
     },
     {
       "parameters": {},
-      "id": "b2cdf289-3ccf-4d7b-bdca-2c73136a15ce",
+      "id": "942b86b9-7b24-42e5-97d7-4826305fce14",
       "name": "When called manually",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -39,7 +39,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "2c0414df-53a2-4e2b-8aaa-2187db0391e5",
+              "id": "ad4a7cbe-44b6-40c9-96eb-a839fd6d5429",
               "name": "today",
               "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
               "type": "string"
@@ -47,7 +47,7 @@
           ]
         }
       },
-      "id": "3989a98b-a5ad-4c86-8ead-a3caed016af3",
+      "id": "6adeb444-f982-4247-a8ca-c7c5c030a13f",
       "name": "Set today ISO",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -75,7 +75,7 @@
         },
         "options": {}
       },
-      "id": "e0253e41-8f06-45c1-afdc-4425b1fe9fa8",
+      "id": "ff224e43-3650-4de0-b71b-77f254737bb9",
       "name": "Read calendar",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -88,7 +88,7 @@
       "parameters": {
         "jsCode": "const today = $('Set today ISO').first().json.today;\nconst rows = $input.all().map((i) => i.json);\nconst match = rows.find((r) => r.status === 'queued' && String(r.scheduled_date).trim() === today);\nif (!match) {\n  return [{ json: { found: false, today, message: `No queued row for ${today}` } }];\n}\nreturn [{ json: { found: true, ...match } }];\n"
       },
-      "id": "4cc5d0ad-ddc5-4511-ad19-446709b10079",
+      "id": "37056c10-20a9-4847-8a05-9d835e0ef57e",
       "name": "Pick today queued row",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -103,7 +103,7 @@
         "assignments": {
           "assignments": [
             {
-              "id": "6c96bef0-b68d-4b02-a24e-f62a69acdd54",
+              "id": "e8e54d51-d5af-4e70-a5f2-df1e41fa0714",
               "name": "chat_id",
               "value": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
               "type": "string"
@@ -112,7 +112,7 @@
         },
         "includeOtherFields": true
       },
-      "id": "1086e2e9-cf64-473e-92a3-002caabfd280",
+      "id": "f33dabcc-9aad-42e2-b0ca-fbc65143abdb",
       "name": "Set calendar row",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -143,7 +143,7 @@
           "combinator": "and"
         }
       },
-      "id": "cf9b3167-c74a-414e-85f6-b01b40a20af1",
+      "id": "a8ca55bf-0ada-4a2e-8c4a-16387fc7b6f7",
       "name": "Row found?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -181,7 +181,7 @@
         },
         "options": {}
       },
-      "id": "986afd27-c718-4a67-ad6d-1fe16864546d",
+      "id": "13797c04-c706-4662-9616-c65273b0dddf",
       "name": "Sheet status drafting",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -197,7 +197,7 @@
         "mode": "each",
         "options": {}
       },
-      "id": "9951fbbc-19af-4ef0-ae3c-271d6e03cb24",
+      "id": "60eb5d06-9e73-440c-a36c-4ea26346c0a7",
       "name": "Run draft and preview",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
@@ -211,7 +211,7 @@
         "chatId": "={{ $env.GIV_TELEGRAM_ALLOWED_CHAT_ID }}",
         "text": "={{ 'Blog scheduler: ' + $json.message }}"
       },
-      "id": "6b54b869-6af7-4641-9900-e478c36c8d06",
+      "id": "7587f289-7a15-49eb-827a-60a564304d1c",
       "name": "Telegram no row",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -224,7 +224,7 @@
       "parameters": {
         "content": "## Blog scheduler\nReads Google Sheet `content-calendar-template.csv` \u2192 finds `status=queued` + `scheduled_date=today` \u2192 runs draft workflow.\n\nImport `content-calendar-template.csv` into Google Sheets tab named `Calendar`."
       },
-      "id": "0ad8ccc3-8e7f-484d-80f2-abe24342a787",
+      "id": "398fc441-ce77-4b56-9f92-360bb27f26ec",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -330,7 +330,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "985fe132-0974-4560-8c02-b8f7159f549f",
+  "versionId": "ce4a9c9a-6c7c-4e60-a651-f30d3f93fa66",
   "meta": {
     "templateCredsSetupCompleted": false
   },

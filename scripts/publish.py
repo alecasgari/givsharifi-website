@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Flatten pages/ to site root for GitHub Pages deploy (preserves indexed URLs)."""
 
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -32,6 +33,33 @@ def should_publish(rel: Path) -> bool:
     return True
 
 
+def sync_blog_post_shells() -> int:
+    """Copy _post-shell.html to blog/{slug}/index.html for every post in index.json."""
+    shell_src = ROOT / "blog" / "_post-shell.html"
+    index_path = ROOT / "posts" / "data" / "index.json"
+    if not shell_src.is_file() or not index_path.is_file():
+        return 0
+    shell = shell_src.read_text(encoding="utf-8")
+    try:
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        print("posts/data/index.json invalid JSON", file=sys.stderr)
+        return 0
+    created = 0
+    for post in index.get("posts", []):
+        slug = post.get("slug")
+        if not slug:
+            continue
+        dest = ROOT / "blog" / slug / "index.html"
+        if dest.is_file():
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(shell, encoding="utf-8")
+        print(f"  blog shell: {dest.relative_to(ROOT)}")
+        created += 1
+    return created
+
+
 def main() -> int:
     import subprocess
 
@@ -42,6 +70,10 @@ def main() -> int:
     fix_paths = ROOT / "scripts" / "fix-site-paths.py"
     if fix_paths.is_file():
         subprocess.run([sys.executable, str(fix_paths)], check=True)
+
+    shells = sync_blog_post_shells()
+    if shells:
+        print(f"\nCreated {shells} missing blog post shell(s).")
 
     if not PAGES.is_dir():
         print("pages/ folder not found", file=sys.stderr)

@@ -12,8 +12,11 @@ OUT = Path(__file__).resolve().parent
 GITHUB_OWNER = "alecasgari"
 GITHUB_REPO = "givsharifi-website"
 GITHUB_BRANCH = "main"
-GEMINI_MODEL = "models/gemini-flash-lite-latest"
+GEMINI_MODEL = "models/gemini-2.0-flash"
 SITE_URL = "https://www.givsharifi.com"
+RAW_INDEX_URL = f"https://raw.githubusercontent.com/{GITHUB_OWNER}/{GITHUB_REPO}/{GITHUB_BRANCH}/posts/data/index.json"
+RAW_DRAFT_URL = f"https://raw.githubusercontent.com/{GITHUB_OWNER}/{GITHUB_REPO}/{GITHUB_BRANCH}/posts/data/_drafts"
+RAW_SHELL_URL = f"https://raw.githubusercontent.com/{GITHUB_OWNER}/{GITHUB_REPO}/{GITHUB_BRANCH}/blog/_post-shell.html"
 
 # Google Sheet — list mode (self-hosted n8n cannot use $env in documentId picker)
 BLOG_SHEET_DOC = {
@@ -38,6 +41,26 @@ def sheets_read_params() -> dict:
         "documentId": BLOG_SHEET_DOC,
         "sheetName": BLOG_SHEET_TAB,
         "options": {},
+    }
+
+
+def sheets_read_by_row_id_params() -> dict:
+    """Read one calendar row — filter in Sheets node (no Code node needed)."""
+    return {
+        "operation": "read",
+        "documentId": BLOG_SHEET_DOC,
+        "sheetName": BLOG_SHEET_TAB,
+        "filtersUI": {
+            "values": [
+                {
+                    "lookupColumn": "id",
+                    "lookupValue": "={{ $('When called by router').item.json.row_id || '1' }}",
+                }
+            ]
+        },
+        "options": {
+            "returnFirstMatch": True,
+        },
     }
 
 
@@ -111,12 +134,12 @@ def connect(connections: dict, src: str, dst: str, src_index: int = 0, dst_index
     connections[src][ctype][src_index].append({"node": dst, "type": ctype, "index": dst_index})
 
 
-def workflow(name: str, nodes: list[dict], connections: dict) -> dict:
+def workflow(name: str, nodes: list[dict], connections: dict, pin_data: dict | None = None) -> dict:
     return {
         "name": name,
         "nodes": nodes,
         "connections": connections,
-        "pinData": {},
+        "pinData": pin_data or {},
         "active": False,
         "settings": {"executionOrder": "v1"},
         "versionId": str(uuid.uuid4()),
@@ -275,7 +298,9 @@ if (words < 1000) {
 }
 
 out.slug = slug;
-out.featuredImagePath = `assets/images/blog/${slug}.webp`;
+out.title = String(out.title || row.proposed_title || '').trim();
+if (!out.title) throw new Error('Gemini output missing title — check proposed_title on calendar row');
+out.featuredImagePath = `assets/images/blog/${slug}.png`;
 out.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);
 out.readingTimeMinutes = Math.max(8, Math.round(words / 200));
 delete out.primaryKeyword;
@@ -311,28 +336,189 @@ return [{ json: { post_json: JSON.stringify(post, null, 2) + '\n', slug: p.slug 
 """
 
 
-PREPEND_INDEX_CODE = r"""const ghItem = $('Get posts index').first().json;
-const github = ghItem.body ?? ghItem;
-if (github.message && !github.content) {
-  throw new Error(`GitHub API: ${github.message}`);
+PUBLISH_PREPEND_INDEX_CODE = r"""const ghItem = $('Get posts index').first();
+const github = ghItem.json?.body ?? ghItem.json ?? {};
+
+let idx = null;
+
+if (Array.isArray(github.posts)) {
+  idx = { ...github };
+} else if (Array.isArray(ghItem.json?.posts)) {
+  idx = ghItem.json;
+} else {
+  let raw = github.content;
+
+  // n8n / GitHub sometimes returns parsed JSON object in content
+  if (raw && typeof raw === 'object' && Array.isArray(raw.posts)) {
+    idx = raw;
+  } else {
+    let rawStr = typeof raw === 'string' ? raw : '';
+    if (github.encoding === 'base64' && rawStr) {
+      rawStr = Buffer.from(rawStr.replace(/\n/g, ''), 'base64').toString('utf8');
+    } else if (rawStr && !rawStr.trim().startsWith('{')) {
+      try {
+        rawStr = Buffer.from(rawStr.replace(/\n/g, ''), 'base64').toString('utf8');
+      } catch { /* keep */ }
+    }
+    if (!rawStr && ghItem.binary && Object.keys(ghItem.binary).length) {
+      const key = ghItem.binary.data ? 'data' : Object.keys(ghItem.binary)[0];
+      const buf = await this.helpers.getBinaryDataBuffer(0, key);
+      rawStr = buf.toString('utf8');
+    }
+    if (!rawStr) {
+      idx = await this.helpers.httpRequest({
+        method: 'GET',
+        url: '""" + RAW_INDEX_URL + r"""',
+        json: true,
+      });
+    } else {
+      idx = JSON.parse(rawStr.trim());
+    }
+  }
 }
-let raw = github.content ?? '';
-if (github.encoding === 'base64' && raw) {
-  raw = Buffer.from(String(raw).replace(/\n/g, ''), 'base64').toString('utf8');
+
+if (!idx || !Array.isArray(idx.posts)) {
+  throw new Error(
+    'Could not load posts/data/index.json — GitHub fields: ' + Object.keys(github).join(', ')
+  );
 }
-raw = String(raw).trim();
-if (!raw) throw new Error('posts/data/index.json content empty');
-const idx = JSON.parse(raw);
-const p = $('Normalize blog output').first().json.normalized;
+
+const p = $('Parse draft').first().json.normalized;
+const row = $('Read sheet row').first().json;
+const title = p.title || row.proposed_title || p.slug;
 idx.posts = [{
   slug: p.slug,
-  title: p.title,
+  title,
   excerpt: p.excerpt,
   date: p.date,
   category: p.category,
   image: `/${p.featuredImagePath}`,
 }, ...(idx.posts || [])];
-return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\n', index_sha: github.sha || '' } }];
+
+return [{
+  json: {
+    index_json: JSON.stringify(idx, null, 2) + '\n',
+    index_sha: github.sha || ghItem.json?.sha || '',
+  },
+}];
+"""
+
+
+BUILD_EXISTING_POSTS_CODE = r"""// Input from HTTP Request (Get posts index) — parsed index.json
+const idx = $input.first().json;
+
+if (!idx || !Array.isArray(idx.posts)) {
+  throw new Error(
+    'Get posts index did not return { posts: [...] }. '
+    + 'Use HTTP Request to raw.githubusercontent.com, not GitHub node (which was passing scheduler data through).'
+  );
+}
+
+const titles = idx.posts.map((p) => `- ${p.slug}: ${p.title}`).join('\n');
+return [{ json: { existing_posts: titles, post_count: idx.posts.length } }];
+"""
+
+
+PARSE_DRAFT_CODE = r"""const item = $input.first();
+const row = $('Read sheet row').first().json;
+const slug = row.published_slug;
+
+if (!slug) {
+  throw new Error(`Row ${row.id} has no published_slug — run draft workflow 02 first`);
+}
+let draft = item.json;
+
+// HTTP Request (responseFormat json) — draft fields at top level
+if (draft?.normalized) {
+  return [{
+    json: {
+      row,
+      normalized: draft.normalized,
+      image_base64: draft.image_base64 || '',
+    },
+  }];
+}
+
+// GitHub node: JSON mode (content base64) or binary mode (filesystem)
+let raw = '';
+if (item.binary && Object.keys(item.binary).length) {
+  const key = item.binary.data ? 'data' : Object.keys(item.binary)[0];
+  const buf = await this.helpers.getBinaryDataBuffer(0, key);
+  raw = buf.toString('utf8');
+} else {
+  const gh = item.json?.body ?? item.json ?? {};
+  raw = gh.content ?? '';
+  if (gh.encoding === 'base64' && raw) {
+    raw = Buffer.from(String(raw).replace(/\n/g, ''), 'base64').toString('utf8');
+  } else if (raw && !String(raw).trim().startsWith('{')) {
+    try {
+      raw = Buffer.from(String(raw).replace(/\n/g, ''), 'base64').toString('utf8');
+    } catch { /* keep raw */ }
+  }
+}
+
+raw = String(raw).trim();
+if (!raw) {
+  throw new Error(
+    `Draft "${slug}" unreadable (0 bytes in n8n). `
+    + 'File may exist on GitHub — use HTTP Request on Get draft JSON, or turn OFF "As Binary Property".'
+  );
+}
+
+draft = JSON.parse(raw);
+if (!draft.normalized) throw new Error('Draft missing normalized post');
+
+return [{
+  json: {
+    row,
+    normalized: draft.normalized,
+    image_base64: draft.image_base64 || '',
+  },
+}];
+"""
+
+
+PACK_FEATURED_IMAGE_CODE = r"""const row = $('Parse draft').first().json;
+const slug = row.normalized.slug;
+const b64 = row.image_base64;
+if (!b64) throw new Error('No image_base64 in draft');
+const image_path = `assets/images/blog/${slug}.png`;
+return [{
+  json: { image_path, slug },
+  binary: {
+    data: {
+      data: b64,
+      mimeType: 'image/png',
+      fileName: `${slug}.png`,
+      encoding: 'base64',
+    },
+  },
+}];
+"""
+
+
+EXTRACT_IMAGE_BASE64_CODE = r"""const item = $input.first();
+const row = $('Normalize blog output').first().json;
+
+let image_base64 = item.json?.data?.[0]?.b64_json || item.json?.image_base64 || '';
+
+// OpenAI Image node (filesystem binary mode) — binary property is usually "data"
+if (!image_base64) {
+  const binary = item.binary || {};
+  const key = binary.data ? 'data' : Object.keys(binary)[0];
+  if (!key) {
+    throw new Error(
+      'No image from OpenAI — expected binary property "data". '
+      + 'Check Generate an image node output.'
+    );
+  }
+  const buffer = await this.helpers.getBinaryDataBuffer(0, key);
+  image_base64 = buffer.toString('base64');
+}
+
+if (!image_base64) throw new Error('Empty image data from OpenAI');
+
+return [{ json: { ...row, image_base64 } }];
 """
 
 
@@ -340,19 +526,34 @@ PREVIEW_TEXT_CODE = r"""const row = $('Extract image base64').first().json;
 const p = row.normalized;
 const blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);
 const preview = blocks.map((b) => b.text).join('\n\n').slice(0, 400);
+
+// chat_id: workflow 01 "Set calendar row" → scheduler trigger → Normalize → here
 const cal = $('When called by scheduler').first().json;
-const chatId = cal.chat_id || cal.telegram_chat_id;
-if (!chatId) {
-  throw new Error('chat_id missing on scheduler payload — set in workflow 01 Set calendar row');
+const FALLBACK_CHAT_ID = '5131907549'; // your Telegram chat ID — keep in sync with workflow 01
+const rowId = row.id ?? row.row_id ?? cal?.id;
+
+const chatId = String(
+  row.chat_id
+  || row.telegram_chat_id
+  || cal?.chat_id
+  || cal?.telegram_chat_id
+  || FALLBACK_CHAT_ID
+).trim();
+
+if (!chatId || chatId === 'REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID') {
+  throw new Error(
+    'chat_id missing — open workflow 01, node "Set calendar row", set chat_id to your numeric Telegram ID'
+  );
 }
+
 return [{
   json: {
     chat_id: chatId,
-    row_id: row.id,
+    row_id: rowId,
     slug: p.slug,
     image_base64: row.image_base64,
     preview_message:
-      `📋 <b>Blog preview</b> (row ${row.id})\n\n`
+      `📋 <b>Blog preview</b> (row ${rowId})\n\n`
       + `<b>Title:</b> ${p.title}\n`
       + `<b>Slug:</b> ${p.slug}\n`
       + `<b>Meta:</b> ${p.metaDescription}\n`
@@ -360,10 +561,10 @@ return [{
       + `<b>Cluster:</b> ${row.cluster}\n`
       + `<b>Primary KW:</b> ${row.primary_keyword}\n\n`
       + `<b>Excerpt:</b>\n${preview}…`,
-    callback_publish: `blog_publish_${row.id}`,
-    callback_regen_article: `blog_regen_article_${row.id}`,
-    callback_regen_image: `blog_regen_image_${row.id}`,
-    callback_skip: `blog_skip_${row.id}`,
+    callback_publish: `blog_publish_${rowId}`,
+    callback_regen_article: `blog_regen_article_${rowId}`,
+    callback_regen_image: `blog_regen_image_${rowId}`,
+    callback_skip: `blog_skip_${rowId}`,
   },
 }];
 """
@@ -899,10 +1100,15 @@ def build_draft_preview() -> dict:
 
     gh_index = node(
         "Get posts index",
-        "n8n-nodes-base.github",
+        "n8n-nodes-base.httpRequest",
         [220, -120],
-        {"resource": "file", "operation": "get", **gh_repo_params(), "filePath": "posts/data/index.json"},
-        type_version=1.1,
+        {
+            "method": "GET",
+            "url": RAW_INDEX_URL,
+            "options": {"response": {"response": {"responseFormat": "json"}}},
+        },
+        type_version=4.2,
+        notes="Public raw JSON — no GitHub credential. Replaces GitHub get (was passing scheduler input through on failure).",
     )
     nodes.append(gh_index)
 
@@ -910,18 +1116,7 @@ def build_draft_preview() -> dict:
         "Build existing keywords context",
         "n8n-nodes-base.code",
         [440, -120],
-        {
-            "jsCode": """const ghItem = $('Get posts index').first().json;
-const github = ghItem.body ?? ghItem;
-let raw = github.content ?? '';
-if (github.encoding === 'base64' && raw) {
-  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');
-}
-const idx = JSON.parse(String(raw).trim() || '{"posts":[]}');
-const titles = (idx.posts || []).map((p) => `- ${p.slug}: ${p.title}`).join('\\n');
-return [{ json: { existing_posts: titles } }];
-"""
-        },
+        {"jsCode": BUILD_EXISTING_POSTS_CODE},
         type_version=2,
     )
     nodes.append(existing_kw)
@@ -930,7 +1125,7 @@ return [{ json: { existing_posts: titles } }];
         "Gemini blog model",
         "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         [440, 120],
-        {"modelName": GEMINI_MODEL, "options": {"temperature": 0.45, "maxOutputTokens": 8192}},
+        {"modelName": GEMINI_MODEL, "options": {"temperature": 0.45, "maxOutputTokens": 16384}},
         type_version=1,
     )
     nodes.append(model)
@@ -1002,20 +1197,21 @@ return [{ json: { existing_posts: titles } }];
     nodes.append(normalize)
 
     image_req = node(
-        "Generate featured image",
-        "n8n-nodes-base.httpRequest",
+        "Generate an image",
+        "@n8n/n8n-nodes-langchain.openAi",
         [1100, -80],
         {
-            "method": "POST",
-            "url": "https://api.openai.com/v1/images/generations",
-            "authentication": "predefinedCredentialType",
-            "nodeCredentialType": "openAiApi",
-            "sendBody": True,
-            "specifyBody": "json",
-            "jsonBody": "={{ { model: 'dall-e-3', prompt: $json.image_prompt, n: 1, size: '1792x1024', response_format: 'b64_json' } }}",
+            "resource": "image",
+            "modelId": {
+                "__rl": True,
+                "mode": "list",
+                "value": "gpt-image-1-mini",
+            },
+            "prompt": "={{ $json.image_prompt }}",
+            "options": {"size": "1536x1024"},
         },
-        type_version=4.2,
-        notes="Assign OpenAI API credential. Or swap for Google Imagen HTTP node.",
+        type_version=2.3,
+        notes="OpenAI credential. Outputs binary property data (filesystem mode).",
     )
     nodes.append(image_req)
 
@@ -1023,14 +1219,7 @@ return [{ json: { existing_posts: titles } }];
         "Extract image base64",
         "n8n-nodes-base.code",
         [1320, -80],
-        {
-            "jsCode": """const body = $input.first().json;
-const b64 = body.data?.[0]?.b64_json;
-if (!b64) throw new Error('No image returned from OpenAI');
-const row = $('Normalize blog output').first().json;
-return [{ json: { ...row, image_base64: b64 } }];
-"""
-        },
+        {"jsCode": EXTRACT_IMAGE_BASE64_CODE},
         type_version=2,
     )
     nodes.append(image_b64)
@@ -1087,7 +1276,7 @@ return [{
         {
             "operation": "sendPhoto",
             "chatId": "={{ $json.chat_id }}",
-            "binaryData": True,
+            "binaryPropertyName": "data",
             "additionalFields": {
                 "caption": "={{ $json.preview_message }}",
                 "parse_mode": "HTML",
@@ -1109,16 +1298,12 @@ return [{
             "inlineKeyboard": {
                 "rows": [
                     [
-                        {"row": {"buttons": [
-                            {"text": "✅ Publish", "additionalFields": {"callback_data": "={{ $('Build preview message').item.json.callback_publish }}"}},
-                            {"text": "🔄 Regen article", "additionalFields": {"callback_data": "={{ $('Build preview message').item.json.callback_regen_article }}"}},
-                        ]}},
+                        {"text": "✅ Publish", "callback_data": "={{ $('Build preview message').item.json.callback_publish }}"},
+                        {"text": "🔄 Regen article", "callback_data": "={{ $('Build preview message').item.json.callback_regen_article }}"},
                     ],
                     [
-                        {"row": {"buttons": [
-                            {"text": "🖼 Regen image", "additionalFields": {"callback_data": "={{ $('Build preview message').item.json.callback_regen_image }}"}},
-                            {"text": "❌ Skip", "additionalFields": {"callback_data": "={{ $('Build preview message').item.json.callback_skip }}"}},
-                        ]}},
+                        {"text": "🖼 Regen image", "callback_data": "={{ $('Build preview message').item.json.callback_regen_image }}"},
+                        {"text": "❌ Skip", "callback_data": "={{ $('Build preview message').item.json.callback_skip }}"},
                     ],
                 ]
             },
@@ -1143,8 +1328,8 @@ return [{
     nodes.append(
         sticky(
             "## Draft + preview\n"
-            "Gemini 1000+ words → slug normalize → DALL-E image → Telegram preview → Sheet status=preview\n\n"
-            "After import: connect binary image path to Send preview photo (Convert to File node if needed).",
+            "Gemini → Normalize → OpenAI Generate an image → Extract base64 → Telegram preview\n"
+            "OpenAI node outputs binary `data` (not JSON b64_json). Extract node uses getBinaryDataBuffer.",
             [-40, -200],
         )
     )
@@ -1155,8 +1340,8 @@ return [{
     connect(c, "Gemini blog model", "Gemini blog writer", ctype="ai_languageModel")
     connect(c, "Blog JSON parser", "Gemini blog writer", ctype="ai_outputParser")
     connect(c, "Gemini blog writer", "Normalize blog output")
-    connect(c, "Normalize blog output", "Generate featured image")
-    connect(c, "Generate featured image", "Extract image base64")
+    connect(c, "Normalize blog output", "Generate an image")
+    connect(c, "Generate an image", "Extract image base64")
     connect(c, "Extract image base64", "Save draft JSON GitHub")
     connect(c, "Save draft JSON GitHub", "Build preview message")
     connect(c, "Build preview message", "Pack image binary")
@@ -1178,38 +1363,26 @@ def build_publish() -> dict:
         "Read sheet row",
         "n8n-nodes-base.googleSheets",
         [220, 0],
-        sheets_read_params(),
+        sheets_read_by_row_id_params(),
         type_version=4.5,
+        notes="Filter: id = row_id from router (or 1 for manual test). No Code node needed.",
     )
     nodes.append(sheet_row)
 
-    pick_row = node(
-        "Find row by id",
-        "n8n-nodes-base.code",
-        [440, 0],
-        {
-            "jsCode": """const rowId = String($('When called by router').first().json.row_id);
-const row = $input.all().map((i) => i.json).find((r) => String(r.id) === rowId);
-if (!row) throw new Error('Sheet row not found: ' + rowId);
-if (!row.published_slug) throw new Error('No published_slug on row — run draft first');
-return [{ json: row }];
-"""
-        },
-        type_version=2,
-    )
-    nodes.append(pick_row)
-
     get_draft = node(
         "Get draft JSON",
-        "n8n-nodes-base.github",
-        [660, 0],
+        "n8n-nodes-base.httpRequest",
+        [440, 0],
         {
-            "resource": "file",
-            "operation": "get",
-            **gh_repo_params(),
-            "filePath": "={{ 'posts/data/_drafts/' + $json.published_slug + '.json' }}",
+            "method": "GET",
+            "url": f"={{{{ '{RAW_DRAFT_URL}/' + $json.published_slug + '.json' }}}}",
+            "options": {
+                "response": {"response": {"responseFormat": "json"}},
+                "timeout": 120000,
+            },
         },
-        type_version=1.1,
+        type_version=4.2,
+        notes="Public raw JSON (~3MB with image_base64). Do NOT use GitHub get + binary mode.",
     )
     nodes.append(get_draft)
 
@@ -1217,18 +1390,7 @@ return [{ json: row }];
         "Parse draft",
         "n8n-nodes-base.code",
         [880, 0],
-        {
-            "jsCode": """const gh = $input.first().json;
-let raw = gh.content ?? '';
-if (gh.encoding === 'base64' && raw) {
-  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');
-}
-const draft = JSON.parse(String(raw).trim());
-const p = draft.normalized;
-if (!p) throw new Error('Draft missing normalized post');
-return [{ json: { row: $('Find row by id').first().json, normalized: p, image_base64: draft.image_base64 || '' } }];
-"""
-        },
+        {"jsCode": PARSE_DRAFT_CODE},
         type_version=2,
     )
     nodes.append(parse_draft)
@@ -1252,12 +1414,26 @@ return [{ json: { post_json: JSON.stringify(post, null, 2) + '\n', slug: p.slug 
 
     shell = node(
         "Get post HTML shell",
-        "n8n-nodes-base.github",
+        "n8n-nodes-base.httpRequest",
         [1100, 80],
-        {"resource": "file", "operation": "get", **gh_repo_params(), "filePath": "blog/_post-shell.html"},
-        type_version=1.1,
+        {
+            "method": "GET",
+            "url": RAW_SHELL_URL,
+            "options": {"response": {"response": {"responseFormat": "text"}}},
+        },
+        type_version=4.2,
+        notes="Raw HTML shell — do NOT use GitHub get (content is base64 in API).",
     )
     nodes.append(shell)
+
+    pack_image = node(
+        "Pack featured image",
+        "n8n-nodes-base.code",
+        [1100, 160],
+        {"jsCode": PACK_FEATURED_IMAGE_CODE},
+        type_version=2,
+    )
+    nodes.append(pack_image)
 
     create_json = node(
         "Create post JSON",
@@ -1284,7 +1460,7 @@ return [{ json: { post_json: JSON.stringify(post, null, 2) + '\n', slug: p.slug 
             "operation": "create",
             **gh_repo_params(),
             "filePath": "={{ 'blog/' + $('Parse draft').item.json.normalized.slug + '/index.html' }}",
-            "fileContent": "={{ $('Get post HTML shell').item.json.content }}",
+            "fileContent": "={{ $('Get post HTML shell').item.json.data || $('Get post HTML shell').item.json.body || $('Get post HTML shell').item.json }}",
             "commitMessage": "=content: add blog shell {{ $('Parse draft').item.json.normalized.slug }}",
         },
         type_version=1.1,
@@ -1292,19 +1468,20 @@ return [{ json: { post_json: JSON.stringify(post, null, 2) + '\n', slug: p.slug 
     nodes.append(create_html)
 
     create_image = node(
-        "Upload featured WebP",
+        "Upload featured image",
         "n8n-nodes-base.github",
         [1320, 160],
         {
             "resource": "file",
             "operation": "create",
             **gh_repo_params(),
-            "filePath": "={{ $('Parse draft').item.json.normalized.featuredImagePath }}",
-            "fileContent": "={{ $('Parse draft').item.json.image_base64 }}",
-            "commitMessage": "=content: add blog image {{ $('Parse draft').item.json.normalized.slug }}",
+            "filePath": "={{ $json.image_path }}",
+            "binaryData": True,
+            "binaryPropertyName": "data",
+            "commitMessage": "=content: add blog image {{ $json.slug }}",
         },
         type_version=1.1,
-        notes="Prefer WebP via Convert to File node before upload — wire after import",
+        notes="PNG from OpenAI — path assets/images/blog/{slug}.png",
     )
     nodes.append(create_image)
 
@@ -1314,37 +1491,15 @@ return [{ json: { post_json: JSON.stringify(post, null, 2) + '\n', slug: p.slug 
         [1540, 0],
         {"resource": "file", "operation": "get", **gh_repo_params(), "filePath": "posts/data/index.json"},
         type_version=1.1,
+        notes="Turn OFF As Binary Property. Need sha for index edit.",
     )
     nodes.append(gh_index)
 
-    publish_prepend_code = r"""const ghItem = $('Get posts index').first().json;
-const github = ghItem.body ?? ghItem;
-if (github.message && !github.content) {
-  throw new Error(`GitHub API: ${github.message}`);
-}
-let raw = github.content ?? '';
-if (github.encoding === 'base64' && raw) {
-  raw = Buffer.from(String(raw).replace(/\n/g, ''), 'base64').toString('utf8');
-}
-raw = String(raw).trim();
-if (!raw) throw new Error('posts/data/index.json content empty');
-const idx = JSON.parse(raw);
-const p = $('Parse draft').first().json.normalized;
-idx.posts = [{
-  slug: p.slug,
-  title: p.title,
-  excerpt: p.excerpt,
-  date: p.date,
-  category: p.category,
-  image: `/${p.featuredImagePath}`,
-}, ...(idx.posts || [])];
-return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\n', index_sha: github.sha || '' } }];
-"""
     prepend = node(
         "Prepend to index",
         "n8n-nodes-base.code",
         [1760, 0],
-        {"jsCode": publish_prepend_code},
+        {"jsCode": PUBLISH_PREPEND_INDEX_CODE},
         type_version=2,
     )
     nodes.append(prepend)
@@ -1391,16 +1546,8 @@ return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\n', index_sha: gi
                 "rows": [
                     [
                         {
-                            "row": {
-                                "buttons": [
-                                    {
-                                        "text": "Open on website",
-                                        "additionalFields": {
-                                            "url": "={{ $env.GIV_SITE_URL + '/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}"
-                                        },
-                                    }
-                                ]
-                            }
+                            "text": "Open on website",
+                            "url": "={{ $env.GIV_SITE_URL + '/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}",
                         }
                     ]
                 ]
@@ -1419,12 +1566,12 @@ return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\n', index_sha: gi
     )
 
     connect(c, "When called by router", "Read sheet row")
-    connect(c, "Read sheet row", "Find row by id")
-    connect(c, "Find row by id", "Get draft JSON")
+    connect(c, "Read sheet row", "Get draft JSON")
     connect(c, "Get draft JSON", "Parse draft")
     connect(c, "Parse draft", "Build post JSON")
     connect(c, "Parse draft", "Get post HTML shell")
-    connect(c, "Parse draft", "Upload featured WebP")
+    connect(c, "Parse draft", "Pack featured image")
+    connect(c, "Pack featured image", "Upload featured image")
     connect(c, "Build post JSON", "Create post JSON")
     connect(c, "Get post HTML shell", "Create blog HTML page")
     connect(c, "Create post JSON", "Get posts index")
@@ -1435,7 +1582,22 @@ return [{ json: { index_json: JSON.stringify(idx, null, 2) + '\n', index_sha: gi
     connect(c, "Update posts index", "Sheet status published")
     connect(c, "Sheet status published", "Telegram published")
 
-    return workflow("GivSharifi Blog — 03 Publish", nodes, c)
+    return workflow(
+        "GivSharifi Blog — 03 Publish",
+        nodes,
+        c,
+        pin_data={
+            "When called by router": [
+                {
+                    "json": {
+                        "row_id": "1",
+                        "chat_id": "5131907549",
+                        "action": "publish",
+                    }
+                }
+            ]
+        },
+    )
 
 
 def main() -> None:

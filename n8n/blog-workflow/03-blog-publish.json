@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "732a4001-864e-4a73-93b6-19b99bbc2d97",
+      "id": "c4cd35b3-941c-4a0e-afbf-203a1b53fc4f",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -29,65 +29,56 @@
           "cachedResultName": "content-calendar-template",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yMd8rsnzDq8zXmOm-XnCC_jYU5NcjW5P84MdYnTi-ms/edit#gid=521343457"
         },
-        "options": {}
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "id",
+              "lookupValue": "={{ $('When called by router').item.json.row_id || '1' }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
       },
-      "id": "966aaa12-9b54-4e82-b10a-34fd6764e3df",
+      "id": "5ab6e3b8-83f9-4679-8d21-b6e660af0855",
       "name": "Read sheet row",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
         220,
         0
-      ]
+      ],
+      "notes": "Filter: id = row_id from router (or 1 for manual test). No Code node needed."
     },
     {
       "parameters": {
-        "jsCode": "const rowId = String($('When called by router').first().json.row_id);\nconst row = $input.all().map((i) => i.json).find((r) => String(r.id) === rowId);\nif (!row) throw new Error('Sheet row not found: ' + rowId);\nif (!row.published_slug) throw new Error('No published_slug on row \u2014 run draft first');\nreturn [{ json: row }];\n"
+        "method": "GET",
+        "url": "={{ 'https://raw.githubusercontent.com/alecasgari/givsharifi-website/main/posts/data/_drafts/' + $json.published_slug + '.json' }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 120000
+        }
       },
-      "id": "23ce10bb-6333-4c85-b9fd-b59a59ee4c8c",
-      "name": "Find row by id",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "c23415fb-2458-48aa-ba7e-016203383c2c",
+      "name": "Get draft JSON",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         440,
         0
-      ]
+      ],
+      "notes": "Public raw JSON (~3MB with image_base64). Do NOT use GitHub get + binary mode."
     },
     {
       "parameters": {
-        "resource": "file",
-        "operation": "get",
-        "owner": {
-          "__rl": true,
-          "value": "alecasgari",
-          "mode": "list",
-          "cachedResultName": "alecasgari",
-          "cachedResultUrl": "https://github.com/alecasgari"
-        },
-        "repository": {
-          "__rl": true,
-          "value": "givsharifi-website",
-          "mode": "list",
-          "cachedResultName": "givsharifi-website",
-          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
-        },
-        "branch": "main",
-        "filePath": "={{ 'posts/data/_drafts/' + $json.published_slug + '.json' }}"
+        "jsCode": "const item = $input.first();\nconst row = $('Read sheet row').first().json;\nconst slug = row.published_slug;\n\nif (!slug) {\n  throw new Error(`Row ${row.id} has no published_slug \u2014 run draft workflow 02 first`);\n}\nlet draft = item.json;\n\n// HTTP Request (responseFormat json) \u2014 draft fields at top level\nif (draft?.normalized) {\n  return [{\n    json: {\n      row,\n      normalized: draft.normalized,\n      image_base64: draft.image_base64 || '',\n    },\n  }];\n}\n\n// GitHub node: JSON mode (content base64) or binary mode (filesystem)\nlet raw = '';\nif (item.binary && Object.keys(item.binary).length) {\n  const key = item.binary.data ? 'data' : Object.keys(item.binary)[0];\n  const buf = await this.helpers.getBinaryDataBuffer(0, key);\n  raw = buf.toString('utf8');\n} else {\n  const gh = item.json?.body ?? item.json ?? {};\n  raw = gh.content ?? '';\n  if (gh.encoding === 'base64' && raw) {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } else if (raw && !String(raw).trim().startsWith('{')) {\n    try {\n      raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n    } catch { /* keep raw */ }\n  }\n}\n\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `Draft \"${slug}\" unreadable (0 bytes in n8n). `\n    + 'File may exist on GitHub \u2014 use HTTP Request on Get draft JSON, or turn OFF \"As Binary Property\".'\n  );\n}\n\ndraft = JSON.parse(raw);\nif (!draft.normalized) throw new Error('Draft missing normalized post');\n\nreturn [{\n  json: {\n    row,\n    normalized: draft.normalized,\n    image_base64: draft.image_base64 || '',\n  },\n}];\n"
       },
-      "id": "12b0399c-7510-4054-9847-ec0c95e05941",
-      "name": "Get draft JSON",
-      "type": "n8n-nodes-base.github",
-      "typeVersion": 1.1,
-      "position": [
-        660,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const gh = $input.first().json;\nlet raw = gh.content ?? '';\nif (gh.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nconst draft = JSON.parse(String(raw).trim());\nconst p = draft.normalized;\nif (!p) throw new Error('Draft missing normalized post');\nreturn [{ json: { row: $('Find row by id').first().json, normalized: p, image_base64: draft.image_base64 || '' } }];\n"
-      },
-      "id": "1198b7ec-a504-45b4-8b1d-47c10e35dbeb",
+      "id": "d966badb-2b10-475c-a3f2-39e70d6b57db",
       "name": "Parse draft",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -100,7 +91,7 @@
       "parameters": {
         "jsCode": "const p = $('Parse draft').first().json.normalized;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\ndelete post.primaryKeyword;\ndelete post.wordCountEstimate;\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n', slug: p.slug } }];\n"
       },
-      "id": "7b8fd551-b648-4362-b0fa-5aa930567ab7",
+      "id": "d1e58fd2-889a-4838-979d-d5a3126910ce",
       "name": "Build post JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -111,32 +102,37 @@
     },
     {
       "parameters": {
-        "resource": "file",
-        "operation": "get",
-        "owner": {
-          "__rl": true,
-          "value": "alecasgari",
-          "mode": "list",
-          "cachedResultName": "alecasgari",
-          "cachedResultUrl": "https://github.com/alecasgari"
-        },
-        "repository": {
-          "__rl": true,
-          "value": "givsharifi-website",
-          "mode": "list",
-          "cachedResultName": "givsharifi-website",
-          "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
-        },
-        "branch": "main",
-        "filePath": "blog/_post-shell.html"
+        "method": "GET",
+        "url": "https://raw.githubusercontent.com/alecasgari/givsharifi-website/main/blog/_post-shell.html",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
       },
-      "id": "548395e6-b3b7-4664-a7ee-2d3584771eb6",
+      "id": "6fef69f2-d2ac-4ab1-94a7-26649e25ab84",
       "name": "Get post HTML shell",
-      "type": "n8n-nodes-base.github",
-      "typeVersion": 1.1,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         1100,
         80
+      ],
+      "notes": "Raw HTML shell \u2014 do NOT use GitHub get (content is base64 in API)."
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $('Parse draft').first().json;\nconst slug = row.normalized.slug;\nconst b64 = row.image_base64;\nif (!b64) throw new Error('No image_base64 in draft');\nconst image_path = `assets/images/blog/${slug}.png`;\nreturn [{\n  json: { image_path, slug },\n  binary: {\n    data: {\n      data: b64,\n      mimeType: 'image/png',\n      fileName: `${slug}.png`,\n      encoding: 'base64',\n    },\n  },\n}];\n"
+      },
+      "id": "396118cb-3d3e-4498-ba1d-752cc104c6bc",
+      "name": "Pack featured image",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        160
       ]
     },
     {
@@ -162,7 +158,7 @@
         "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
         "commitMessage": "=content: publish blog {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "1c08f271-cd1a-43b9-8cf1-ccddc57fd7ea",
+      "id": "3fe1d736-170e-4df7-b4fe-24b89f797bfb",
       "name": "Create post JSON",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -191,10 +187,10 @@
         },
         "branch": "main",
         "filePath": "={{ 'blog/' + $('Parse draft').item.json.normalized.slug + '/index.html' }}",
-        "fileContent": "={{ $('Get post HTML shell').item.json.content }}",
+        "fileContent": "={{ $('Get post HTML shell').item.json.data || $('Get post HTML shell').item.json.body || $('Get post HTML shell').item.json }}",
         "commitMessage": "=content: add blog shell {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "84a53e5b-bdc8-4ecb-9d98-b0c3346132a9",
+      "id": "d7fac661-7efc-43dd-99a2-e77c5aff7575",
       "name": "Create blog HTML page",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -222,19 +218,20 @@
           "cachedResultUrl": "https://github.com/alecasgari/givsharifi-website"
         },
         "branch": "main",
-        "filePath": "={{ $('Parse draft').item.json.normalized.featuredImagePath }}",
-        "fileContent": "={{ $('Parse draft').item.json.image_base64 }}",
-        "commitMessage": "=content: add blog image {{ $('Parse draft').item.json.normalized.slug }}"
+        "filePath": "={{ $json.image_path }}",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "commitMessage": "=content: add blog image {{ $json.slug }}"
       },
-      "id": "9282b7eb-ede3-449d-b021-8e1c7345b4dd",
-      "name": "Upload featured WebP",
+      "id": "dbad63bc-fd0b-4adf-a1fd-92c72f24e20d",
+      "name": "Upload featured image",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
         1320,
         160
       ],
-      "notes": "Prefer WebP via Convert to File node before upload \u2014 wire after import"
+      "notes": "PNG from OpenAI \u2014 path assets/images/blog/{slug}.png"
     },
     {
       "parameters": {
@@ -257,20 +254,21 @@
         "branch": "main",
         "filePath": "posts/data/index.json"
       },
-      "id": "00d73173-738b-4df3-a241-59b40256c75a",
+      "id": "ea16138b-f92b-4d26-aae5-099f131d6277",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
         1540,
         0
-      ]
+      ],
+      "notes": "Turn OFF As Binary Property. Need sha for index edit."
     },
     {
       "parameters": {
-        "jsCode": "const ghItem = $('Get posts index').first().json;\nconst github = ghItem.body ?? ghItem;\nif (github.message && !github.content) {\n  throw new Error(`GitHub API: ${github.message}`);\n}\nlet raw = github.content ?? '';\nif (github.encoding === 'base64' && raw) {\n  raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n}\nraw = String(raw).trim();\nif (!raw) throw new Error('posts/data/index.json content empty');\nconst idx = JSON.parse(raw);\nconst p = $('Parse draft').first().json.normalized;\nidx.posts = [{\n  slug: p.slug,\n  title: p.title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${p.featuredImagePath}`,\n}, ...(idx.posts || [])];\nreturn [{ json: { index_json: JSON.stringify(idx, null, 2) + '\\n', index_sha: github.sha || '' } }];\n"
+        "jsCode": "const ghItem = $('Get posts index').first();\nconst github = ghItem.json?.body ?? ghItem.json ?? {};\n\nlet idx = null;\n\nif (Array.isArray(github.posts)) {\n  idx = { ...github };\n} else if (Array.isArray(ghItem.json?.posts)) {\n  idx = ghItem.json;\n} else {\n  let raw = github.content;\n\n  // n8n / GitHub sometimes returns parsed JSON object in content\n  if (raw && typeof raw === 'object' && Array.isArray(raw.posts)) {\n    idx = raw;\n  } else {\n    let rawStr = typeof raw === 'string' ? raw : '';\n    if (github.encoding === 'base64' && rawStr) {\n      rawStr = Buffer.from(rawStr.replace(/\\n/g, ''), 'base64').toString('utf8');\n    } else if (rawStr && !rawStr.trim().startsWith('{')) {\n      try {\n        rawStr = Buffer.from(rawStr.replace(/\\n/g, ''), 'base64').toString('utf8');\n      } catch { /* keep */ }\n    }\n    if (!rawStr && ghItem.binary && Object.keys(ghItem.binary).length) {\n      const key = ghItem.binary.data ? 'data' : Object.keys(ghItem.binary)[0];\n      const buf = await this.helpers.getBinaryDataBuffer(0, key);\n      rawStr = buf.toString('utf8');\n    }\n    if (!rawStr) {\n      idx = await this.helpers.httpRequest({\n        method: 'GET',\n        url: 'https://raw.githubusercontent.com/alecasgari/givsharifi-website/main/posts/data/index.json',\n        json: true,\n      });\n    } else {\n      idx = JSON.parse(rawStr.trim());\n    }\n  }\n}\n\nif (!idx || !Array.isArray(idx.posts)) {\n  throw new Error(\n    'Could not load posts/data/index.json \u2014 GitHub fields: ' + Object.keys(github).join(', ')\n  );\n}\n\nconst p = $('Parse draft').first().json.normalized;\nconst row = $('Read sheet row').first().json;\nconst title = p.title || row.proposed_title || p.slug;\nidx.posts = [{\n  slug: p.slug,\n  title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${p.featuredImagePath}`,\n}, ...(idx.posts || [])];\n\nreturn [{\n  json: {\n    index_json: JSON.stringify(idx, null, 2) + '\\n',\n    index_sha: github.sha || ghItem.json?.sha || '',\n  },\n}];\n"
       },
-      "id": "cff74731-897a-457a-8e48-0eb50021a5c2",
+      "id": "233bde25-2816-4545-98a9-37a46b1ad14f",
       "name": "Prepend to index",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -305,7 +303,7 @@
           "sha": "={{ $json.index_sha }}"
         }
       },
-      "id": "329539ea-5a00-4d36-8fd8-5ae16d6d57a4",
+      "id": "fb530081-e663-4e21-9342-960666cf1fb5",
       "name": "Update posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -344,7 +342,7 @@
         },
         "options": {}
       },
-      "id": "2fbf2533-97c7-4cf2-8ab5-d408ca8dbffa",
+      "id": "fc6d1d22-66eb-4e59-a280-b344c5f888ea",
       "name": "Sheet status published",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -362,22 +360,14 @@
           "rows": [
             [
               {
-                "row": {
-                  "buttons": [
-                    {
-                      "text": "Open on website",
-                      "additionalFields": {
-                        "url": "={{ $env.GIV_SITE_URL + '/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}"
-                      }
-                    }
-                  ]
-                }
+                "text": "Open on website",
+                "url": "={{ $env.GIV_SITE_URL + '/blog/' + $('Parse draft').item.json.normalized.slug + '/' }}"
               }
             ]
           ]
         }
       },
-      "id": "833b3419-7a5f-4b85-9257-fea75cdd57e7",
+      "id": "6c30b29f-48a9-46eb-93d0-b119f6d15216",
       "name": "Telegram published",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -390,7 +380,7 @@
       "parameters": {
         "content": "## Publish on approve\nLoads draft from `posts/data/_drafts/{slug}.json` \u2192 GitHub post + shell + image + index \u2192 Sheet published"
       },
-      "id": "1495e755-f439-4b22-ab7c-516a6ebad07d",
+      "id": "07f6b909-1432-48d9-b8f6-8f847ffbe7c0",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -413,17 +403,6 @@
       ]
     },
     "Read sheet row": {
-      "main": [
-        [
-          {
-            "node": "Find row by id",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Find row by id": {
       "main": [
         [
           {
@@ -459,7 +438,18 @@
             "index": 0
           },
           {
-            "node": "Upload featured WebP",
+            "node": "Pack featured image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pack featured image": {
+      "main": [
+        [
+          {
+            "node": "Upload featured image",
             "type": "main",
             "index": 0
           }
@@ -560,12 +550,22 @@
       ]
     }
   },
-  "pinData": {},
+  "pinData": {
+    "When called by router": [
+      {
+        "json": {
+          "row_id": "1",
+          "chat_id": "5131907549",
+          "action": "publish"
+        }
+      }
+    ]
+  },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "67837971-b848-475e-8d93-8e843f3b8f1f",
+  "versionId": "1d0a4b6b-dae4-4a29-95b4-9ac2bcae91c5",
   "meta": {
     "templateCredsSetupCompleted": false
   },
