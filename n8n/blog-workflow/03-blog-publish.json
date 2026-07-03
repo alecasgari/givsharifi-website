@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "2a0f6347-b108-497a-8604-8abb4ea11ba0",
+      "id": "7c0ed567-7d6e-4aad-99af-337a40585c02",
       "name": "When called by router",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -41,7 +41,7 @@
           "returnFirstMatch": true
         }
       },
-      "id": "95afe67c-b41b-482a-9273-0f12b5a331fe",
+      "id": "52f0815b-8ede-4637-a3ea-c4b158b5ce8f",
       "name": "Read sheet row",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -64,7 +64,7 @@
           "timeout": 120000
         }
       },
-      "id": "3ee2abb5-cbc0-4496-b22c-a622af0c54b3",
+      "id": "677fc05d-f03a-46cb-a884-08fd75816876",
       "name": "Get draft JSON",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -76,9 +76,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first();\nconst row = $('Read sheet row').first().json;\nconst slug = row.published_slug;\n\nif (!slug) {\n  throw new Error(`Row ${row.id} has no published_slug \u2014 run draft workflow 02 first`);\n}\nlet draft = item.json;\n\n// HTTP Request (responseFormat json) \u2014 draft fields at top level\nif (draft?.normalized) {\n  const slug = draft.normalized.slug;\n  draft.normalized.featuredImagePath = `assets/images/blog/${slug}.png`;\n  return [{\n    json: {\n      row,\n      normalized: draft.normalized,\n      image_base64: draft.image_base64 || '',\n    },\n  }];\n}\n\n// GitHub node: JSON mode (content base64) or binary mode (filesystem)\nlet raw = '';\nif (item.binary && Object.keys(item.binary).length) {\n  const key = item.binary.data ? 'data' : Object.keys(item.binary)[0];\n  const buf = await this.helpers.getBinaryDataBuffer(0, key);\n  raw = buf.toString('utf8');\n} else {\n  const gh = item.json?.body ?? item.json ?? {};\n  raw = gh.content ?? '';\n  if (gh.encoding === 'base64' && raw) {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } else if (raw && !String(raw).trim().startsWith('{')) {\n    try {\n      raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n    } catch { /* keep raw */ }\n  }\n}\n\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `Draft \"${slug}\" unreadable (0 bytes in n8n). `\n    + 'File may exist on GitHub \u2014 use HTTP Request on Get draft JSON, or turn OFF \"As Binary Property\".'\n  );\n}\n\ndraft = JSON.parse(raw);\nif (!draft.normalized) throw new Error('Draft missing normalized post');\n\nconst slug = draft.normalized.slug;\ndraft.normalized.featuredImagePath = `assets/images/blog/${slug}.png`;\n\nreturn [{\n  json: {\n    row,\n    normalized: draft.normalized,\n    image_base64: draft.image_base64 || '',\n  },\n}];\n"
+        "jsCode": "const item = $input.first();\nconst row = $('Read sheet row').first().json;\nconst slug = row.published_slug;\n\nif (!slug) {\n  throw new Error(`Row ${row.id} has no published_slug \u2014 run draft workflow 02 first`);\n}\nlet draft = item.json;\n\n// HTTP Request (responseFormat json) \u2014 draft fields at top level\nif (draft?.normalized) {\n  draft.normalized.featuredImagePath = `assets/images/blog/${draft.normalized.slug}.png`;\n  return [{\n    json: {\n      row,\n      normalized: draft.normalized,\n      image_base64: draft.image_base64 || '',\n    },\n  }];\n}\n\n// GitHub node: JSON mode (content base64) or binary mode (filesystem)\nlet raw = '';\nif (item.binary && Object.keys(item.binary).length) {\n  const key = item.binary.data ? 'data' : Object.keys(item.binary)[0];\n  const buf = await this.helpers.getBinaryDataBuffer(0, key);\n  raw = buf.toString('utf8');\n} else {\n  const gh = item.json?.body ?? item.json ?? {};\n  raw = gh.content ?? '';\n  if (gh.encoding === 'base64' && raw) {\n    raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n  } else if (raw && !String(raw).trim().startsWith('{')) {\n    try {\n      raw = Buffer.from(String(raw).replace(/\\n/g, ''), 'base64').toString('utf8');\n    } catch { /* keep raw */ }\n  }\n}\n\nraw = String(raw).trim();\nif (!raw) {\n  throw new Error(\n    `Draft \"${slug}\" unreadable (0 bytes in n8n). `\n    + 'File may exist on GitHub \u2014 use HTTP Request on Get draft JSON, or turn OFF \"As Binary Property\".'\n  );\n}\n\ndraft = JSON.parse(raw);\nif (!draft.normalized) throw new Error('Draft missing normalized post');\n\ndraft.normalized.featuredImagePath = `assets/images/blog/${draft.normalized.slug}.png`;\n\nreturn [{\n  json: {\n    row,\n    normalized: draft.normalized,\n    image_base64: draft.image_base64 || '',\n  },\n}];\n"
       },
-      "id": "99c27622-4244-4d1f-8d97-592c62435d6b",
+      "id": "4f07fbd0-3404-4bd3-abe0-c81bf49d2da3",
       "name": "Parse draft",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -91,7 +91,7 @@
       "parameters": {
         "jsCode": "const p = $('Parse draft').first().json.normalized;\nconst imagePath = `assets/images/blog/${p.slug}.png`;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${imagePath}`,\n};\ndelete post.featuredImagePath;\ndelete post.primaryKeyword;\ndelete post.wordCountEstimate;\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n', slug: p.slug } }];\n"
       },
-      "id": "d785ce59-e444-4f11-855d-694cf5752e0e",
+      "id": "7932f629-b71c-44bf-ab0f-fb003a290925",
       "name": "Build post JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -112,7 +112,7 @@
           }
         }
       },
-      "id": "dc38020e-7db4-4064-aafd-b8b6184009c3",
+      "id": "b26e7042-fe4b-4a5a-8145-d332cbfa65ed",
       "name": "Get post HTML shell",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -126,7 +126,7 @@
       "parameters": {
         "jsCode": "const row = $('Parse draft').first().json;\nconst slug = row.normalized.slug;\nconst b64 = row.image_base64;\nif (!b64) throw new Error('No image_base64 in draft');\nconst image_path = `assets/images/blog/${slug}.png`;\nconst buffer = Buffer.from(b64, 'base64');\nconst binary = await this.helpers.prepareBinaryData(buffer, `${slug}.png`, 'image/png');\nreturn [{\n  json: { image_path, slug },\n  binary: { data: binary },\n}];\n"
       },
-      "id": "2041eb12-58c8-4e2e-b80c-83e43b539595",
+      "id": "7da09280-d6a8-4037-b5cc-23138469b327",
       "name": "Pack featured image",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -158,7 +158,7 @@
         "fileContent": "={{ $('Build post JSON').item.json.post_json }}",
         "commitMessage": "=content: publish blog {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "8d65f744-81f8-4e5a-bb0b-3797a6a82bb5",
+      "id": "a225fa69-7a0b-4be1-a2d7-28fdb9d55135",
       "name": "Create post JSON",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -190,7 +190,7 @@
         "fileContent": "={{ $('Get post HTML shell').item.json.data || $('Get post HTML shell').item.json.body || $('Get post HTML shell').item.json }}",
         "commitMessage": "=content: add blog shell {{ $('Parse draft').item.json.normalized.slug }}"
       },
-      "id": "e6a3ce95-4370-4c5d-bbb4-0c2dab86e47f",
+      "id": "df750e5f-8c68-44fe-a8e1-2902935ed947",
       "name": "Create blog HTML page",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -223,7 +223,7 @@
         "binaryPropertyName": "data",
         "commitMessage": "=content: add blog image {{ $json.slug }}"
       },
-      "id": "b6d77f04-ba17-4a42-ad3c-bbe432bfb92c",
+      "id": "b7909300-0c06-440d-bbc5-e0f50f526568",
       "name": "Upload featured image",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -254,7 +254,7 @@
         "branch": "main",
         "filePath": "posts/data/index.json"
       },
-      "id": "dce5354e-0642-4070-aeb5-de3e1ff0f0a2",
+      "id": "cf9ab100-679b-4ebf-8a8f-9db73aaad168",
       "name": "Get posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -268,7 +268,7 @@
       "parameters": {
         "jsCode": "const ghItem = $('Get posts index').first();\nconst github = ghItem.json?.body ?? ghItem.json ?? {};\n\nlet idx = null;\n\nif (Array.isArray(github.posts)) {\n  idx = { ...github };\n} else if (Array.isArray(ghItem.json?.posts)) {\n  idx = ghItem.json;\n} else {\n  let raw = github.content;\n\n  // n8n / GitHub sometimes returns parsed JSON object in content\n  if (raw && typeof raw === 'object' && Array.isArray(raw.posts)) {\n    idx = raw;\n  } else {\n    let rawStr = typeof raw === 'string' ? raw : '';\n    if (github.encoding === 'base64' && rawStr) {\n      rawStr = Buffer.from(rawStr.replace(/\\n/g, ''), 'base64').toString('utf8');\n    } else if (rawStr && !rawStr.trim().startsWith('{')) {\n      try {\n        rawStr = Buffer.from(rawStr.replace(/\\n/g, ''), 'base64').toString('utf8');\n      } catch { /* keep */ }\n    }\n    if (!rawStr && ghItem.binary && Object.keys(ghItem.binary).length) {\n      const key = ghItem.binary.data ? 'data' : Object.keys(ghItem.binary)[0];\n      const buf = await this.helpers.getBinaryDataBuffer(0, key);\n      rawStr = buf.toString('utf8');\n    }\n    if (!rawStr) {\n      idx = await this.helpers.httpRequest({\n        method: 'GET',\n        url: 'https://raw.githubusercontent.com/alecasgari/givsharifi-website/main/posts/data/index.json',\n        json: true,\n      });\n    } else {\n      idx = JSON.parse(rawStr.trim());\n    }\n  }\n}\n\nif (!idx || !Array.isArray(idx.posts)) {\n  throw new Error(\n    'Could not load posts/data/index.json \u2014 GitHub fields: ' + Object.keys(github).join(', ')\n  );\n}\n\nconst p = $('Parse draft').first().json.normalized;\nconst row = $('Read sheet row').first().json;\nconst title = p.title || row.proposed_title || p.slug;\nconst imagePath = `assets/images/blog/${p.slug}.png`;\nidx.posts = [{\n  slug: p.slug,\n  title,\n  excerpt: p.excerpt,\n  date: p.date,\n  category: p.category,\n  image: `/${imagePath}`,\n}, ...(idx.posts || [])];\n\nreturn [{\n  json: {\n    index_json: JSON.stringify(idx, null, 2) + '\\n',\n    index_sha: github.sha || ghItem.json?.sha || '',\n  },\n}];\n"
       },
-      "id": "931eeba6-dd9c-4ac9-a1e9-7f0df0dd95cc",
+      "id": "04427562-4043-4b19-b7db-15faf6dc37ad",
       "name": "Prepend to index",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -303,7 +303,7 @@
           "sha": "={{ $json.index_sha }}"
         }
       },
-      "id": "98ad41cb-7c4c-4a60-889d-059a6021f0ca",
+      "id": "6cb2f745-decb-4da8-8876-acd914169548",
       "name": "Update posts index",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -342,7 +342,7 @@
         },
         "options": {}
       },
-      "id": "3359d631-d9b9-4559-ab80-1c3a97ea38e4",
+      "id": "9b59e9f6-2077-4911-a8b8-9db1029487a9",
       "name": "Sheet status published",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
@@ -367,7 +367,7 @@
           ]
         }
       },
-      "id": "2ece31eb-7d6f-4e6e-b027-3b23fa4f328e",
+      "id": "3dc49644-55d3-472b-adca-d76a8293cd9f",
       "name": "Telegram published",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -380,7 +380,7 @@
       "parameters": {
         "content": "## Publish on approve\nLoads draft from `posts/data/_drafts/{slug}.json` \u2192 GitHub post + shell + image + index \u2192 Sheet published"
       },
-      "id": "d2c5b7da-c844-46e4-9977-c51f01ca6187",
+      "id": "178d85c1-9301-4642-80e6-9380bb42a877",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -565,7 +565,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "39a5bbd5-47d2-4687-a307-05e47e000ab5",
+  "versionId": "8876d7be-42d6-49bd-b047-22b00e949d84",
   "meta": {
     "templateCredsSetupCompleted": false
   },

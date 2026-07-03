@@ -545,8 +545,7 @@ let draft = item.json;
 
 // HTTP Request (responseFormat json) — draft fields at top level
 if (draft?.normalized) {
-  const slug = draft.normalized.slug;
-  draft.normalized.featuredImagePath = `assets/images/blog/${slug}.png`;
+  draft.normalized.featuredImagePath = `assets/images/blog/${draft.normalized.slug}.png`;
   return [{
     json: {
       row,
@@ -585,8 +584,7 @@ if (!raw) {
 draft = JSON.parse(raw);
 if (!draft.normalized) throw new Error('Draft missing normalized post');
 
-const slug = draft.normalized.slug;
-draft.normalized.featuredImagePath = `assets/images/blog/${slug}.png`;
+draft.normalized.featuredImagePath = `assets/images/blog/${draft.normalized.slug}.png`;
 
 return [{
   json: {
