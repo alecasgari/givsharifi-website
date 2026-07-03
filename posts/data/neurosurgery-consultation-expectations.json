@@ -95,13 +95,13 @@
     },
     {
       "type": "cta",
-      "text": "{href:",
-      "level": 0
+      "text": "Explore brain surgery services",
+      "href": "/brain-surgery/"
     },
     {
       "type": "cta",
-      "text": "{href:",
-      "level": 0
+      "text": "Book a free consultation",
+      "href": "/"
     },
     {
       "type": "heading",

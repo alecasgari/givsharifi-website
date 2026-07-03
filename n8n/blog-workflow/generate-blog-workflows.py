@@ -235,27 +235,55 @@ if (out && typeof out === 'object' && out.output && typeof out.output === 'objec
   out = out.output;
 }
 
-function fixCta(b, index) {
-  const pillar = String(row.pillar_url || '/brain-surgery/').trim() || '/';
-  const hrefDefault = index === 0 ? pillar : '/';
-  const labelDefault = index === 0 ? 'Explore related services' : 'Book a consultation';
+function isBrokenCtaValue(value) {
+  const s = String(value || '').trim();
+  return !s || s === '{href:' || s.startsWith('{href') || /^href:\s*$/i.test(s);
+}
 
-  if (b.href && b.text && !String(b.text).includes('href:')) {
+function fixCta(b, index) {
+  const pillar = String(row.pillar_url || '/brain-surgery/').trim() || '/brain-surgery/';
+  const hrefDefault = index === 0
+    ? (pillar.startsWith('/') ? pillar : `/${pillar}`)
+    : '/';
+  const labelDefault = index === 0 ? 'Explore related services' : 'Book a free consultation';
+
+  let href = String(b.href || '').trim();
+  let text = String(b.text || '').trim();
+  const raw = text;
+
+  const needsRepair =
+    isBrokenCtaValue(text) ||
+    isBrokenCtaValue(href) ||
+    raw.includes('href:') ||
+    raw.includes('text:');
+
+  if (needsRepair) {
+    const hrefMatch =
+      raw.match(/href:\s*['"]?([^'",}\s]+)/i) ||
+      String(b.href || '').match(/(\/[^'",}\s]+)/);
+    const textMatch =
+      raw.match(/text:\s*['"]([^'"]+)['"]/i) ||
+      raw.match(/text:\s*([^,}]+)/i);
+    if (hrefMatch) href = hrefMatch[1].trim();
+    if (textMatch) text = textMatch[1].trim();
+  }
+
+  if (b.href && b.text && !needsRepair) {
     return {
       type: 'cta',
-      text: String(b.text).trim() || labelDefault,
-      href: String(b.href).trim() || hrefDefault,
+      text: text || labelDefault,
+      href: href || hrefDefault,
     };
   }
 
-  const raw = String(b.text || '');
-  const hrefMatch = raw.match(/href:\s*([^,]+)/i);
-  const textMatch = raw.match(/text:\s*(.+)$/i);
-  return {
-    type: 'cta',
-    text: (textMatch?.[1] || labelDefault).trim() || labelDefault,
-    href: (hrefMatch?.[1] || hrefDefault).trim() || hrefDefault,
-  };
+  if (isBrokenCtaValue(href)) href = hrefDefault;
+  if (isBrokenCtaValue(text)) text = labelDefault;
+
+  if (!href.startsWith('/') && !href.startsWith('http')) {
+    href = `/${href.replace(/^\/+/, '')}`;
+  }
+
+  return { type: 'cta', text, href };
 }
 
 let ctaIndex = 0;
