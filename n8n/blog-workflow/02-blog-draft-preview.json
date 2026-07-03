@@ -1,5 +1,5 @@
 {
-  "name": "GivSharifi Blog \u2014 02 Draft and Preview",
+  "name": "GivSharifi Blog — 02 Draft and Preview",
   "nodes": [
     {
       "parameters": {},
@@ -32,11 +32,11 @@
         220,
         -120
       ],
-      "notes": "Public raw JSON \u2014 no GitHub credential. Replaces GitHub get (was passing scheduler input through on failure)."
+      "notes": "Public raw JSON — no GitHub credential. Replaces GitHub get (was passing scheduler input through on failure)."
     },
     {
       "parameters": {
-        "jsCode": "// Input from HTTP Request (Get posts index) \u2014 parsed index.json\nconst idx = $input.first().json;\n\nif (!idx || !Array.isArray(idx.posts)) {\n  throw new Error(\n    'Get posts index did not return { posts: [...] }. '\n    + 'Use HTTP Request to raw.githubusercontent.com, not GitHub node (which was passing scheduler data through).'\n  );\n}\n\nconst titles = idx.posts.map((p) => `- ${p.slug}: ${p.title}`).join('\\n');\nreturn [{ json: { existing_posts: titles, post_count: idx.posts.length } }];\n"
+        "jsCode": "// Input from HTTP Request (Get posts index) — parsed index.json\nconst idx = $input.first().json;\n\nif (!idx || !Array.isArray(idx.posts)) {\n  throw new Error(\n    'Get posts index did not return { posts: [...] }. '\n    + 'Use HTTP Request to raw.githubusercontent.com, not GitHub node (which was passing scheduler data through).'\n  );\n}\n\nconst titles = idx.posts.map((p) => `- ${p.slug}: ${p.title}`).join('\\n');\nreturn [{ json: { existing_posts: titles, post_count: idx.posts.length } }];\n"
       },
       "id": "c1b51a49-dc7b-4d05-8d11-f711ea7b7d4a",
       "name": "Build existing keywords context",
@@ -80,10 +80,10 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\nscheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a COMPLETE long-form SEO blog post JSON for Prof. Giv Sharifi's website.\\n\\nCRITICAL \u2014 FULL ARTICLE, NOT AN OUTLINE:\\n- Minimum 1000 words in paragraph + list text combined\\n- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n- Do NOT output section titles only. Every H2 section needs 2+ full paragraphs.\\n- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n- NEVER use type text. NEVER use heading level 1.\\n- heading level 2 = main sections; level 3 = FAQ questions only\\n- Structure: intro paragraph (120+ words) \u2192 5-6 H2 sections (each with 2 paragraphs + optional list) \u2192 2 cta blocks (href=pillar_url and href=/) \u2192 H2 FAQ \u2192 5x (H3 question + paragraph answer 80+ words)\\n- date: use scheduled_date from calendar row\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-65 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- featuredImagePath: assets/images/blog/{slug}.webp",
+        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\nscheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a COMPLETE long-form SEO blog post JSON for Prof. Giv Sharifi's website.\\n\\nCRITICAL — FULL ARTICLE, NOT AN OUTLINE:\\n- Minimum 1000 words in paragraph + list text combined\\n- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n- Do NOT output section titles only. Every H2 section needs 2+ full paragraphs.\\n- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n- NEVER use type text. NEVER use heading level 1.\\n- heading level 2 = main sections; level 3 = FAQ questions only\\n- Structure: intro paragraph (120+ words) → 5-6 H2 sections (each with 2 paragraphs + optional list) → 2 cta blocks (href=pillar_url and href=/) → H2 FAQ → 5x (H3 question + paragraph answer 80+ words)\\n- date: use scheduled_date from calendar row\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-65 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- featuredImagePath: assets/images/blog/{slug}.webp",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. Write FULL prose paragraphs \u2014 never bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. If you cannot reach 1000 words, add more paragraph blocks before returning JSON."
+          "systemMessage": "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. Write FULL prose paragraphs — never bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. If you cannot reach 1000 words, add more paragraph blocks before returning JSON."
         }
       },
       "id": "f3d611b3-8d26-4130-a89a-914d45c3c229",
@@ -97,7 +97,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const out = $('Gemini blog writer').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nfunction countBodyWords(blocks) {\n  let n = 0;\n  for (const b of blocks || []) {\n    if (b.type === 'paragraph' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n    if ((b.type === 'list' || b.type === 'ordered-list') && Array.isArray(b.items)) {\n      for (const item of b.items) {\n        n += String(item).split(/\\s+/).filter(Boolean).length;\n      }\n    }\n    if (b.type === 'blockquote' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n  }\n  return n;\n}\n\nfunction normalizeBlocks(blocks) {\n  const outBlocks = [];\n  for (const b of blocks || []) {\n    if (!b || typeof b !== 'object') continue;\n    if (b.type === 'text' || b.type === 'paragraph') {\n      const t = String(b.text || '').trim();\n      if (!t) continue;\n      if (t.split(/\\s+/).length < 15 && !t.includes('.')) {\n        outBlocks.push({ type: 'heading', level: b.level === 3 ? 3 : 2, text: t });\n      } else {\n        outBlocks.push({ type: 'paragraph', text: t });\n      }\n      continue;\n    }\n    if (b.type === 'heading') {\n      const level = b.level === 1 ? 2 : (b.level || 2);\n      outBlocks.push({ type: 'heading', level, text: String(b.text || '').trim() });\n      continue;\n    }\n    if (['list', 'ordered-list', 'cta', 'blockquote', 'image', 'html'].includes(b.type)) {\n      outBlocks.push(b);\n    }\n  }\n  return outBlocks;\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nout.content = normalizeBlocks(out.content);\nconst paragraphCount = out.content.filter((b) => b.type === 'paragraph').length;\nconst words = countBodyWords(out.content);\n\nif (paragraphCount < 10) {\n  throw new Error(\n    `Gemini returned an outline, not a full article: only ${paragraphCount} paragraph blocks. `\n    + 'Regenerate. Need 10+ paragraph blocks with 70+ words each.'\n  );\n}\nif (words < 1000) {\n  throw new Error(\n    `Article too short: ~${words} words in paragraphs (minimum 1000). Regenerate with full prose.`\n  );\n}\n\nout.slug = slug;\nout.featuredImagePath = `assets/images/blog/${slug}.webp`;\nout.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\ndelete out.primaryKeyword;\ndelete out.wordCountEstimate;\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    paragraph_count: paragraphCount,\n    image_prompt: `Professional medical illustration for a patient education article titled \"${out.title}\". `\n      + `Topic: ${row.primary_keyword}. Style: clean modern healthcare illustration, soft blue and white tones, `\n      + `abstract anatomy or MRI scan motif. No blood, no surgery scenes, no patient faces, no text, no logos. 16:9.`,\n  },\n}];\n"
+        "jsCode": "const out = $('Gemini blog writer').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nfunction countBodyWords(blocks) {\n  let n = 0;\n  for (const b of blocks || []) {\n    if (b.type === 'paragraph' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n    if ((b.type === 'list' || b.type === 'ordered-list') && Array.isArray(b.items)) {\n      for (const item of b.items) {\n        n += String(item).split(/\\s+/).filter(Boolean).length;\n      }\n    }\n    if (b.type === 'blockquote' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n  }\n  return n;\n}\n\nfunction normalizeBlocks(blocks) {\n  const outBlocks = [];\n  for (const b of blocks || []) {\n    if (!b || typeof b !== 'object') continue;\n    if (b.type === 'text' || b.type === 'paragraph') {\n      const t = String(b.text || '').trim();\n      if (!t) continue;\n      if (t.split(/\\s+/).length < 15 && !t.includes('.')) {\n        outBlocks.push({ type: 'heading', level: b.level === 3 ? 3 : 2, text: t });\n      } else {\n        outBlocks.push({ type: 'paragraph', text: t });\n      }\n      continue;\n    }\n    if (b.type === 'heading') {\n      const level = b.level === 1 ? 2 : (b.level || 2);\n      outBlocks.push({ type: 'heading', level, text: String(b.text || '').trim() });\n      continue;\n    }\n    if (['list', 'ordered-list', 'cta', 'blockquote', 'image', 'html'].includes(b.type)) {\n      outBlocks.push(b);\n    }\n  }\n  return outBlocks;\n}\n\nfunction buildImagePrompt(row, out) {\n  const topic = String(row.primary_keyword || out.title || 'neurosurgery').trim();\n  const cluster = String(row.cluster || row.category || '').toLowerCase();\n  let subjectFocus = 'precision neurosurgical care and advanced neural imaging';\n  if (cluster.includes('spine') || cluster.includes('spinal')) {\n    subjectFocus = 'spinal anatomy, vertebral structures, and minimally invasive spine care';\n  } else if (cluster.includes('brain') || cluster.includes('tumour') || cluster.includes('tumor')) {\n    subjectFocus = 'brain health, neural pathways, and high-resolution neuroimaging';\n  } else if (cluster.includes('pituitary') || cluster.includes('endoscopic')) {\n    subjectFocus = 'skull-base anatomy and endoscopic neurosurgical precision';\n  }\n\n  return (\n    `Premium hero image for an authoritative neurosurgery medical website article: \"${out.title}\". `\n    + `Clinical theme: ${topic}. Visual focus: ${subjectFocus}. `\n    + `Style: cinematic editorial medical photography blended with photorealistic 3D volumetric anatomy — `\n    + `rich depth, natural window light, soft shadow gradients, atmospheric haze, realistic material textures, `\n    + `subtle film grain, magazine-quality composition. Sophisticated palette: warm ivory, soft charcoal, `\n    + `muted teal and sage accents; full tonal range. `\n    + `NOT flat vector illustration, NOT two-tone blue infographic, NOT clip art, NOT cartoon, `\n    + `NOT generic stock photo, NOT sterile hospital corridor cliché. `\n    + `Composition: wide cinematic 16:9, rule of thirds, shallow depth of field, clean modern neurology setting `\n    + `with organic holographic scan elements integrated naturally into the scene. `\n    + `Strict exclusions: no blood, no open surgery, no wounds, no identifiable patient or doctor faces, `\n    + `no readable text, no logos, no watermarks.`\n  );\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nout.content = normalizeBlocks(out.content);\nconst paragraphCount = out.content.filter((b) => b.type === 'paragraph').length;\nconst words = countBodyWords(out.content);\n\nif (paragraphCount < 10) {\n  throw new Error(\n    `Gemini returned an outline, not a full article: only ${paragraphCount} paragraph blocks. `\n    + 'Regenerate. Need 10+ paragraph blocks with 70+ words each.'\n  );\n}\nif (words < 1000) {\n  throw new Error(\n    `Article too short: ~${words} words in paragraphs (minimum 1000). Regenerate with full prose.`\n  );\n}\n\nout.slug = slug;\nout.title = String(out.title || row.proposed_title || '').trim();\nif (!out.title) throw new Error('Gemini output missing title — check proposed_title on calendar row');\nout.featuredImagePath = `assets/images/blog/${slug}.png`;\nout.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\ndelete out.primaryKeyword;\ndelete out.wordCountEstimate;\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    paragraph_count: paragraphCount,\n    image_prompt: buildImagePrompt(row, out),\n  },\n}];\n"
       },
       "id": "75a1c463-63dc-40b1-a2cc-1c8005b4b08b",
       "name": "Normalize blog output",
@@ -114,11 +114,12 @@
         "modelId": {
           "__rl": true,
           "mode": "list",
-          "value": "gpt-image-1-mini"
+          "value": "gpt-image-1"
         },
         "prompt": "={{ $json.image_prompt }}",
         "options": {
-          "size": "1536x1024"
+          "size": "1536x1024",
+          "quality": "high"
         }
       },
       "id": "2567b081-622a-4fd0-a1a3-506785009ae5",
@@ -133,7 +134,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first();\nconst row = $('Normalize blog output').first().json;\n\nlet image_base64 = item.json?.data?.[0]?.b64_json || item.json?.image_base64 || '';\n\n// OpenAI Image node (filesystem binary mode) \u2014 binary property is usually \"data\"\nif (!image_base64) {\n  const binary = item.binary || {};\n  const key = binary.data ? 'data' : Object.keys(binary)[0];\n  if (!key) {\n    throw new Error(\n      'No image from OpenAI \u2014 expected binary property \"data\". '\n      + 'Check Generate an image node output.'\n    );\n  }\n  const buffer = await this.helpers.getBinaryDataBuffer(0, key);\n  image_base64 = buffer.toString('base64');\n}\n\nif (!image_base64) throw new Error('Empty image data from OpenAI');\n\nreturn [{ json: { ...row, image_base64 } }];\n"
+        "jsCode": "const item = $input.first();\nconst row = $('Normalize blog output').first().json;\n\nlet image_base64 = item.json?.data?.[0]?.b64_json || item.json?.image_base64 || '';\n\n// OpenAI Image node (filesystem binary mode) — binary property is usually \"data\"\nif (!image_base64) {\n  const binary = item.binary || {};\n  const key = binary.data ? 'data' : Object.keys(binary)[0];\n  if (!key) {\n    throw new Error(\n      'No image from OpenAI — expected binary property \"data\". '\n      + 'Check Generate an image node output.'\n    );\n  }\n  const buffer = await this.helpers.getBinaryDataBuffer(0, key);\n  image_base64 = buffer.toString('base64');\n}\n\nif (!image_base64) throw new Error('Empty image data from OpenAI');\n\nreturn [{ json: { ...row, image_base64 } }];\n"
       },
       "id": "030d58b4-2d2e-476e-a089-2ed262d1f0b1",
       "name": "Extract image base64",
@@ -179,7 +180,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const row = $('Extract image base64').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\n\n// chat_id: workflow 01 \"Set calendar row\" \u2192 scheduler trigger \u2192 Normalize \u2192 here\nconst cal = $('When called by scheduler').first().json;\nconst FALLBACK_CHAT_ID = '5131907549'; // your Telegram chat ID \u2014 keep in sync with workflow 01\nconst rowId = row.id ?? row.row_id ?? cal?.id;\n\nconst chatId = String(\n  row.chat_id\n  || row.telegram_chat_id\n  || cal?.chat_id\n  || cal?.telegram_chat_id\n  || FALLBACK_CHAT_ID\n).trim();\n\nif (!chatId || chatId === 'REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID') {\n  throw new Error(\n    'chat_id missing \u2014 open workflow 01, node \"Set calendar row\", set chat_id to your numeric Telegram ID'\n  );\n}\n\nreturn [{\n  json: {\n    chat_id: chatId,\n    row_id: rowId,\n    slug: p.slug,\n    image_base64: row.image_base64,\n    preview_message:\n      `\ud83d\udccb <b>Blog preview</b> (row ${rowId})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}\u2026`,\n    callback_publish: `blog_publish_${rowId}`,\n    callback_regen_article: `blog_regen_article_${rowId}`,\n    callback_regen_image: `blog_regen_image_${rowId}`,\n    callback_skip: `blog_skip_${rowId}`,\n  },\n}];\n"
+        "jsCode": "const row = $('Extract image base64').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\n\n// chat_id: workflow 01 \"Set calendar row\" → scheduler trigger → Normalize → here\nconst cal = $('When called by scheduler').first().json;\nconst FALLBACK_CHAT_ID = '5131907549'; // your Telegram chat ID — keep in sync with workflow 01\nconst rowId = row.id ?? row.row_id ?? cal?.id;\n\nconst chatId = String(\n  row.chat_id\n  || row.telegram_chat_id\n  || cal?.chat_id\n  || cal?.telegram_chat_id\n  || FALLBACK_CHAT_ID\n).trim();\n\nif (!chatId || chatId === 'REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID') {\n  throw new Error(\n    'chat_id missing — open workflow 01, node \"Set calendar row\", set chat_id to your numeric Telegram ID'\n  );\n}\n\nreturn [{\n  json: {\n    chat_id: chatId,\n    row_id: rowId,\n    slug: p.slug,\n    image_base64: row.image_base64,\n    preview_message:\n      `📋 <b>Blog preview</b> (row ${rowId})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}…`,\n    callback_publish: `blog_publish_${rowId}`,\n    callback_regen_article: `blog_regen_article_${rowId}`,\n    callback_regen_image: `blog_regen_image_${rowId}`,\n    callback_skip: `blog_skip_${rowId}`,\n  },\n}];\n"
       },
       "id": "fe0f5d05-bba6-4a0a-921e-d1e0789f310f",
       "name": "Build preview message",
@@ -221,7 +222,7 @@
         1760,
         -80
       ],
-      "notes": "Wire binary from image \u2014 map in n8n UI: binary property from previous HTTP node converted to file"
+      "notes": "Wire binary from image — map in n8n UI: binary property from previous HTTP node converted to file"
     },
     {
       "parameters": {
@@ -232,21 +233,21 @@
           "rows": [
             [
               {
-                "text": "\u2705 Publish",
+                "text": "✅ Publish",
                 "callback_data": "={{ $('Build preview message').item.json.callback_publish }}"
               },
               {
-                "text": "\ud83d\udd04 Regen article",
+                "text": "🔄 Regen article",
                 "callback_data": "={{ $('Build preview message').item.json.callback_regen_article }}"
               }
             ],
             [
               {
-                "text": "\ud83d\uddbc Regen image",
+                "text": "🖼 Regen image",
                 "callback_data": "={{ $('Build preview message').item.json.callback_regen_image }}"
               },
               {
-                "text": "\u274c Skip",
+                "text": "❌ Skip",
                 "callback_data": "={{ $('Build preview message').item.json.callback_skip }}"
               }
             ]
@@ -303,7 +304,7 @@
     },
     {
       "parameters": {
-        "content": "## Draft + preview\nGemini \u2192 Normalize \u2192 OpenAI Generate an image \u2192 Extract base64 \u2192 Telegram preview\nOpenAI node outputs binary `data` (not JSON b64_json). Extract node uses getBinaryDataBuffer."
+        "content": "## Draft + preview\nGemini → Normalize → OpenAI Generate an image → Extract base64 → Telegram preview\nOpenAI node outputs binary `data` (not JSON b64_json). Extract node uses getBinaryDataBuffer."
       },
       "id": "1c5a06b5-d1f5-4419-bd1e-84f6b04c7b1a",
       "name": "Note",

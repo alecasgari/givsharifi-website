@@ -278,6 +278,34 @@ function normalizeBlocks(blocks) {
   return outBlocks;
 }
 
+function buildImagePrompt(row, out) {
+  const topic = String(row.primary_keyword || out.title || 'neurosurgery').trim();
+  const cluster = String(row.cluster || row.category || '').toLowerCase();
+  let subjectFocus = 'precision neurosurgical care and advanced neural imaging';
+  if (cluster.includes('spine') || cluster.includes('spinal')) {
+    subjectFocus = 'spinal anatomy, vertebral structures, and minimally invasive spine care';
+  } else if (cluster.includes('brain') || cluster.includes('tumour') || cluster.includes('tumor')) {
+    subjectFocus = 'brain health, neural pathways, and high-resolution neuroimaging';
+  } else if (cluster.includes('pituitary') || cluster.includes('endoscopic')) {
+    subjectFocus = 'skull-base anatomy and endoscopic neurosurgical precision';
+  }
+
+  return (
+    `Premium hero image for an authoritative neurosurgery medical website article: "${out.title}". `
+    + `Clinical theme: ${topic}. Visual focus: ${subjectFocus}. `
+    + `Style: cinematic editorial medical photography blended with photorealistic 3D volumetric anatomy — `
+    + `rich depth, natural window light, soft shadow gradients, atmospheric haze, realistic material textures, `
+    + `subtle film grain, magazine-quality composition. Sophisticated palette: warm ivory, soft charcoal, `
+    + `muted teal and sage accents; full tonal range. `
+    + `NOT flat vector illustration, NOT two-tone blue infographic, NOT clip art, NOT cartoon, `
+    + `NOT generic stock photo, NOT sterile hospital corridor cliché. `
+    + `Composition: wide cinematic 16:9, rule of thirds, shallow depth of field, clean modern neurology setting `
+    + `with organic holographic scan elements integrated naturally into the scene. `
+    + `Strict exclusions: no blood, no open surgery, no wounds, no identifiable patient or doctor faces, `
+    + `no readable text, no logos, no watermarks.`
+  );
+}
+
 const slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);
 if (!slug) throw new Error('Could not build SEO slug');
 
@@ -312,9 +340,7 @@ return [{
     normalized: out,
     word_count: words,
     paragraph_count: paragraphCount,
-    image_prompt: `Professional medical illustration for a patient education article titled "${out.title}". `
-      + `Topic: ${row.primary_keyword}. Style: clean modern healthcare illustration, soft blue and white tones, `
-      + `abstract anatomy or MRI scan motif. No blood, no surgery scenes, no patient faces, no text, no logos. 16:9.`,
+    image_prompt: buildImagePrompt(row, out),
   },
 }];
 """
@@ -1206,10 +1232,10 @@ def build_draft_preview() -> dict:
             "modelId": {
                 "__rl": True,
                 "mode": "list",
-                "value": "gpt-image-1-mini",
+                "value": "gpt-image-1",
             },
             "prompt": "={{ $json.image_prompt }}",
-            "options": {"size": "1536x1024"},
+            "options": {"size": "1536x1024", "quality": "high"},
         },
         type_version=2.3,
         notes="OpenAI credential. Outputs binary property data (filesystem mode).",
