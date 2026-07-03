@@ -1,9 +1,9 @@
 {
-  "name": "GivSharifi Blog — 02 Draft and Preview",
+  "name": "GivSharifi Blog \u2014 02 Draft and Preview",
   "nodes": [
     {
       "parameters": {},
-      "id": "c9bd7399-cead-416f-804b-ace9cc0fe4b3",
+      "id": "51cd54de-63a1-4098-b853-2a4d1c7bcbfe",
       "name": "When called by scheduler",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
@@ -24,7 +24,7 @@
           }
         }
       },
-      "id": "b520db00-f762-4819-a9f8-770d7d17c425",
+      "id": "3095277d-ac70-4e6f-9709-5f0d91336e07",
       "name": "Get posts index",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -32,13 +32,13 @@
         220,
         -120
       ],
-      "notes": "Public raw JSON — no GitHub credential. Replaces GitHub get (was passing scheduler input through on failure)."
+      "notes": "Public raw JSON \u2014 no GitHub credential. Replaces GitHub get (was passing scheduler input through on failure)."
     },
     {
       "parameters": {
-        "jsCode": "// Input from HTTP Request (Get posts index) — parsed index.json\nconst idx = $input.first().json;\n\nif (!idx || !Array.isArray(idx.posts)) {\n  throw new Error(\n    'Get posts index did not return { posts: [...] }. '\n    + 'Use HTTP Request to raw.githubusercontent.com, not GitHub node (which was passing scheduler data through).'\n  );\n}\n\nconst titles = idx.posts.map((p) => `- ${p.slug}: ${p.title}`).join('\\n');\nreturn [{ json: { existing_posts: titles, post_count: idx.posts.length } }];\n"
+        "jsCode": "// Input from HTTP Request (Get posts index) \u2014 parsed index.json\nconst idx = $input.first().json;\n\nif (!idx || !Array.isArray(idx.posts)) {\n  throw new Error(\n    'Get posts index did not return { posts: [...] }. '\n    + 'Use HTTP Request to raw.githubusercontent.com, not GitHub node (which was passing scheduler data through).'\n  );\n}\n\nconst titles = idx.posts.map((p) => `- ${p.slug}: ${p.title}`).join('\\n');\nreturn [{ json: { existing_posts: titles, post_count: idx.posts.length } }];\n"
       },
-      "id": "c1b51a49-dc7b-4d05-8d11-f711ea7b7d4a",
+      "id": "3b4465da-af3d-4959-b12b-6c652bfc2d8c",
       "name": "Build existing keywords context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -52,10 +52,10 @@
         "modelName": "models/gemini-2.0-flash",
         "options": {
           "temperature": 0.45,
-          "maxOutputTokens": 16384
+          "maxOutputTokens": 24576
         }
       },
-      "id": "7980ad58-bbac-419e-adf1-ca1a09c7c854",
+      "id": "c1e5910b-d26a-4f6d-9f9f-ee4845a636af",
       "name": "Gemini blog model",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -66,27 +66,14 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"slug\": \"brain-tumour-surgery-dubai\",\n  \"title\": \"Brain Tumour Surgery Dubai: Types, Process and Recovery\",\n  \"metaDescription\": \"Considering brain tumour surgery in Dubai? Learn types of surgery, what happens before and after, and when to seek a specialist. Speak with Prof. Giv Sharifi.\",\n  \"excerpt\": \"A clear guide to brain tumour surgery in Dubai \\u2014 surgical types, the hospital pathway, and realistic recovery expectations for patients and families.\",\n  \"date\": \"2026-07-02\",\n  \"category\": \"Brain Surgery\",\n  \"tags\": [\n    \"brain tumour surgery Dubai\",\n    \"neurosurgeon Dubai\",\n    \"neurosurgery Dubai\",\n    \"glioma surgery\",\n    \"brain cancer treatment\",\n    \"neurosurgeon Tehran\"\n  ],\n  \"readingTimeMinutes\": 8,\n  \"featuredImagePath\": \"assets/images/blog/brain-tumour-surgery-dubai.webp\",\n  \"content\": [\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Brain tumour surgery in Dubai is a major decision that patients and families often face after an MRI or CT scan shows a growth inside the skull. The goal of surgery is to remove all or part of the tumour while protecting healthy brain tissue, nerves, and blood vessels. Prof. Giv Sharifi explains each step in plain language so you know what tests are needed, what happens in the operating room, and how recovery usually progresses. This article covers common tumour types, surgical options, and when a second opinion may help.\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"What Is a Brain Tumour?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"A brain tumour is an abnormal mass of cells within the brain or its coverings. Some tumours are benign and grow slowly; others are malignant and may spread more quickly. Symptoms can include headaches, seizures, weakness, speech changes, or vision problems, depending on the tumour location. Imaging with MRI is the main tool for diagnosis. Your neurosurgeon will also review your medical history and neurological examination before recommending surgery, observation, or other treatments.\"\n    },\n    {\n      \"type\": \"list\",\n      \"items\": [\n        \"Persistent headaches that worsen over weeks\",\n        \"New seizures in an adult\",\n        \"Weakness or numbness on one side of the body\",\n        \"Personality or memory changes\"\n      ]\n    },\n    {\n      \"type\": \"cta\",\n      \"text\": \"Explore brain surgery services\",\n      \"href\": \"/brain-surgery/\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 2,\n      \"text\": \"Frequently Asked Questions\"\n    },\n    {\n      \"type\": \"heading\",\n      \"level\": 3,\n      \"text\": \"How long is hospital stay after brain tumour surgery?\"\n    },\n    {\n      \"type\": \"paragraph\",\n      \"text\": \"Most patients stay in hospital for several days after craniotomy, but the exact length depends on the tumour type, surgery complexity, and recovery from anaesthesia. Some people go to a high-dependency unit for closer monitoring. Your team will check speech, movement, and wound healing before discharge. Physiotherapy and follow-up scans are often arranged. Prof. Giv Sharifi discusses expected timelines during your pre-operative consultation so you can plan work and family support.\"\n    }\n  ]\n}"
-      },
-      "id": "17fc8bf0-8298-43bb-a682-89a690067487",
-      "name": "Blog JSON parser",
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
-      "position": [
-        440,
-        320
-      ]
-    },
-    {
-      "parameters": {
         "promptType": "define",
-        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\nscheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a COMPLETE long-form SEO blog post JSON for Prof. Giv Sharifi's website.\\n\\nCRITICAL — FULL ARTICLE, NOT AN OUTLINE:\\n- Minimum 1000 words in paragraph + list text combined\\n- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n- Do NOT output section titles only. Every H2 section needs 2+ full paragraphs.\\n- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n- NEVER use type text. NEVER use heading level 1.\\n- heading level 2 = main sections; level 3 = FAQ questions only\\n- Structure: intro paragraph (120+ words) → 5-6 H2 sections (each with 2 paragraphs + optional list) → 2 cta blocks (href=pillar_url and href=/) → H2 FAQ → 5x (H3 question + paragraph answer 80+ words)\\n- date: use scheduled_date from calendar row\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-65 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- featuredImagePath: assets/images/blog/{slug}.webp",
-        "hasOutputParser": true,
+        "text": "=Calendar row:\\nid: {{ $('When called by scheduler').item.json.id }}\\ncluster: {{ $('When called by scheduler').item.json.cluster }}\\npillar_url: {{ $('When called by scheduler').item.json.pillar_url }}\\nprimary_keyword: {{ $('When called by scheduler').item.json.primary_keyword }}\\nsearch_intent: {{ $('When called by scheduler').item.json.search_intent }}\\nproposed_title: {{ $('When called by scheduler').item.json.proposed_title }}\\nproposed_slug: {{ $('When called by scheduler').item.json.proposed_slug }}\\nsecondary_keywords: {{ $('When called by scheduler').item.json.secondary_keywords }}\\ncategory: {{ $('When called by scheduler').item.json.category }}\\nscheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\nAlready published (avoid duplicate intent):\\n{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\nWrite a COMPLETE long-form SEO blog post as a single JSON object for Prof. Giv Sharifi's website.\\n\\nCRITICAL \u2014 FULL ARTICLE, NOT AN OUTLINE:\\n- Minimum 1000 words in paragraph + list text combined\\n- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n- Do NOT output section titles only. Every H2 section needs 2+ full paragraphs.\\n- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n- NEVER use type text. NEVER use heading level 1.\\n- heading level 2 = main sections; level 3 = FAQ questions only\\n- ONLY heading blocks may include level. NEVER add level to paragraph, list, or cta.\\n- cta blocks MUST be: {\"type\":\"cta\",\"text\":\"Button label\",\"href\":\"/path/\"}\\n- Structure: intro paragraph (120+ words) \u2192 5-6 H2 sections (each with 2 paragraphs + optional list) \u2192 2 cta blocks (first href=pillar_url, second href=/) \u2192 H2 FAQ \u2192 5x (H3 question + paragraph answer 80+ words)\\n- date: use scheduled_date from calendar row\\n- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n- title: 50-65 chars, primary keyword near start\\n- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n- featuredImagePath: assets/images/blog/{slug}.png\\n- Return ONLY valid JSON. No markdown fences. No commentary.",
+        "hasOutputParser": false,
         "options": {
-          "systemMessage": "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. Write FULL prose paragraphs — never bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. If you cannot reach 1000 words, add more paragraph blocks before returning JSON."
+          "systemMessage": "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. Return one valid JSON object matching the requested shape. Write FULL prose paragraphs \u2014 never bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. Never add level:0 or level on non-heading blocks. If you cannot reach 1000 words, add more paragraph blocks before returning JSON."
         }
       },
-      "id": "f3d611b3-8d26-4130-a89a-914d45c3c229",
+      "id": "471415cc-74db-459a-9ee1-65dc83c0562c",
       "name": "Gemini blog writer",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
@@ -97,14 +84,28 @@
     },
     {
       "parameters": {
-        "jsCode": "const out = $('Gemini blog writer').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nfunction countBodyWords(blocks) {\n  let n = 0;\n  for (const b of blocks || []) {\n    if (b.type === 'paragraph' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n    if ((b.type === 'list' || b.type === 'ordered-list') && Array.isArray(b.items)) {\n      for (const item of b.items) {\n        n += String(item).split(/\\s+/).filter(Boolean).length;\n      }\n    }\n    if (b.type === 'blockquote' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n  }\n  return n;\n}\n\nfunction normalizeBlocks(blocks) {\n  const outBlocks = [];\n  for (const b of blocks || []) {\n    if (!b || typeof b !== 'object') continue;\n    if (b.type === 'text' || b.type === 'paragraph') {\n      const t = String(b.text || '').trim();\n      if (!t) continue;\n      if (t.split(/\\s+/).length < 15 && !t.includes('.')) {\n        outBlocks.push({ type: 'heading', level: b.level === 3 ? 3 : 2, text: t });\n      } else {\n        outBlocks.push({ type: 'paragraph', text: t });\n      }\n      continue;\n    }\n    if (b.type === 'heading') {\n      const level = b.level === 1 ? 2 : (b.level || 2);\n      outBlocks.push({ type: 'heading', level, text: String(b.text || '').trim() });\n      continue;\n    }\n    if (['list', 'ordered-list', 'cta', 'blockquote', 'image', 'html'].includes(b.type)) {\n      outBlocks.push(b);\n    }\n  }\n  return outBlocks;\n}\n\nfunction buildImagePrompt(row, out) {\n  const topic = String(row.primary_keyword || out.title || 'neurosurgery').trim();\n  const cluster = String(row.cluster || row.category || '').toLowerCase();\n  let subjectFocus = 'precision neurosurgical care and advanced neural imaging';\n  if (cluster.includes('spine') || cluster.includes('spinal')) {\n    subjectFocus = 'spinal anatomy, vertebral structures, and minimally invasive spine care';\n  } else if (cluster.includes('brain') || cluster.includes('tumour') || cluster.includes('tumor')) {\n    subjectFocus = 'brain health, neural pathways, and high-resolution neuroimaging';\n  } else if (cluster.includes('pituitary') || cluster.includes('endoscopic')) {\n    subjectFocus = 'skull-base anatomy and endoscopic neurosurgical precision';\n  }\n\n  return (\n    `Premium hero image for an authoritative neurosurgery medical website article: \"${out.title}\". `\n    + `Clinical theme: ${topic}. Visual focus: ${subjectFocus}. `\n    + `Style: cinematic editorial medical photography blended with photorealistic 3D volumetric anatomy — `\n    + `rich depth, natural window light, soft shadow gradients, atmospheric haze, realistic material textures, `\n    + `subtle film grain, magazine-quality composition. Sophisticated palette: warm ivory, soft charcoal, `\n    + `muted teal and sage accents; full tonal range. `\n    + `NOT flat vector illustration, NOT two-tone blue infographic, NOT clip art, NOT cartoon, `\n    + `NOT generic stock photo, NOT sterile hospital corridor cliché. `\n    + `Composition: wide cinematic 16:9, rule of thirds, shallow depth of field, clean modern neurology setting `\n    + `with organic holographic scan elements integrated naturally into the scene. `\n    + `Strict exclusions: no blood, no open surgery, no wounds, no identifiable patient or doctor faces, `\n    + `no readable text, no logos, no watermarks.`\n  );\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nout.content = normalizeBlocks(out.content);\nconst paragraphCount = out.content.filter((b) => b.type === 'paragraph').length;\nconst words = countBodyWords(out.content);\n\nif (paragraphCount < 10) {\n  throw new Error(\n    `Gemini returned an outline, not a full article: only ${paragraphCount} paragraph blocks. `\n    + 'Regenerate. Need 10+ paragraph blocks with 70+ words each.'\n  );\n}\nif (words < 1000) {\n  throw new Error(\n    `Article too short: ~${words} words in paragraphs (minimum 1000). Regenerate with full prose.`\n  );\n}\n\nout.slug = slug;\nout.title = String(out.title || row.proposed_title || '').trim();\nif (!out.title) throw new Error('Gemini output missing title — check proposed_title on calendar row');\nout.featuredImagePath = `assets/images/blog/${slug}.png`;\nout.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\ndelete out.primaryKeyword;\ndelete out.wordCountEstimate;\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    paragraph_count: paragraphCount,\n    image_prompt: buildImagePrompt(row, out),\n  },\n}];\n"
+        "jsCode": "const item = $('Gemini blog writer').first().json;\nconst row = $('When called by scheduler').first().json;\nlet out = item.output ?? item.text ?? item;\n\nif (typeof out === 'string') {\n  let raw = out.trim();\n  const fenced = raw.match(/```(?:json)?\\s*([\\s\\S]*?)```/i);\n  if (fenced) raw = fenced[1].trim();\n  const start = raw.indexOf('{');\n  const end = raw.lastIndexOf('}');\n  if (start === -1 || end === -1) {\n    throw new Error('Gemini did not return a JSON object');\n  }\n  out = JSON.parse(raw.slice(start, end + 1));\n}\n\nif (out && typeof out === 'object' && out.output && typeof out.output === 'object' && !out.slug) {\n  out = out.output;\n}\n\nfunction fixCta(b, index) {\n  const pillar = String(row.pillar_url || '/brain-surgery/').trim() || '/';\n  const hrefDefault = index === 0 ? pillar : '/';\n  const labelDefault = index === 0 ? 'Explore related services' : 'Book a consultation';\n\n  if (b.href && b.text && !String(b.text).includes('href:')) {\n    return {\n      type: 'cta',\n      text: String(b.text).trim() || labelDefault,\n      href: String(b.href).trim() || hrefDefault,\n    };\n  }\n\n  const raw = String(b.text || '');\n  const hrefMatch = raw.match(/href:\\s*([^,]+)/i);\n  const textMatch = raw.match(/text:\\s*(.+)$/i);\n  return {\n    type: 'cta',\n    text: (textMatch?.[1] || labelDefault).trim() || labelDefault,\n    href: (hrefMatch?.[1] || hrefDefault).trim() || hrefDefault,\n  };\n}\n\nlet ctaIndex = 0;\n\nfunction sanitizeBlock(b) {\n  if (!b || typeof b !== 'object') return null;\n  const type = b.type;\n\n  if (type === 'heading') {\n    const text = String(b.text || '').trim();\n    return text ? { type: 'heading', level: b.level === 3 ? 3 : 2, text } : null;\n  }\n\n  if (type === 'paragraph' || type === 'text') {\n    const text = String(b.text || '').trim();\n    return text ? { type: 'paragraph', text } : null;\n  }\n\n  if (type === 'list' || type === 'ordered-list') {\n    const items = (b.items || []).map((x) => String(x).trim()).filter(Boolean);\n    return items.length ? { type, items } : null;\n  }\n\n  if (type === 'cta') {\n    const fixed = fixCta(b, ctaIndex);\n    ctaIndex += 1;\n    return fixed;\n  }\n\n  if (type === 'blockquote') {\n    const text = String(b.text || '').trim();\n    return text ? { type: 'blockquote', text } : null;\n  }\n\n  return null;\n}\n\nout.content = (out.content || []).map(sanitizeBlock).filter(Boolean);\n\nif (!out.slug || !out.title || !Array.isArray(out.content) || !out.content.length) {\n  throw new Error('Gemini JSON missing slug, title, or content after sanitize');\n}\n\nreturn [{ json: { output: out } }];\n"
       },
-      "id": "75a1c463-63dc-40b1-a2cc-1c8005b4b08b",
-      "name": "Normalize blog output",
+      "id": "89b27369-a0b5-4f4f-aeb8-b3ec5ef2e55a",
+      "name": "Parse & sanitize JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         880,
+        0
+      ],
+      "notes": "Fixes level:0 on paragraphs, broken CTA href/text, markdown-wrapped JSON. No structured parser needed."
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = $('Parse & sanitize JSON').first().json.output || {};\nconst row = $('When called by scheduler').first().json;\n\nconst STOP = new Set([\n  'a','an','the','and','or','for','of','in','on','to','with','at','by','from','as','is','are','was','were','be','been','being',\n]);\n\nfunction slugify(s) {\n  return String(s || '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .split(/\\s+/)\n    .filter((w) => w && !STOP.has(w))\n    .join('-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '')\n    .slice(0, 60);\n}\n\nfunction countBodyWords(blocks) {\n  let n = 0;\n  for (const b of blocks || []) {\n    if (b.type === 'paragraph' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n    if ((b.type === 'list' || b.type === 'ordered-list') && Array.isArray(b.items)) {\n      for (const item of b.items) {\n        n += String(item).split(/\\s+/).filter(Boolean).length;\n      }\n    }\n    if (b.type === 'blockquote' && b.text) {\n      n += String(b.text).split(/\\s+/).filter(Boolean).length;\n    }\n  }\n  return n;\n}\n\nfunction normalizeBlocks(blocks) {\n  const outBlocks = [];\n  for (const b of blocks || []) {\n    if (!b || typeof b !== 'object') continue;\n    if (b.type === 'text' || b.type === 'paragraph') {\n      const t = String(b.text || '').trim();\n      if (!t) continue;\n      if (t.split(/\\s+/).length < 15 && !t.includes('.')) {\n        outBlocks.push({ type: 'heading', level: b.level === 3 ? 3 : 2, text: t });\n      } else {\n        outBlocks.push({ type: 'paragraph', text: t });\n      }\n      continue;\n    }\n    if (b.type === 'heading') {\n      const level = b.level === 1 ? 2 : (b.level || 2);\n      outBlocks.push({ type: 'heading', level, text: String(b.text || '').trim() });\n      continue;\n    }\n    if (['list', 'ordered-list', 'cta', 'blockquote', 'image', 'html'].includes(b.type)) {\n      outBlocks.push(b);\n    }\n  }\n  return outBlocks;\n}\n\nfunction buildImagePrompt(row, out) {\n  const topic = String(row.primary_keyword || out.title || 'neurosurgery').trim();\n  const cluster = String(row.cluster || row.category || '').toLowerCase();\n  let subjectFocus = 'precision neurosurgical care and advanced neural imaging';\n  if (cluster.includes('spine') || cluster.includes('spinal')) {\n    subjectFocus = 'spinal anatomy, vertebral structures, and minimally invasive spine care';\n  } else if (cluster.includes('brain') || cluster.includes('tumour') || cluster.includes('tumor')) {\n    subjectFocus = 'brain health, neural pathways, and high-resolution neuroimaging';\n  } else if (cluster.includes('pituitary') || cluster.includes('endoscopic')) {\n    subjectFocus = 'skull-base anatomy and endoscopic neurosurgical precision';\n  }\n\n  return (\n    `Premium hero image for an authoritative neurosurgery medical website article: \"${out.title}\". `\n    + `Clinical theme: ${topic}. Visual focus: ${subjectFocus}. `\n    + `Style: cinematic editorial medical photography blended with photorealistic 3D volumetric anatomy \u2014 `\n    + `rich depth, natural window light, soft shadow gradients, atmospheric haze, realistic material textures, `\n    + `subtle film grain, magazine-quality composition. Sophisticated palette: warm ivory, soft charcoal, `\n    + `muted teal and sage accents; full tonal range. `\n    + `NOT flat vector illustration, NOT two-tone blue infographic, NOT clip art, NOT cartoon, `\n    + `NOT generic stock photo, NOT sterile hospital corridor clich\u00e9. `\n    + `Composition: wide cinematic 16:9, rule of thirds, shallow depth of field, clean modern neurology setting `\n    + `with organic holographic scan elements integrated naturally into the scene. `\n    + `Strict exclusions: no blood, no open surgery, no wounds, no identifiable patient or doctor faces, `\n    + `no readable text, no logos, no watermarks.`\n  );\n}\n\nconst slug = slugify(out.slug || row.proposed_slug || row.primary_keyword);\nif (!slug) throw new Error('Could not build SEO slug');\n\nout.content = normalizeBlocks(out.content);\nconst paragraphCount = out.content.filter((b) => b.type === 'paragraph').length;\nconst words = countBodyWords(out.content);\n\nif (paragraphCount < 10) {\n  throw new Error(\n    `Gemini returned an outline, not a full article: only ${paragraphCount} paragraph blocks. `\n    + 'Regenerate. Need 10+ paragraph blocks with 70+ words each.'\n  );\n}\nif (words < 1000) {\n  throw new Error(\n    `Article too short: ~${words} words in paragraphs (minimum 1000). Regenerate with full prose.`\n  );\n}\n\nout.slug = slug;\nout.title = String(out.title || row.proposed_title || '').trim();\nif (!out.title) throw new Error('Gemini output missing title \u2014 check proposed_title on calendar row');\nout.featuredImagePath = `assets/images/blog/${slug}.png`;\nout.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).slice(0, 10);\nout.readingTimeMinutes = Math.max(8, Math.round(words / 200));\ndelete out.primaryKeyword;\ndelete out.wordCountEstimate;\n\nreturn [{\n  json: {\n    ...row,\n    normalized: out,\n    word_count: words,\n    paragraph_count: paragraphCount,\n    image_prompt: buildImagePrompt(row, out),\n  },\n}];\n"
+      },
+      "id": "8ca2bb0a-de22-4fbf-a8c2-5fa7c4c4917f",
+      "name": "Normalize blog output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
         0
       ]
     },
@@ -122,26 +123,26 @@
           "quality": "high"
         }
       },
-      "id": "2567b081-622a-4fd0-a1a3-506785009ae5",
+      "id": "026cf1a0-d7fd-4844-b13f-df1a58da2e46",
       "name": "Generate an image",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.3,
       "position": [
-        1100,
+        1320,
         -80
       ],
       "notes": "OpenAI credential. Outputs binary property data (filesystem mode)."
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first();\nconst row = $('Normalize blog output').first().json;\n\nlet image_base64 = item.json?.data?.[0]?.b64_json || item.json?.image_base64 || '';\n\n// OpenAI Image node (filesystem binary mode) — binary property is usually \"data\"\nif (!image_base64) {\n  const binary = item.binary || {};\n  const key = binary.data ? 'data' : Object.keys(binary)[0];\n  if (!key) {\n    throw new Error(\n      'No image from OpenAI — expected binary property \"data\". '\n      + 'Check Generate an image node output.'\n    );\n  }\n  const buffer = await this.helpers.getBinaryDataBuffer(0, key);\n  image_base64 = buffer.toString('base64');\n}\n\nif (!image_base64) throw new Error('Empty image data from OpenAI');\n\nreturn [{ json: { ...row, image_base64 } }];\n"
+        "jsCode": "const item = $input.first();\nconst row = $('Normalize blog output').first().json;\n\nlet image_base64 = item.json?.data?.[0]?.b64_json || item.json?.image_base64 || '';\n\n// OpenAI Image node (filesystem binary mode) \u2014 binary property is usually \"data\"\nif (!image_base64) {\n  const binary = item.binary || {};\n  const key = binary.data ? 'data' : Object.keys(binary)[0];\n  if (!key) {\n    throw new Error(\n      'No image from OpenAI \u2014 expected binary property \"data\". '\n      + 'Check Generate an image node output.'\n    );\n  }\n  const buffer = await this.helpers.getBinaryDataBuffer(0, key);\n  image_base64 = buffer.toString('base64');\n}\n\nif (!image_base64) throw new Error('Empty image data from OpenAI');\n\nreturn [{ json: { ...row, image_base64 } }];\n"
       },
-      "id": "030d58b4-2d2e-476e-a089-2ed262d1f0b1",
+      "id": "24ab0b04-aa3d-4d76-a119-38001e3e145f",
       "name": "Extract image base64",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1320,
+        1540,
         -80
       ]
     },
@@ -168,26 +169,26 @@
         "fileContent": "={{ JSON.stringify($('Extract image base64').item.json, null, 2) }}",
         "commitMessage": "=blog: save draft {{ $('Extract image base64').item.json.normalized.slug }}"
       },
-      "id": "073c30da-c7c2-4d3a-a5d0-50529c22d67b",
+      "id": "7f4fd14e-2e5a-4d23-a472-57b130565194",
       "name": "Save draft JSON GitHub",
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
       "position": [
-        1540,
+        1760,
         0
       ],
       "notes": "On re-run change operation to edit if file exists"
     },
     {
       "parameters": {
-        "jsCode": "const row = $('Extract image base64').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\n\n// chat_id: workflow 01 \"Set calendar row\" → scheduler trigger → Normalize → here\nconst cal = $('When called by scheduler').first().json;\nconst FALLBACK_CHAT_ID = '5131907549'; // your Telegram chat ID — keep in sync with workflow 01\nconst rowId = row.id ?? row.row_id ?? cal?.id;\n\nconst chatId = String(\n  row.chat_id\n  || row.telegram_chat_id\n  || cal?.chat_id\n  || cal?.telegram_chat_id\n  || FALLBACK_CHAT_ID\n).trim();\n\nif (!chatId || chatId === 'REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID') {\n  throw new Error(\n    'chat_id missing — open workflow 01, node \"Set calendar row\", set chat_id to your numeric Telegram ID'\n  );\n}\n\nreturn [{\n  json: {\n    chat_id: chatId,\n    row_id: rowId,\n    slug: p.slug,\n    image_base64: row.image_base64,\n    preview_message:\n      `📋 <b>Blog preview</b> (row ${rowId})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}…`,\n    callback_publish: `blog_publish_${rowId}`,\n    callback_regen_article: `blog_regen_article_${rowId}`,\n    callback_regen_image: `blog_regen_image_${rowId}`,\n    callback_skip: `blog_skip_${rowId}`,\n  },\n}];\n"
+        "jsCode": "const row = $('Extract image base64').first().json;\nconst p = row.normalized;\nconst blocks = (p.content || []).filter((b) => b.type === 'paragraph').slice(0, 2);\nconst preview = blocks.map((b) => b.text).join('\\n\\n').slice(0, 400);\n\n// chat_id: workflow 01 \"Set calendar row\" \u2192 scheduler trigger \u2192 Normalize \u2192 here\nconst cal = $('When called by scheduler').first().json;\nconst FALLBACK_CHAT_ID = '5131907549'; // your Telegram chat ID \u2014 keep in sync with workflow 01\nconst rowId = row.id ?? row.row_id ?? cal?.id;\n\nconst chatId = String(\n  row.chat_id\n  || row.telegram_chat_id\n  || cal?.chat_id\n  || cal?.telegram_chat_id\n  || FALLBACK_CHAT_ID\n).trim();\n\nif (!chatId || chatId === 'REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID') {\n  throw new Error(\n    'chat_id missing \u2014 open workflow 01, node \"Set calendar row\", set chat_id to your numeric Telegram ID'\n  );\n}\n\nreturn [{\n  json: {\n    chat_id: chatId,\n    row_id: rowId,\n    slug: p.slug,\n    image_base64: row.image_base64,\n    preview_message:\n      `\ud83d\udccb <b>Blog preview</b> (row ${rowId})\\n\\n`\n      + `<b>Title:</b> ${p.title}\\n`\n      + `<b>Slug:</b> ${p.slug}\\n`\n      + `<b>Meta:</b> ${p.metaDescription}\\n`\n      + `<b>Words:</b> ~${row.word_count}\\n`\n      + `<b>Cluster:</b> ${row.cluster}\\n`\n      + `<b>Primary KW:</b> ${row.primary_keyword}\\n\\n`\n      + `<b>Excerpt:</b>\\n${preview}\u2026`,\n    callback_publish: `blog_publish_${rowId}`,\n    callback_regen_article: `blog_regen_article_${rowId}`,\n    callback_regen_image: `blog_regen_image_${rowId}`,\n    callback_skip: `blog_skip_${rowId}`,\n  },\n}];\n"
       },
-      "id": "fe0f5d05-bba6-4a0a-921e-d1e0789f310f",
+      "id": "79679192-aa9a-40d5-b1b7-1024fcef6586",
       "name": "Build preview message",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1760,
+        1980,
         0
       ]
     },
@@ -195,12 +196,12 @@
       "parameters": {
         "jsCode": "const item = $input.first().json;\nconst b64 = item.image_base64;\nif (!b64) throw new Error('No image_base64 for Telegram photo');\nreturn [{\n  json: item,\n  binary: {\n    data: {\n      data: b64,\n      mimeType: 'image/png',\n      fileName: `${item.slug}.png`,\n      encoding: 'base64',\n    },\n  },\n}];\n"
       },
-      "id": "e6b0a5ac-db0d-4148-8d8c-d72c2db8d0f3",
+      "id": "d4d2f7eb-ae93-4c22-9f43-131713b13fa2",
       "name": "Pack image binary",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1980,
+        2200,
         -80
       ]
     },
@@ -214,15 +215,15 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "2710b524-e756-42e6-b244-777338412fe1",
+      "id": "fa144590-bb3e-4c13-af4c-004121d3fffe",
       "name": "Send preview photo",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1760,
+        2200,
         -80
       ],
-      "notes": "Wire binary from image — map in n8n UI: binary property from previous HTTP node converted to file"
+      "notes": "Wire binary from image \u2014 map in n8n UI: binary property from previous HTTP node converted to file"
     },
     {
       "parameters": {
@@ -233,33 +234,33 @@
           "rows": [
             [
               {
-                "text": "✅ Publish",
+                "text": "\u2705 Publish",
                 "callback_data": "={{ $('Build preview message').item.json.callback_publish }}"
               },
               {
-                "text": "🔄 Regen article",
+                "text": "\ud83d\udd04 Regen article",
                 "callback_data": "={{ $('Build preview message').item.json.callback_regen_article }}"
               }
             ],
             [
               {
-                "text": "🖼 Regen image",
+                "text": "\ud83d\uddbc Regen image",
                 "callback_data": "={{ $('Build preview message').item.json.callback_regen_image }}"
               },
               {
-                "text": "❌ Skip",
+                "text": "\u274c Skip",
                 "callback_data": "={{ $('Build preview message').item.json.callback_skip }}"
               }
             ]
           ]
         }
       },
-      "id": "d24e24cf-8ce2-4aa2-b84a-acd733b23f7b",
+      "id": "eddd2386-f888-4cdd-88a2-84c1fa9bb465",
       "name": "Send approve buttons",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1760,
+        2200,
         80
       ]
     },
@@ -293,20 +294,20 @@
         },
         "options": {}
       },
-      "id": "8bd92a28-2cdf-40cf-a63f-6cd63c69586b",
+      "id": "a2733e24-08d7-47bc-b9c9-a30055a18055",
       "name": "Sheet status preview",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
         2420,
-        80
+        0
       ]
     },
     {
       "parameters": {
-        "content": "## Draft + preview\nGemini → Normalize → OpenAI Generate an image → Extract base64 → Telegram preview\nOpenAI node outputs binary `data` (not JSON b64_json). Extract node uses getBinaryDataBuffer."
+        "content": "## Draft + preview\nGemini \u2192 Parse & sanitize JSON \u2192 Normalize \u2192 OpenAI image \u2192 Telegram preview\nNo structured parser \u2014 Code node fixes level:0, broken CTAs, fenced JSON."
       },
-      "id": "1c5a06b5-d1f5-4419-bd1e-84f6b04c7b1a",
+      "id": "8c29acb9-e1a4-4891-8605-abac28fb4c6b",
       "name": "Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -361,18 +362,18 @@
         ]
       ]
     },
-    "Blog JSON parser": {
-      "ai_outputParser": [
+    "Gemini blog writer": {
+      "main": [
         [
           {
-            "node": "Gemini blog writer",
-            "type": "ai_outputParser",
+            "node": "Parse & sanitize JSON",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Gemini blog writer": {
+    "Parse & sanitize JSON": {
       "main": [
         [
           {
@@ -471,7 +472,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3b2f57cc-cd1c-4f22-ac9b-cb6b15e831be",
+  "versionId": "0beb70c0-2e1e-49d2-8237-cf5e008b79fc",
   "meta": {
     "templateCredsSetupCompleted": false
   },

@@ -215,7 +215,95 @@ BLOG_SCHEMA = {
 }
 
 
-NORMALIZE_SLUG_CODE = r"""const out = $('Gemini blog writer').first().json.output || {};
+PARSE_SANITIZE_JSON_CODE = r"""const item = $('Gemini blog writer').first().json;
+const row = $('When called by scheduler').first().json;
+let out = item.output ?? item.text ?? item;
+
+if (typeof out === 'string') {
+  let raw = out.trim();
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced) raw = fenced[1].trim();
+  const start = raw.indexOf('{');
+  const end = raw.lastIndexOf('}');
+  if (start === -1 || end === -1) {
+    throw new Error('Gemini did not return a JSON object');
+  }
+  out = JSON.parse(raw.slice(start, end + 1));
+}
+
+if (out && typeof out === 'object' && out.output && typeof out.output === 'object' && !out.slug) {
+  out = out.output;
+}
+
+function fixCta(b, index) {
+  const pillar = String(row.pillar_url || '/brain-surgery/').trim() || '/';
+  const hrefDefault = index === 0 ? pillar : '/';
+  const labelDefault = index === 0 ? 'Explore related services' : 'Book a consultation';
+
+  if (b.href && b.text && !String(b.text).includes('href:')) {
+    return {
+      type: 'cta',
+      text: String(b.text).trim() || labelDefault,
+      href: String(b.href).trim() || hrefDefault,
+    };
+  }
+
+  const raw = String(b.text || '');
+  const hrefMatch = raw.match(/href:\s*([^,]+)/i);
+  const textMatch = raw.match(/text:\s*(.+)$/i);
+  return {
+    type: 'cta',
+    text: (textMatch?.[1] || labelDefault).trim() || labelDefault,
+    href: (hrefMatch?.[1] || hrefDefault).trim() || hrefDefault,
+  };
+}
+
+let ctaIndex = 0;
+
+function sanitizeBlock(b) {
+  if (!b || typeof b !== 'object') return null;
+  const type = b.type;
+
+  if (type === 'heading') {
+    const text = String(b.text || '').trim();
+    return text ? { type: 'heading', level: b.level === 3 ? 3 : 2, text } : null;
+  }
+
+  if (type === 'paragraph' || type === 'text') {
+    const text = String(b.text || '').trim();
+    return text ? { type: 'paragraph', text } : null;
+  }
+
+  if (type === 'list' || type === 'ordered-list') {
+    const items = (b.items || []).map((x) => String(x).trim()).filter(Boolean);
+    return items.length ? { type, items } : null;
+  }
+
+  if (type === 'cta') {
+    const fixed = fixCta(b, ctaIndex);
+    ctaIndex += 1;
+    return fixed;
+  }
+
+  if (type === 'blockquote') {
+    const text = String(b.text || '').trim();
+    return text ? { type: 'blockquote', text } : null;
+  }
+
+  return null;
+}
+
+out.content = (out.content || []).map(sanitizeBlock).filter(Boolean);
+
+if (!out.slug || !out.title || !Array.isArray(out.content) || !out.content.length) {
+  throw new Error('Gemini JSON missing slug, title, or content after sanitize');
+}
+
+return [{ json: { output: out } }];
+"""
+
+
+NORMALIZE_SLUG_CODE = r"""const out = $('Parse & sanitize JSON').first().json.output || {};
 const row = $('When called by scheduler').first().json;
 
 const STOP = new Set([
@@ -1152,19 +1240,10 @@ def build_draft_preview() -> dict:
         "Gemini blog model",
         "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
         [440, 120],
-        {"modelName": GEMINI_MODEL, "options": {"temperature": 0.45, "maxOutputTokens": 16384}},
+        {"modelName": GEMINI_MODEL, "options": {"temperature": 0.45, "maxOutputTokens": 24576}},
         type_version=1,
     )
     nodes.append(model)
-
-    parser = node(
-        "Blog JSON parser",
-        "@n8n/n8n-nodes-langchain.outputParserStructured",
-        [440, 320],
-        {"jsonSchemaExample": json.dumps(BLOG_SCHEMA, indent=2)},
-        type_version=1.2,
-    )
-    nodes.append(parser)
 
     blog_prompt = (
         "=Calendar row:\\n"
@@ -1180,7 +1259,7 @@ def build_draft_preview() -> dict:
         "scheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\n"
         "Already published (avoid duplicate intent):\\n"
         "{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\n"
-        "Write a COMPLETE long-form SEO blog post JSON for Prof. Giv Sharifi's website.\\n\\n"
+        "Write a COMPLETE long-form SEO blog post as a single JSON object for Prof. Giv Sharifi's website.\\n\\n"
         "CRITICAL — FULL ARTICLE, NOT AN OUTLINE:\\n"
         "- Minimum 1000 words in paragraph + list text combined\\n"
         "- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n"
@@ -1188,15 +1267,18 @@ def build_draft_preview() -> dict:
         "- Allowed content types ONLY: paragraph, heading, list, ordered-list, cta\\n"
         "- NEVER use type text. NEVER use heading level 1.\\n"
         "- heading level 2 = main sections; level 3 = FAQ questions only\\n"
+        "- ONLY heading blocks may include level. NEVER add level to paragraph, list, or cta.\\n"
+        "- cta blocks MUST be: {\"type\":\"cta\",\"text\":\"Button label\",\"href\":\"/path/\"}\\n"
         "- Structure: intro paragraph (120+ words) → 5-6 H2 sections (each with 2 paragraphs + optional list) "
-        "→ 2 cta blocks (href=pillar_url and href=/) → H2 FAQ → 5x (H3 question + paragraph answer 80+ words)\\n"
+        "→ 2 cta blocks (first href=pillar_url, second href=/) → H2 FAQ → 5x (H3 question + paragraph answer 80+ words)\\n"
         "- date: use scheduled_date from calendar row\\n"
         "- slug: 3-5 words, lowercase hyphenated, NO stop words (the, and, for, of, in, to, with)\\n"
         "- title: 50-65 chars, primary keyword near start\\n"
         "- metaDescription: 150-155 chars, unique from excerpt, soft CTA\\n"
         "- 5-8 tags including neurosurgery Dubai and neurosurgeon Tehran where natural\\n"
         "- YMYL: no guaranteed outcomes; use may, can, your surgeon will assess\\n"
-        "- featuredImagePath: assets/images/blog/{slug}.webp"
+        "- featuredImagePath: assets/images/blog/{slug}.png\\n"
+        "- Return ONLY valid JSON. No markdown fences. No commentary."
     )
 
     agent = node(
@@ -1206,13 +1288,14 @@ def build_draft_preview() -> dict:
         {
             "promptType": "define",
             "text": blog_prompt,
-            "hasOutputParser": True,
+            "hasOutputParser": False,
             "options": {
                 "systemMessage": (
                     "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. "
-                    "Output valid JSON only via the parser. Write FULL prose paragraphs — never bullet-point outlines "
-                    "disguised as headings. Simple B2 English. Never use Persian. If you cannot reach 1000 words, "
-                    "add more paragraph blocks before returning JSON."
+                    "Return one valid JSON object matching the requested shape. Write FULL prose paragraphs — never "
+                    "bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. "
+                    "Never add level:0 or level on non-heading blocks. If you cannot reach 1000 words, add more "
+                    "paragraph blocks before returning JSON."
                 )
             },
         },
@@ -1220,13 +1303,23 @@ def build_draft_preview() -> dict:
     )
     nodes.append(agent)
 
-    normalize = node("Normalize blog output", "n8n-nodes-base.code", [880, 0], {"jsCode": NORMALIZE_SLUG_CODE}, type_version=2)
+    parse_json = node(
+        "Parse & sanitize JSON",
+        "n8n-nodes-base.code",
+        [880, 0],
+        {"jsCode": PARSE_SANITIZE_JSON_CODE},
+        type_version=2,
+        notes="Fixes level:0 on paragraphs, broken CTA href/text, markdown-wrapped JSON. No structured parser needed.",
+    )
+    nodes.append(parse_json)
+
+    normalize = node("Normalize blog output", "n8n-nodes-base.code", [1100, 0], {"jsCode": NORMALIZE_SLUG_CODE}, type_version=2)
     nodes.append(normalize)
 
     image_req = node(
         "Generate an image",
         "@n8n/n8n-nodes-langchain.openAi",
-        [1100, -80],
+        [1320, -80],
         {
             "resource": "image",
             "modelId": {
@@ -1245,7 +1338,7 @@ def build_draft_preview() -> dict:
     image_b64 = node(
         "Extract image base64",
         "n8n-nodes-base.code",
-        [1320, -80],
+        [1540, -80],
         {"jsCode": EXTRACT_IMAGE_BASE64_CODE},
         type_version=2,
     )
@@ -1254,7 +1347,7 @@ def build_draft_preview() -> dict:
     save_draft = node(
         "Save draft JSON GitHub",
         "n8n-nodes-base.github",
-        [1540, 0],
+        [1760, 0],
         {
             "resource": "file",
             "operation": "create",
@@ -1268,13 +1361,13 @@ def build_draft_preview() -> dict:
     )
     nodes.append(save_draft)
 
-    preview = node("Build preview message", "n8n-nodes-base.code", [1760, 0], {"jsCode": PREVIEW_TEXT_CODE}, type_version=2)
+    preview = node("Build preview message", "n8n-nodes-base.code", [1980, 0], {"jsCode": PREVIEW_TEXT_CODE}, type_version=2)
     nodes.append(preview)
 
     pack_binary = node(
         "Pack image binary",
         "n8n-nodes-base.code",
-        [1980, -80],
+        [2200, -80],
         {
             "jsCode": """const item = $input.first().json;
 const b64 = item.image_base64;
@@ -1299,7 +1392,7 @@ return [{
     send_photo = node(
         "Send preview photo",
         "n8n-nodes-base.telegram",
-        [1760, -80],
+        [2200, -80],
         {
             "operation": "sendPhoto",
             "chatId": "={{ $json.chat_id }}",
@@ -1317,7 +1410,7 @@ return [{
     send_buttons = node(
         "Send approve buttons",
         "n8n-nodes-base.telegram",
-        [1760, 80],
+        [2200, 80],
         {
             "chatId": "={{ $('Build preview message').item.json.chat_id }}",
             "text": "Approve this blog post?",
@@ -1342,7 +1435,7 @@ return [{
     sheet_preview = node(
         "Sheet status preview",
         "n8n-nodes-base.googleSheets",
-        [2420, 80],
+        [2420, 0],
         sheets_update_params({
             "id": "={{ $('When called by scheduler').item.json.id }}",
             "status": "preview",
@@ -1355,8 +1448,8 @@ return [{
     nodes.append(
         sticky(
             "## Draft + preview\n"
-            "Gemini → Normalize → OpenAI Generate an image → Extract base64 → Telegram preview\n"
-            "OpenAI node outputs binary `data` (not JSON b64_json). Extract node uses getBinaryDataBuffer.",
+            "Gemini → Parse & sanitize JSON → Normalize → OpenAI image → Telegram preview\n"
+            "No structured parser — Code node fixes level:0, broken CTAs, fenced JSON.",
             [-40, -200],
         )
     )
@@ -1365,8 +1458,8 @@ return [{
     connect(c, "Get posts index", "Build existing keywords context")
     connect(c, "Build existing keywords context", "Gemini blog writer")
     connect(c, "Gemini blog model", "Gemini blog writer", ctype="ai_languageModel")
-    connect(c, "Blog JSON parser", "Gemini blog writer", ctype="ai_outputParser")
-    connect(c, "Gemini blog writer", "Normalize blog output")
+    connect(c, "Gemini blog writer", "Parse & sanitize JSON")
+    connect(c, "Parse & sanitize JSON", "Normalize blog output")
     connect(c, "Normalize blog output", "Generate an image")
     connect(c, "Generate an image", "Extract image base64")
     connect(c, "Extract image base64", "Save draft JSON GitHub")
