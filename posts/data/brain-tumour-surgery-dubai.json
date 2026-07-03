@@ -14,7 +14,6 @@
     "neurosurgery expert"
   ],
   "readingTimeMinutes": 8,
-  "featuredImagePath": "assets/images/blog/brain-tumour-surgery-dubai.webp",
   "content": [
     {
       "type": "heading",
@@ -160,5 +159,5 @@
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },
-  "featuredImage": "/assets/images/blog/brain-tumour-surgery-dubai.webp"
+  "featuredImage": "/assets/images/blog/brain-tumour-surgery-dubai.png"
 }

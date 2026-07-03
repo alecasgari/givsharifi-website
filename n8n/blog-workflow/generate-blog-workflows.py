@@ -386,13 +386,14 @@ if (!idx || !Array.isArray(idx.posts)) {
 const p = $('Parse draft').first().json.normalized;
 const row = $('Read sheet row').first().json;
 const title = p.title || row.proposed_title || p.slug;
+const imagePath = `assets/images/blog/${p.slug}.png`;
 idx.posts = [{
   slug: p.slug,
   title,
   excerpt: p.excerpt,
   date: p.date,
   category: p.category,
-  image: `/${p.featuredImagePath}`,
+  image: `/${imagePath}`,
 }, ...(idx.posts || [])];
 
 return [{
@@ -430,6 +431,8 @@ let draft = item.json;
 
 // HTTP Request (responseFormat json) — draft fields at top level
 if (draft?.normalized) {
+  const slug = draft.normalized.slug;
+  draft.normalized.featuredImagePath = `assets/images/blog/${slug}.png`;
   return [{
     json: {
       row,
@@ -468,6 +471,9 @@ if (!raw) {
 draft = JSON.parse(raw);
 if (!draft.normalized) throw new Error('Draft missing normalized post');
 
+const slug = draft.normalized.slug;
+draft.normalized.featuredImagePath = `assets/images/blog/${slug}.png`;
+
 return [{
   json: {
     row,
@@ -483,16 +489,11 @@ const slug = row.normalized.slug;
 const b64 = row.image_base64;
 if (!b64) throw new Error('No image_base64 in draft');
 const image_path = `assets/images/blog/${slug}.png`;
+const buffer = Buffer.from(b64, 'base64');
+const binary = await this.helpers.prepareBinaryData(buffer, `${slug}.png`, 'image/png');
 return [{
   json: { image_path, slug },
-  binary: {
-    data: {
-      data: b64,
-      mimeType: 'image/png',
-      fileName: `${slug}.png`,
-      encoding: 'base64',
-    },
-  },
+  binary: { data: binary },
 }];
 """
 
@@ -1396,6 +1397,7 @@ def build_publish() -> dict:
     nodes.append(parse_draft)
 
     publish_build_post_code = r"""const p = $('Parse draft').first().json.normalized;
+const imagePath = `assets/images/blog/${p.slug}.png`;
 const post = {
   ...p,
   author: {
@@ -1403,8 +1405,9 @@ const post = {
     title: 'Board-Certified Neurosurgeon',
     url: 'https://www.givsharifi.com/',
   },
-  featuredImage: `/${p.featuredImagePath}`,
+  featuredImage: `/${imagePath}`,
 };
+delete post.featuredImagePath;
 delete post.primaryKeyword;
 delete post.wordCountEstimate;
 return [{ json: { post_json: JSON.stringify(post, null, 2) + '\n', slug: p.slug } }];
