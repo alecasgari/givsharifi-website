@@ -30,7 +30,6 @@ SITE_DIRS = (
     "assets",
     "blog",
     "components",
-    "congress",
     *PUBLISH_DIRS,
 )
 SITE_OUTPUT = ROOT / "_site"
