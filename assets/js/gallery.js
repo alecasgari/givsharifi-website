@@ -82,9 +82,23 @@
           el.classList.toggle("is-active", on);
           el.setAttribute("aria-pressed", on ? "true" : "false");
         });
-        render();
+        render({ scrollToResults: true });
       });
     }
+  }
+
+  function scrollToGallery() {
+    const listEl = document.querySelector(".gal-list");
+    if (!listEl) return;
+    const headerHeight =
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
+    const toolbar = document.querySelector(".gal-toolbar");
+    const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
+    const offset = headerHeight + toolbarHeight + 12;
+    const listTop = listEl.getBoundingClientRect().top;
+    if (listTop >= offset && listTop < window.innerHeight * 0.45) return;
+    const top = listTop + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }
 
   function getFiltered() {
@@ -105,7 +119,7 @@
     }));
   }
 
-  function render() {
+  function render(options = {}) {
     const list = getFiltered();
     const filtered = list.length !== allImages.length || activeCategory || (searchInput?.value || "").trim();
 
@@ -118,6 +132,7 @@
     if (!list.length) {
       grid.innerHTML =
         '<p class="gal-empty">No photos match your search or category filter.</p>';
+      if (options.scrollToResults) requestAnimationFrame(scrollToGallery);
       return;
     }
 
@@ -142,6 +157,8 @@
     if (window.GivLightbox) {
       window.GivLightbox.bindGalleryGrid(grid, toLightboxItems(list));
     }
+
+    if (options.scrollToResults) requestAnimationFrame(scrollToGallery);
   }
 
   function escapeHtml(str) {
