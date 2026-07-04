@@ -48,20 +48,22 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/images/gallery/ assets/data/gallery.json
-          git reset assets/images/gallery/_incoming/ 2>/dev/null || true
+          git add assets/data/gallery.json
+          git add assets/images/gallery/
+          git add -u assets/images/gallery/_incoming/
           if git diff --staged --quiet; then
             echo "changes_detected=false" >> "$GITHUB_OUTPUT"
             echo "No gallery changes to commit."
             exit 0
           fi
+          git pull --rebase origin main
           git commit -m "chore: process gallery images from n8n"
           for attempt in 1 2 3 4 5; do
-            git pull --rebase origin main
             if git push origin HEAD:main; then
               echo "changes_detected=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
+            git pull --rebase origin main
             echo "Push attempt $attempt failed, retrying..."
             sleep $((attempt * 4))
           done
