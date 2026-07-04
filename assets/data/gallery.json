@@ -420,6 +420,18 @@
       "featured": false,
       "width": 1000,
       "height": 667
+    },
+    {
+      "slug": "nanomedicine-symposium-tehran",
+      "file": "assets/images/gallery/nanomedicine-symposium-tehran.webp",
+      "thumb": "assets/images/gallery/nanomedicine-symposium-tehran-thumb.webp",
+      "strip": "assets/images/gallery/nanomedicine-symposium-tehran-strip.webp",
+      "alt": "Prof. Giv Sharifi speaking at the Nanomedicine Symposium in Tehran, showcasing his academic contribution to neurosurgery.",
+      "title": "Nanomedicine Symposium in Tehran",
+      "category": "Event",
+      "featured": false,
+      "width": 1000,
+      "height": 667
     }
   ]
 }
