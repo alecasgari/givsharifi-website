@@ -1,0 +1,33 @@
+{
+  "updated": "2026-07-04",
+  "events": [
+    {
+      "slug": "international-clinical-oncology-congress-2026",
+      "title": "20th International Clinical Oncology Congress",
+      "subtitle": "International Clinical Oncology Congress — Tehran, July 2026",
+      "date": "2026-07-02",
+      "year": 2026,
+      "city": "Tehran",
+      "country": "Iran",
+      "venue": "Heart Hotel, Rajaei Cardiovascular Institute",
+      "type": "Congress",
+      "excerpt": "The 20th International Clinical Oncology Congress hosted by the Iranian Society of Radiation Oncology at Heart Hotel, Rajaei Cardiovascular Institute, Tehran — 2–3 July 2026.",
+      "coverImage": "congress/international-clinical-oncology-congress-2026/images/01-congress-backdrop.png",
+      "keywords": ["clinical oncology", "radiation oncology", "ISRO", "Tehran", "brain tumour", "oncology congress"]
+    },
+    {
+      "slug": "nanomedicine-symposium-2025",
+      "title": "Symposium on Nanomedicine and its Impact on the Central Nervous System",
+      "subtitle": "Introduction of The Textbook of Nanoneuroscience and Nanoneurosurgery (2nd Edition)",
+      "date": "2025-02-01",
+      "year": 2025,
+      "city": "Tehran",
+      "country": "Iran",
+      "venue": "Shahid Beheshti University of Medical Sciences",
+      "type": "Symposium",
+      "excerpt": "An academic symposium on nanomedicine applications in the central nervous system, featuring the unveiling of the second edition of the leading nanoneuroscience textbook.",
+      "coverImage": "congress/nanomedicine-symposium-2025/images/01-group-photo.png",
+      "keywords": ["nanomedicine", "nanoneuroscience", "central nervous system", "neurosurgery", "symposium", "Tehran"]
+    }
+  ]
+}

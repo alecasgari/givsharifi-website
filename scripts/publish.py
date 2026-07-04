@@ -16,6 +16,7 @@ PUBLISH_DIRS = (
     "physiotherapy",
     "medical-tourism",
     "publications",
+    "congress",
     "videos",
     "gallery",
     "done",
@@ -29,6 +30,7 @@ SITE_DIRS = (
     "assets",
     "blog",
     "components",
+    "congress",
     *PUBLISH_DIRS,
 )
 SITE_OUTPUT = ROOT / "_site"
@@ -40,6 +42,33 @@ def should_publish(rel: Path) -> bool:
     if any(part.startswith("_") for part in rel.parts):
         return False
     return True
+
+
+def sync_congress_event_shells() -> int:
+    """Copy _event-shell.html to congress/{slug}/index.html for every event in index.json."""
+    shell_src = ROOT / "congress" / "_event-shell.html"
+    index_path = ROOT / "congress" / "data" / "index.json"
+    if not shell_src.is_file() or not index_path.is_file():
+        return 0
+    shell = shell_src.read_text(encoding="utf-8")
+    try:
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        print("congress/data/index.json invalid JSON", file=sys.stderr)
+        return 0
+    created = 0
+    for event in index.get("events", []):
+        slug = event.get("slug")
+        if not slug:
+            continue
+        dest = ROOT / "congress" / slug / "index.html"
+        if dest.is_file():
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(shell, encoding="utf-8")
+        print(f"  congress shell: {dest.relative_to(ROOT)}")
+        created += 1
+    return created
 
 
 def sync_blog_post_shells() -> int:
@@ -139,6 +168,10 @@ def main() -> int:
     if shells:
         print(f"\nCreated {shells} missing blog post shell(s).")
 
+    cong_shells = sync_congress_event_shells()
+    if cong_shells:
+        print(f"Created {cong_shells} missing congress event shell(s).")
+
     if not PAGES.is_dir():
         print("pages/ folder not found", file=sys.stderr)
         return 1
@@ -154,6 +187,15 @@ def main() -> int:
                             shutil.rmtree(child)
                         else:
                             child.unlink()
+            elif name == "congress":
+                # Only replace listing page; preserve event subfolders and congress/data/
+                listing_src = PAGES / "congress" / "index.html"
+                if listing_src.is_file():
+                    dest = target / "index.html"
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(listing_src, dest)
+                    print(f"  congress/index.html -> {dest.relative_to(ROOT)}")
+                continue
             else:
                 shutil.rmtree(target)
 

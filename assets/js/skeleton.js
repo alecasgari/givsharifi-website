@@ -88,5 +88,21 @@
       `
       );
     },
+
+    congress(count) {
+      return repeat(
+        count,
+        () => `
+        <div class="skeleton-cong-card" aria-hidden="true">
+          <div class="skeleton skeleton-cong-card__media"></div>
+          <div class="skeleton-cong-card__body">
+            <div class="skeleton skeleton-line skeleton-line--short"></div>
+            <div class="skeleton skeleton-line skeleton-line--title"></div>
+            <div class="skeleton skeleton-line"></div>
+          </div>
+        </div>
+      `
+      );
+    },
   };
 })();
