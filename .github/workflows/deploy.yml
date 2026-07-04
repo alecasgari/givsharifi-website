@@ -38,9 +38,23 @@ jobs:
           path: _site
 
       - name: Wait for artifact
-        run: sleep 20
+        run: sleep 30
 
       - name: Deploy to GitHub Pages
         id: deployment
+        uses: actions/deploy-pages@v4
+        timeout-minutes: 15
+        continue-on-error: true
+
+      - name: Deploy to GitHub Pages (retry 1)
+        if: steps.deployment.outcome == 'failure'
+        id: deployment_retry1
+        uses: actions/deploy-pages@v4
+        timeout-minutes: 15
+        continue-on-error: true
+
+      - name: Deploy to GitHub Pages (retry 2)
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        id: deployment_retry2
         uses: actions/deploy-pages@v4
         timeout-minutes: 15
