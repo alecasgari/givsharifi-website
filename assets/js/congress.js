@@ -39,7 +39,7 @@
       bindEvents();
       injectSchema(data);
     } catch (e) {
-      grid.innerHTML = '<p class="cong-loading">Unable to load congress events. Please try again later.</p>';
+      grid.innerHTML = '<p class="cong-loading">Unable to load congress events. Please refresh the page or try again later.</p>';
       console.error(e);
     }
   }
@@ -97,7 +97,7 @@
     }
 
     if (!list.length) {
-      grid.innerHTML = '<p class="cong-empty">No congress events match your search.</p>';
+      grid.innerHTML = '<p class="cong-empty">No events match your search. Try a different keyword, year, or city.</p>';
       return;
     }
 
@@ -116,7 +116,7 @@
           </div>
           <h2 class="cong-card__title">${escapeHtml(e.title)}</h2>
           ${e.excerpt ? `<p class="cong-card__excerpt">${escapeHtml(e.excerpt)}</p>` : ''}
-          <span class="cong-card__footer">View event →</span>
+          <span class="cong-card__footer">View event details →</span>
         </div>
       </a>
     `

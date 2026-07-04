@@ -35,17 +35,18 @@
 
       applyHead(event, pageUrl, imageUrl);
       root.innerHTML = renderEvent(event, pageUrl);
+      initSlideshow(event);
       initGalleryLightbox(event);
     } catch (e) {
       root.innerHTML =
         '<div class="container cong-event__error"><h1>Event not found</h1><p><a href="' +
         u('congress/') +
-        '">← Back to Congress</a></p></div>';
+        '">← Back to Congress &amp; Symposia</a></p></div>';
     }
   }
 
   function applyHead(event, pageUrl, imageUrl) {
-    document.title = event.title + ' | Prof. Giv Sharifi';
+    document.title = event.title + ' | Prof. Giv Sharifi — Neurosurgeon';
 
     setMeta('name', 'description', event.metaDescription || event.summary || '');
     if (event.keywords) setMeta('name', 'keywords', event.keywords);
@@ -127,7 +128,7 @@
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
-        { '@type': 'ListItem', position: 2, name: 'Congress', item: SITE + '/congress/' },
+        { '@type': 'ListItem', position: 2, name: 'Congress & Symposia', item: SITE + '/congress/' },
         { '@type': 'ListItem', position: 3, name: event.title, item: pageUrl },
       ],
     };
@@ -135,6 +136,35 @@
     bcScript.type = 'application/ld+json';
     bcScript.textContent = JSON.stringify(breadcrumb);
     document.head.appendChild(bcScript);
+  }
+
+  function renderSlideshow(event) {
+    if (!event.gallery || !event.gallery.length) return '';
+
+    const multi = event.gallery.length > 1;
+    const first = event.gallery[0];
+
+    return `
+      <section class="cong-slideshow" aria-label="Event photo slideshow">
+        <div class="container">
+          <div class="cong-slideshow__frame" id="cong-slideshow">
+            <div class="cong-slideshow__viewport">
+              <button type="button" class="cong-slideshow__nav cong-slideshow__nav--prev" data-slideshow-prev aria-label="Previous photo"${multi ? '' : ' hidden'}>&lsaquo;</button>
+              <figure class="cong-slideshow__figure" data-slideshow-figure tabindex="0" role="button" aria-label="Open full-size photo">
+                <img class="cong-slideshow__img" src="${escapeAttr(u(first.file))}" alt="${escapeAttr(first.alt || '')}" width="1200" height="675">
+                <figcaption class="cong-slideshow__caption" data-slideshow-caption>${escapeHtml(first.caption || first.alt || '')}</figcaption>
+              </figure>
+              <button type="button" class="cong-slideshow__nav cong-slideshow__nav--next" data-slideshow-next aria-label="Next photo"${multi ? '' : ' hidden'}>&rsaquo;</button>
+            </div>
+          </div>
+          <div class="cong-slideshow__meta">
+            <span class="cong-slideshow__counter" data-slideshow-counter>1 / ${event.gallery.length}</span>
+            <span class="cong-slideshow__hint">${multi ? 'Use arrows or swipe · Click image to enlarge' : 'Click image to enlarge'}</span>
+          </div>
+          ${multi ? `<div class="cong-slideshow__dots" data-slideshow-dots role="tablist" aria-label="Photo thumbnails">${event.gallery.map((_, i) => `<button type="button" class="cong-slideshow__dot${i === 0 ? ' is-active' : ''}" data-slideshow-dot="${i}" role="tab" aria-label="Photo ${i + 1}" aria-selected="${i === 0}"></button>`).join('')}</div>` : ''}
+        </div>
+      </section>
+    `;
   }
 
   function renderEvent(event, pageUrl) {
@@ -154,7 +184,7 @@
       facts.push('<li><strong>Venue:</strong> ' + escapeHtml(event.venue) + '</li>');
     }
     if (event.type) {
-      facts.push('<li><strong>Type:</strong> ' + escapeHtml(event.type) + '</li>');
+      facts.push('<li><strong>Event type:</strong> ' + escapeHtml(event.type) + '</li>');
     }
 
     const sections = (event.sections || [])
@@ -172,18 +202,18 @@
       event.organizers && event.organizers.length
         ? `
       <div class="cong-event-organizers">
-        <h3>Organizers</h3>
+        <h3>Organisers</h3>
         <ul>${event.organizers.map((o) => '<li>' + escapeHtml(o) + '</li>').join('')}</ul>
       </div>
     `
         : '';
 
     const gallery =
-      event.gallery && event.gallery.length
+      event.gallery && event.gallery.length > 1
         ? `
-      <section class="cong-event-gallery" aria-label="Event photo gallery">
+      <section class="cong-event-gallery" aria-label="All event photos">
         <div class="container">
-          <h2>Photo Gallery</h2>
+          <h2>All Photos</h2>
           <div class="cong-event-gallery__grid" id="cong-event-gallery">
             ${event.gallery
               .map(
@@ -201,13 +231,23 @@
     `
         : '';
 
+    const hasGallery = event.gallery && event.gallery.length;
+    const coverOnly =
+      !hasGallery && event.coverImage
+        ? '<section class="cong-event-cover"><div class="container"><img src="' +
+          escapeAttr(u(event.coverImage)) +
+          '" alt="' +
+          escapeAttr(event.title) +
+          '" width="1200" height="675"></div></section>'
+        : '';
+
     return `
       <section class="cong-event-hero">
         <div class="container">
           <nav class="blog-breadcrumb" aria-label="Breadcrumb">
             <ol>
               <li><a href="${u('./')}">Home</a></li>
-              <li><a href="${u('congress/')}">Congress</a></li>
+              <li><a href="${u('congress/')}">Congress &amp; Symposia</a></li>
               <li aria-current="page">${escapeHtml(truncate(event.title, 48))}</li>
             </ol>
           </nav>
@@ -218,15 +258,7 @@
         </div>
       </section>
 
-      ${
-        event.coverImage
-          ? '<section class="cong-event-cover"><div class="container"><img src="' +
-            escapeAttr(u(event.coverImage)) +
-            '" alt="' +
-            escapeAttr(event.title) +
-            '" width="1200" height="675"></div></section>'
-          : ''
-      }
+      ${hasGallery ? renderSlideshow(event) : coverOnly}
 
       <section class="cong-event-content">
         <div class="container">
@@ -240,8 +272,8 @@
 
       <section class="pg-cta" aria-label="Consultation">
         <div class="container pg-cta__inner">
-          <h2>Book a consultation</h2>
-          <p>Discuss your neurological condition with Prof. Giv Sharifi — Dubai, Tehran, or online.</p>
+          <h2>Discuss your case with an internationally active neurosurgeon</h2>
+          <p>Free consultation in Dubai, Tehran, or online — bring your MRI for specialist review.</p>
           <div class="pg-cta__actions">
             <button type="button" class="btn btn--primary btn--lg" data-open-consultation>Free Consultation</button>
             <a href="${u('congress/')}" class="btn btn--secondary btn--lg">All Congress Events</a>
@@ -249,6 +281,111 @@
         </div>
       </section>
     `;
+  }
+
+  function initSlideshow(event) {
+    if (!event.gallery || !event.gallery.length) return;
+
+    const frame = document.getElementById('cong-slideshow');
+    if (!frame) return;
+
+    const img = frame.querySelector('.cong-slideshow__img');
+    const caption = frame.querySelector('[data-slideshow-caption]');
+    const counter = document.querySelector('[data-slideshow-counter]');
+    const prevBtn = frame.querySelector('[data-slideshow-prev]');
+    const nextBtn = frame.querySelector('[data-slideshow-next]');
+    const dotsWrap = document.querySelector('[data-slideshow-dots]');
+    const figure = frame.querySelector('[data-slideshow-figure]');
+
+    let index = 0;
+    let touchStartX = 0;
+    const items = event.gallery;
+    const lightboxItems = items.map((imgItem) => ({
+      src: u(imgItem.file),
+      alt: imgItem.alt || '',
+      caption: imgItem.caption || imgItem.alt || '',
+    }));
+
+    function showAt(i) {
+      index = ((i % items.length) + items.length) % items.length;
+      const item = items[index];
+      if (img) {
+        img.classList.add('is-fading');
+        const nextSrc = u(item.file);
+        if (img.getAttribute('src') !== nextSrc) {
+          img.addEventListener(
+            'load',
+            () => img.classList.remove('is-fading'),
+            { once: true }
+          );
+          img.src = nextSrc;
+          img.alt = item.alt || '';
+        } else {
+          img.classList.remove('is-fading');
+        }
+      }
+      if (caption) caption.textContent = item.caption || item.alt || '';
+      if (counter) counter.textContent = index + 1 + ' / ' + items.length;
+      if (dotsWrap) {
+        dotsWrap.querySelectorAll('[data-slideshow-dot]').forEach((dot, j) => {
+          const active = j === index;
+          dot.classList.toggle('is-active', active);
+          dot.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+      }
+    }
+
+    function step(delta) {
+      if (items.length < 2) return;
+      showAt(index + delta);
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', () => step(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => step(1));
+
+    if (dotsWrap) {
+      dotsWrap.querySelectorAll('[data-slideshow-dot]').forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const i = Number.parseInt(dot.dataset.slideshowDot, 10);
+          if (Number.isFinite(i)) showAt(i);
+        });
+      });
+    }
+
+    frame.addEventListener(
+      'touchstart',
+      (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      { passive: true }
+    );
+
+    frame.addEventListener(
+      'touchend',
+      (e) => {
+        if (items.length < 2) return;
+        const dx = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(dx) < 48) return;
+        step(dx < 0 ? 1 : -1);
+      },
+      { passive: true }
+    );
+
+    if (figure) {
+      figure.addEventListener('click', () => {
+        if (window.GivLightbox) window.GivLightbox.openGallery(lightboxItems, index);
+      });
+      figure.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (window.GivLightbox) window.GivLightbox.openGallery(lightboxItems, index);
+        }
+        if (e.key === 'ArrowLeft') step(-1);
+        if (e.key === 'ArrowRight') step(1);
+      });
+    }
+
+    showAt(0);
   }
 
   function initGalleryLightbox(event) {
