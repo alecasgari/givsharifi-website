@@ -6,6 +6,7 @@
   const searchInput = document.getElementById("gal-search");
   const countEl = document.getElementById("gal-count");
   const updatedEl = document.getElementById("gal-updated");
+  const filtersEl = document.getElementById("gal-filters");
 
   if (!grid) return;
 
@@ -15,6 +16,12 @@
 
   let allImages = [];
   let debounceTimer;
+  let activeCategory = "";
+
+  function normalizeCategory(value) {
+    if (!value) return "";
+    return String(value).replace(/,+\s*$/, "").trim();
+  }
 
   async function init() {
     if (window.GivSkeleton) {
@@ -26,6 +33,7 @@
       const data = await res.json();
       allImages = (data.images || []).slice().reverse();
       if (updatedEl && data.updated) updatedEl.textContent = `Last updated ${data.updated}`;
+      buildFilters();
       render();
       bindEvents();
     } catch (e) {
@@ -34,19 +42,57 @@
     }
   }
 
-  function bindEvents() {
-    if (!searchInput) return;
-    searchInput.addEventListener("input", () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(render, 200);
+  function getCategories() {
+    const counts = new Map();
+    allImages.forEach((img) => {
+      const cat = normalizeCategory(img.category);
+      if (!cat) return;
+      counts.set(cat, (counts.get(cat) || 0) + 1);
     });
+    return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }
+
+  function buildFilters() {
+    if (!filtersEl) return;
+    const categories = getCategories();
+    const buttons = [
+      `<button type="button" class="gal-filter-btn is-active" data-gal-category="" aria-pressed="true">All photos</button>`,
+      ...categories.map(
+        ([cat, count]) =>
+          `<button type="button" class="gal-filter-btn" data-gal-category="${escapeAttr(cat)}" aria-pressed="false">${escapeHtml(cat)} <span class="gal-filter-btn__count">(${count})</span></button>`
+      ),
+    ];
+    filtersEl.innerHTML = buttons.join("");
+  }
+
+  function bindEvents() {
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(render, 200);
+      });
+    }
+    if (filtersEl) {
+      filtersEl.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-gal-category]");
+        if (!btn) return;
+        activeCategory = btn.dataset.galCategory || "";
+        filtersEl.querySelectorAll(".gal-filter-btn").forEach((el) => {
+          const on = el === btn;
+          el.classList.toggle("is-active", on);
+          el.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        render();
+      });
+    }
   }
 
   function getFiltered() {
     const q = (searchInput?.value || "").trim().toLowerCase();
-    if (!q) return allImages;
     return allImages.filter((img) => {
-      const hay = [img.title, img.alt, img.category].join(" ").toLowerCase();
+      if (activeCategory && normalizeCategory(img.category) !== activeCategory) return false;
+      if (!q) return true;
+      const hay = [img.title, img.alt, normalizeCategory(img.category)].join(" ").toLowerCase();
       return hay.includes(q);
     });
   }
@@ -61,16 +107,17 @@
 
   function render() {
     const list = getFiltered();
+    const filtered = list.length !== allImages.length || activeCategory || (searchInput?.value || "").trim();
+
     if (countEl) {
-      countEl.textContent =
-        list.length === allImages.length
-          ? `${list.length} photos`
-          : `${list.length} of ${allImages.length}`;
+      countEl.textContent = filtered
+        ? `Showing ${list.length} of ${allImages.length}`
+        : `${list.length} photo${list.length !== 1 ? "s" : ""}`;
     }
 
     if (!list.length) {
       grid.innerHTML =
-        '<p class="gal-empty">No photos yet. Check back soon.</p>';
+        '<p class="gal-empty">No photos match your search or category filter.</p>';
       return;
     }
 
@@ -85,7 +132,7 @@
           alt="${escapeAttr(img.alt)}" width="${img.width || 640}" height="${img.height || 480}" loading="lazy">
         <span class="gal-card__overlay">
           <span class="gal-card__title">${escapeHtml(img.title || img.alt)}</span>
-          ${img.category ? `<span class="gal-card__cat">${escapeHtml(img.category)}</span>` : ""}
+          ${normalizeCategory(img.category) ? `<span class="gal-card__cat">${escapeHtml(normalizeCategory(img.category))}</span>` : ""}
         </span>
       </button>
     `

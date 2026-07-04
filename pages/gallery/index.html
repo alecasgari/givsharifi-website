@@ -90,12 +90,15 @@
     </section>
 
     <div class="gal-toolbar">
-      <div class="container gal-toolbar__inner">
-        <label class="gal-search">
-          <span class="visually-hidden">Search photos</span>
-          <input type="search" id="gal-search" placeholder="Search by procedure, location, or keyword…" autocomplete="off">
-        </label>
-        <span class="gal-count" id="gal-count" aria-live="polite"></span>
+      <div class="container">
+        <div class="gal-toolbar__inner">
+          <label class="gal-search">
+            <span class="visually-hidden">Search photos</span>
+            <input type="search" id="gal-search" placeholder="Search by procedure, location, or keyword…" autocomplete="off">
+          </label>
+          <span class="gal-count" id="gal-count" aria-live="polite"></span>
+        </div>
+        <div class="gal-filters" id="gal-filters" role="toolbar" aria-label="Filter by category"></div>
       </div>
     </div>
 
@@ -139,7 +142,7 @@
   <script src="assets/js/layout.js"></script>
   <script src="assets/js/form.js"></script>
   <script src="assets/js/lightbox.js"></script>
-  <script src="assets/js/gallery.js"></script>
+  <script src="assets/js/gallery.js?v=20260704b"></script>
   <script src="assets/js/analytics.js" defer></script>
 </body>
 </html>
