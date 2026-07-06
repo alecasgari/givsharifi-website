@@ -171,6 +171,10 @@ def main() -> int:
     if cong_shells:
         print(f"Created {cong_shells} missing congress event shell(s).")
 
+    sitemap = ROOT / "scripts" / "generate-sitemap.py"
+    if sitemap.is_file():
+        subprocess.run([sys.executable, str(sitemap)], check=True)
+
     if not PAGES.is_dir():
         print("pages/ folder not found", file=sys.stderr)
         return 1
