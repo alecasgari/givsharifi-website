@@ -1,4 +1,14 @@
 User-agent: *
 Allow: /
 
+# Legacy WordPress URLs (no longer exist — save crawl budget)
+Disallow: /search/
+Disallow: /blog/tag/
+Disallow: /blog/category/
+Disallow: /blog/*?
+
+# Utility / data paths (not public pages)
+Disallow: /done/
+Disallow: /posts/
+
 Sitemap: https://www.givsharifi.com/sitemap.xml
