@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-07-01",
+  "updated": "2026-07-09",
   "videos": [
+    {
+      "id": "DakWchQxcBP",
+      "file": "DakWchQxcBP.mp4",
+      "poster": "DakWchQxcBP.jpg",
+      "title": "Expert Neurosurgical Insights with Prof. Giv Sharifi",
+      "description": "Join Prof. Giv Sharifi as he provides expert insights into advanced neurosurgical procedures. This educational video offers patients a clear understanding of complex brain and pituitary conditions, emphasizing the precision and dedication involved in modern neurosurgical care. Learn more about Prof. Sharifi’s commitment to patient health and surgical excellence.",
+      "date": "2026-07-09",
+      "duration": "1:55",
+      "category": "Education",
+      "instagram": "https://www.instagram.com/reel/DakWchQxcBP/?igsh=MWNsdTFxb2I0anMzcA=="
+    },
     {
       "id": "IJJUKn8Ry_4",
       "file": "IJJUKn8Ry_4.mp4",
