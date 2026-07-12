@@ -24,8 +24,8 @@
 
   const SERVICE_LINKS = {
     'Spinal Surgery': { href: 'spinal-surgery/', label: 'Spinal Surgery Services' },
-    'Brain Surgery': { href: 'brain-surgery/', label: 'Brain Surgery Services' },
-    'Neurosurgery': { href: 'brain-surgery/', label: 'Neurosurgery Services' },
+    'Brain Surgery': { href: 'brain-surgery/', label: 'Brain Tumor Specialist — Dubai & Tehran' },
+    'Neurosurgery': { href: 'brain-surgery/', label: 'Brain Tumor Specialist — Dubai & Tehran' },
   };
 
   async function loadPost() {
