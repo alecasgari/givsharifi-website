@@ -22,6 +22,14 @@
 
   if (!slug || slug === 'blog') return;
 
+  // Server-rendered posts already include full article HTML for SEO / Soft 404 fix.
+  if (root.getAttribute('data-ssr') === '1') {
+    const canonical = document.querySelector('link[rel="canonical"]');
+    const pageUrl = (canonical && canonical.href) || SITE + '/blog/' + slug + '/';
+    initShare(pageUrl);
+    return;
+  }
+
   const SERVICE_LINKS = {
     'Spinal Surgery': { href: 'spinal-surgery/', label: 'Spinal Surgery Services' },
     'Brain Surgery': { href: 'brain-surgery/', label: 'Brain Tumor Specialist — Dubai & Tehran' },

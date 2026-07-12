@@ -71,30 +71,25 @@ def sync_congress_event_shells() -> int:
 
 
 def sync_blog_post_shells() -> int:
-    """Copy _post-shell.html to blog/{slug}/index.html for every post in index.json."""
-    shell_src = ROOT / "blog" / "_post-shell.html"
-    index_path = ROOT / "posts" / "data" / "index.json"
-    if not shell_src.is_file() or not index_path.is_file():
+    """Render full HTML blog pages from posts/data (SSR — fixes Soft 404)."""
+    gen = ROOT / "scripts" / "generate-blog-pages.py"
+    if not gen.is_file():
         return 0
-    shell = shell_src.read_text(encoding="utf-8")
+    import subprocess
+
+    result = subprocess.run([sys.executable, str(gen)], check=False)
+    if result.returncode != 0:
+        print("generate-blog-pages.py failed", file=sys.stderr)
+        return 0
+    # Count rendered pages from index
+    index_path = ROOT / "posts" / "data" / "index.json"
+    if not index_path.is_file():
+        return 0
     try:
         index = json.loads(index_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        print("posts/data/index.json invalid JSON", file=sys.stderr)
         return 0
-    created = 0
-    for post in index.get("posts", []):
-        slug = post.get("slug")
-        if not slug:
-            continue
-        dest = ROOT / "blog" / slug / "index.html"
-        if dest.is_file():
-            continue
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(shell, encoding="utf-8")
-        print(f"  blog shell: {dest.relative_to(ROOT)}")
-        created += 1
-    return created
+    return len({p.get("slug") for p in index.get("posts", []) if p.get("slug")})
 
 
 def copy_tree(src: Path, dest: Path) -> int:
