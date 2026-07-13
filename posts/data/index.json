@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "neurosurgery-consultation-expectations",
+      "title": "Your First Neurosurgery Consultation: What to Bring and Expect",
+      "excerpt": "Prepare for your neurosurgery consultation with Prof. Giv Sharifi. Learn what medical records to bring, how to ask the right questions, and what to expect.",
+      "date": "2026-07-13",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/neurosurgery-consultation-expectations.png"
+    },
+    {
       "slug": "pituitary-adenoma-symptoms",
       "title": "Pituitary Adenoma Symptoms: Hormones Vision and When to Seek Help",
       "excerpt": "Discover the common symptoms of pituitary adenomas, including hormonal imbalances and vision problems. Learn when to consult a specialist for expert care.",
