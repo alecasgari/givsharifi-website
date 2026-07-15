@@ -1408,3 +1408,38 @@
     margin-bottom: 0.25rem;
   }
 }
+
+/* ── About page ── */
+.about-portrait {
+  margin: 0;
+}
+
+.about-portrait img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  display: block;
+  box-shadow: 0 16px 40px rgba(7, 11, 16, 0.12);
+}
+
+.about-stats {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.pg-band .btn--secondary {
+  margin-top: 0.75rem;
+  margin-inline-end: 0.5rem;
+}

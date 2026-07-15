@@ -15,6 +15,7 @@ OUT = ROOT / "sitemap.xml"
 # Service / listing pages (exclude done/ — noindex thank-you page)
 STATIC_PAGES: list[tuple[str, str, str]] = [
     ("", "weekly", "1.0"),
+    ("about/", "monthly", "0.9"),
     ("brain-surgery/", "monthly", "0.9"),
     ("spinal-surgery/", "monthly", "0.9"),
     ("endoscopic-pituitary-surgery/", "monthly", "0.9"),

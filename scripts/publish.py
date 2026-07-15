@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PAGES = ROOT / "pages"
 
 PUBLISH_DIRS = (
+    "about",
     "brain-surgery",
     "spinal-surgery",
     "endoscopic-pituitary-surgery",
