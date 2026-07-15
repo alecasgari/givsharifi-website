@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-07-09",
+  "updated": "2026-07-15",
   "videos": [
+    {
+      "id": "Ssd7zdMrmZ4",
+      "file": "Ssd7zdMrmZ4.mp4",
+      "poster": "Ssd7zdMrmZ4.jpg",
+      "title": "Multidisciplinary Approach to Pituitary Macroadenoma Surgery: Insights from Prof. Guive Sharifi",
+      "description": "Join Prof. Guive Sharifi and his expert multidisciplinary team as they perform a complex, high-stakes endoscopic surgery for a Pituitary Macroadenoma. This educational video highlights the critical collaboration between neurosurgery, anesthesiology, and ENT specialists to ensure patient safety and optimal outcomes. Beyond the technical precision of the procedure, Prof. Sharifi offers a rare, personal look into the realities of modern neurosurgery, the challenges of the operating room, and his dedication to advancing surgical standards. This video is an essential resource for patients and medical professionals interested in the intricacies of skull base surgery and the power of team-based care.",
+      "date": "2026-07-14",
+      "duration": "22:23",
+      "category": "Surgery",
+      "youtube": "https://www.youtube.com/watch?v=Ssd7zdMrmZ4"
+    },
     {
       "id": "DakWchQxcBP",
       "file": "DakWchQxcBP.mp4",
