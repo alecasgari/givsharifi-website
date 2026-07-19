@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-07-15",
+  "updated": "2026-07-19",
   "videos": [
+    {
+      "id": "4E4mu7fb49E",
+      "file": "4E4mu7fb49E.mp4",
+      "poster": "4E4mu7fb49E.jpg",
+      "title": "Pediatric Cervical Spine Aneurysmal Bone Cyst: Surgical Resection and Stabilization",
+      "description": "Explore a complex pediatric neurosurgical case featuring the successful treatment of multiple aneurysmal bone cysts (ABC) in the cervical spine. Prof. Giv Sharifi details the surgical approach, which involved complete microsurgical tumor resection followed by subaxial posterior cervical fixation to ensure long-term spinal stability. This case study highlights the advanced techniques required to manage rare spinal tumors in pediatric patients, emphasizing the importance of precise surgical planning and stabilization for optimal recovery.",
+      "date": "2026-07-08",
+      "duration": "4:35",
+      "category": "Surgery",
+      "youtube": "https://www.youtube.com/watch?v=4E4mu7fb49E"
+    },
     {
       "id": "Ssd7zdMrmZ4",
       "file": "Ssd7zdMrmZ4.mp4",
