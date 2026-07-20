@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "cervical-disc-herniation-surgery",
+      "title": "Cervical Disc Herniation: Neck Pain Arm Pain and Surgical Options",
+      "excerpt": "Understand the symptoms of cervical disc herniation, including neck pain and radiating arm pain, and learn about surgical options like ACDF and microdiscectomy.",
+      "date": "2026-07-20",
+      "category": "Spinal Surgery",
+      "image": "/assets/images/blog/cervical-disc-herniation-surgery.png"
+    },
+    {
       "slug": "glioma-treatment-options",
       "title": "Glioma Treatment Options: Surgery, Radiation and What to Expect",
       "excerpt": "Explore glioma treatment options including surgery, radiation, and neuro-oncology care with Prof. Giv Sharifi. Learn about managing low and high grade tumors.",
