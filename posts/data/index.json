@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "endoscopic-pituitary-surgery-guide",
+      "title": "Endoscopic Pituitary Surgery: A Step-by-Step Patient Guide",
+      "excerpt": "Comprehensive patient guide on endoscopic pituitary surgery, transsphenoidal techniques, skull base approach, and recovery by Prof. Giv Sharifi.",
+      "date": "2026-07-22",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/endoscopic-pituitary-surgery-guide.png"
+    },
+    {
       "slug": "cervical-disc-herniation-surgery",
       "title": "Cervical Disc Herniation: Neck Pain Arm Pain and Surgical Options",
       "excerpt": "Understand the symptoms of cervical disc herniation, including neck pain and radiating arm pain, and learn about surgical options like ACDF and microdiscectomy.",
