@@ -456,6 +456,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-patient-appreciation-plaque",
+      "file": "assets/images/gallery/prof-giv-sharifi-patient-appreciation-plaque.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-patient-appreciation-plaque-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-patient-appreciation-plaque-strip.webp",
+      "alt": "Prof. Giv Sharifi receiving a plaque of appreciation from a successfully treated neurosurgery patient in Dubai and Tehran",
+      "title": "Patient Appreciation and Recovery with Prof. Giv Sharifi",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
