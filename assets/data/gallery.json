@@ -480,6 +480,18 @@
       "featured": false,
       "width": 1080,
       "height": 810
+    },
+    {
+      "slug": "prof-giv-sharifi-patient-satisfaction-with-colleagues",
+      "file": "assets/images/gallery/prof-giv-sharifi-patient-satisfaction-with-colleagues.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-patient-satisfaction-with-colleagues-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-patient-satisfaction-with-colleagues-strip.webp",
+      "alt": "Prof. Giv Sharifi and his son Niu Sharifi alongside colleagues and a successfully operated patient",
+      "title": "Patient Satisfaction and Team Gathering with Prof. Giv Sharifi",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
