@@ -468,6 +468,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-with-colleagues-and-recovered-patient",
+      "file": "assets/images/gallery/prof-giv-sharifi-with-colleagues-and-recovered-patient.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-with-colleagues-and-recovered-patient-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-with-colleagues-and-recovered-patient-strip.webp",
+      "alt": "Prof. Giv Sharifi and his son Niu Sharifi alongside colleagues and a recovered patient in Dubai and Tehran",
+      "title": "Prof. Giv Sharifi with Colleagues and Recovered Patient",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 1080,
+      "height": 810
     }
   ]
 }
