@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-04",
+  "updated": "2026-07-24",
   "images": [
     {
       "slug": "prof-giv-sharifi-neurosurgery-microscope-operating-room",
@@ -432,6 +432,18 @@
       "featured": false,
       "width": 1000,
       "height": 667
+    },
+    {
+      "slug": "prof-giv-sharifi-international-neurosurgery-congress-symposium",
+      "file": "assets/images/gallery/prof-giv-sharifi-international-neurosurgery-congress-symposium.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-international-neurosurgery-congress-symposium-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-international-neurosurgery-congress-symposium-strip.webp",
+      "alt": "Prof. Giv Sharifi presenting and participating in an international neurosurgery congress and academic symposium",
+      "title": "Prof. Giv Sharifi at International Neurosurgery Congress and Symposium",
+      "category": "Event",
+      "featured": false,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
