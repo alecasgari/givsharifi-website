@@ -444,6 +444,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "prof-giv-sharifi-satisfied-patient-flowers",
+      "file": "assets/images/gallery/prof-giv-sharifi-satisfied-patient-flowers.webp",
+      "thumb": "assets/images/gallery/prof-giv-sharifi-satisfied-patient-flowers-thumb.webp",
+      "strip": "assets/images/gallery/prof-giv-sharifi-satisfied-patient-flowers-strip.webp",
+      "alt": "Prof. Giv Sharifi with a satisfied neurosurgery patient presenting flowers in Tehran clinic",
+      "title": "Patient Appreciation and Care - Prof. Giv Sharifi",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
