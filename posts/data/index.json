@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "spinal-surgery-recovery-guide",
+      "title": "Spinal Surgery Recovery: Pain Management Physio and Red Flags",
+      "excerpt": "Master your recovery after spinal surgery with expert insights on pain management, physiotherapy, wound care, and recognizing critical post-op red flags.",
+      "date": "2026-07-24",
+      "category": "Spinal Surgery",
+      "image": "/assets/images/blog/spinal-surgery-recovery-guide.png"
+    },
+    {
       "slug": "endoscopic-pituitary-surgery-guide",
       "title": "Endoscopic Pituitary Surgery: A Step-by-Step Patient Guide",
       "excerpt": "Comprehensive patient guide on endoscopic pituitary surgery, transsphenoidal techniques, skull base approach, and recovery by Prof. Giv Sharifi.",
