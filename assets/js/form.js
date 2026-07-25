@@ -93,10 +93,12 @@
     return { ok: true, countryCode: parsed.countryCode, local };
   }
 
-  function showFieldError(form, message) {
+  function showFieldError(form, message, field) {
     const msg = form.querySelector('.form-message');
     const phoneWrap = form.querySelector('.phone-field');
-    if (phoneWrap) phoneWrap.classList.add('is-invalid');
+    const issueWrap = form.querySelector('.form-textarea-wrap');
+    if (phoneWrap) phoneWrap.classList.toggle('is-invalid', field === 'phone');
+    if (issueWrap) issueWrap.classList.toggle('is-invalid', field === 'issue');
     if (msg) {
       msg.className = 'form-message is-error';
       msg.textContent = message;
@@ -106,11 +108,25 @@
   function clearFieldError(form) {
     const msg = form.querySelector('.form-message');
     const phoneWrap = form.querySelector('.phone-field');
+    const issueWrap = form.querySelector('.form-textarea-wrap');
     if (phoneWrap) phoneWrap.classList.remove('is-invalid');
+    if (issueWrap) issueWrap.classList.remove('is-invalid');
     if (msg) {
       msg.className = 'form-message';
       msg.textContent = '';
     }
+  }
+
+  function validateIssue(rawIssue) {
+    const issue = String(rawIssue || '').trim();
+    const max = 300;
+    if (!issue) {
+      return { ok: false, message: 'Please describe your issue (required, max 300 characters).' };
+    }
+    if (issue.length > max) {
+      return { ok: false, message: 'Please keep your issue description within 300 characters.' };
+    }
+    return { ok: true, value: issue.slice(0, max) };
   }
 
   function bindPhoneField(form) {
@@ -163,7 +179,10 @@
       counter.classList.toggle('is-at-limit', len >= max);
     }
 
-    issue.addEventListener('input', update);
+    issue.addEventListener('input', () => {
+      clearFieldError(form);
+      update();
+    });
     update();
   }
 
@@ -187,7 +206,15 @@
     const phoneCheck = validatePhone(countryCode, phoneRaw);
 
     if (!phoneCheck.ok) {
-      showFieldError(form, phoneCheck.message);
+      showFieldError(form, phoneCheck.message, 'phone');
+      return;
+    }
+
+    const issueCheck = validateIssue(fd.get('issue'));
+    if (!issueCheck.ok) {
+      showFieldError(form, issueCheck.message, 'issue');
+      const issueEl = form.querySelector('[name="issue"]');
+      if (issueEl) issueEl.focus();
       return;
     }
 
@@ -198,7 +225,7 @@
       patient_name: fd.get('patient_name') || '',
       patient_number_copy_country: normalizedCountry,
       patient_number: phone,
-      issue: (fd.get('issue') || '').slice(0, 300),
+      issue: issueCheck.value,
       phone_full: '+' + normalizedCountry + phone,
       source: 'website',
       page: window.location.pathname,
