@@ -2,7 +2,7 @@
  * Homepage featured gallery strip — auto-scroll below hero stats.
  */
 (function () {
-  const STRIP_LIMIT = 4;
+  const STRIP_LIMIT = 10;
   const track = document.getElementById("home-gallery-track");
   if (!track) return;
 
@@ -37,17 +37,17 @@
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
-      const featured = (data.images || [])
-        .filter((img) => img.featured)
+      // Latest uploads = last entries in gallery.json
+      const latest = (data.images || [])
         .slice()
         .reverse()
         .slice(0, STRIP_LIMIT);
-      if (!featured.length) {
+      if (!latest.length) {
         track.closest(".hp-media-strip")?.remove();
         return;
       }
 
-      const items = featured.map((img, i) => renderItem(img, i)).join("");
+      const items = latest.map((img, i) => renderItem(img, i)).join("");
       track.innerHTML = items + items;
       track.classList.add("is-ready");
       const section = document.getElementById("home-gallery-section");
