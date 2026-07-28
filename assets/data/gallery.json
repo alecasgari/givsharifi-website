@@ -540,6 +540,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "successful-neurosurgery-patient-appreciation-flowers",
+      "file": "assets/images/gallery/successful-neurosurgery-patient-appreciation-flowers.webp",
+      "thumb": "assets/images/gallery/successful-neurosurgery-patient-appreciation-flowers-thumb.webp",
+      "strip": "assets/images/gallery/successful-neurosurgery-patient-appreciation-flowers-strip.webp",
+      "alt": "Prof. Giv Sharifi receiving flowers from a patient after a successful neurosurgery in Dubai and Tehran",
+      "title": "Successful Neurosurgery Patient Appreciation",
+      "category": "Patient Care",
+      "featured": true,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
