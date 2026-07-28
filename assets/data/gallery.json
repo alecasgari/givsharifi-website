@@ -552,6 +552,18 @@
       "featured": true,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "successful-neurosurgery-patient-recovery-flowers",
+      "file": "assets/images/gallery/successful-neurosurgery-patient-recovery-flowers.webp",
+      "thumb": "assets/images/gallery/successful-neurosurgery-patient-recovery-flowers-thumb.webp",
+      "strip": "assets/images/gallery/successful-neurosurgery-patient-recovery-flowers-strip.webp",
+      "alt": "Successful neurosurgery procedure and patient recovery with flowers presented to Prof. Giv Sharifi",
+      "title": "Successful Neurosurgery and Patient Recovery - Prof. Giv Sharifi",
+      "category": "Patient Care",
+      "featured": true,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
