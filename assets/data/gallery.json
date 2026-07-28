@@ -528,6 +528,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "successful-brain-surgery-patient-recovery-giv-sharifi",
+      "file": "assets/images/gallery/successful-brain-surgery-patient-recovery-giv-sharifi.webp",
+      "thumb": "assets/images/gallery/successful-brain-surgery-patient-recovery-giv-sharifi-thumb.webp",
+      "strip": "assets/images/gallery/successful-brain-surgery-patient-recovery-giv-sharifi-strip.webp",
+      "alt": "Successful brain surgery performed by Prof. Giv Sharifi leading to patient recovery and health",
+      "title": "Successful Brain Surgery and Patient Recovery",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
