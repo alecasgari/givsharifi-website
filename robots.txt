@@ -1,11 +1,19 @@
 User-agent: *
 Allow: /
 
-# Legacy WordPress URLs (no longer exist — save crawl budget)
+# Legacy WordPress / removed locale (save crawl budget)
 Disallow: /search/
+Disallow: /tag/
+Disallow: /category/
 Disallow: /blog/tag/
 Disallow: /blog/category/
 Disallow: /blog/*?
+Disallow: /ar/
+Disallow: /wp-admin/
+Disallow: /wp-content/
+Disallow: /wp-includes/
+Disallow: /etn-
+Disallow: /etn_
 
 # Utility / data paths (not public pages)
 Disallow: /done/
