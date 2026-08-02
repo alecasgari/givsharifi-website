@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-28",
+  "updated": "2026-08-02",
   "images": [
     {
       "slug": "prof-giv-sharifi-neurosurgery-microscope-operating-room",
@@ -526,6 +526,18 @@
       "title": "Successful Neurosurgery Patient Appreciation",
       "category": "Patient Care",
       "featured": true,
+      "width": 960,
+      "height": 1280
+    },
+    {
+      "slug": "patient-gift-successful-neurosurgery",
+      "file": "assets/images/gallery/patient-gift-successful-neurosurgery.webp",
+      "thumb": "assets/images/gallery/patient-gift-successful-neurosurgery-thumb.webp",
+      "strip": "assets/images/gallery/patient-gift-successful-neurosurgery-strip.webp",
+      "alt": "A patient presenting a gift to Prof. Giv Sharifi after a successful neurosurgery procedure",
+      "title": "Patient Appreciation After Successful Neurosurgery",
+      "category": "Patient Care",
+      "featured": false,
       "width": 960,
       "height": 1280
     }
