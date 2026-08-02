@@ -540,6 +540,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "patient-gift-successful-neurosurgery-2",
+      "file": "assets/images/gallery/patient-gift-successful-neurosurgery-2.webp",
+      "thumb": "assets/images/gallery/patient-gift-successful-neurosurgery-2-thumb.webp",
+      "strip": "assets/images/gallery/patient-gift-successful-neurosurgery-2-strip.webp",
+      "alt": "Prof. Giv Sharifi receiving a gift from a patient after a successful neurosurgery in Tehran and Dubai clinic",
+      "title": "Patient Expressing Gratitude After Successful Surgery",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 960,
+      "height": 1280
     }
   ]
 }
