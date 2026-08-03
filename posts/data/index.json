@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "prolactinoma-treatment",
+      "title": "Prolactinoma Treatment: Medication vs Surgery Options",
+      "excerpt": "Discover effective prolactinoma treatment strategies, from dopamine agonist medications like cabergoline to minimally invasive endoscopic pituitary surgery with Prof. Giv Sharifi.",
+      "date": "2026-08-03",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/prolactinoma-treatment.png"
+    },
+    {
       "slug": "spinal-stenosis-surgery-options",
       "title": "Spinal Stenosis Surgery Options: Laminectomy & Fusion",
       "excerpt": "Discover advanced spinal stenosis surgery options, from decompression surgery and laminectomy to spinal fusion and minimally invasive care with Prof. Giv Sharifi.",
