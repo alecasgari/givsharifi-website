@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-07-19",
+  "updated": "2026-08-04",
   "videos": [
+    {
+      "id": "BrxD51xBy50",
+      "file": "BrxD51xBy50.mp4",
+      "poster": "BrxD51xBy50.jpg",
+      "title": "Post-Operative Patient Consultation and Recovery Care with Prof. Giv Sharifi",
+      "description": "Watch as Prof. Giv Sharifi conducts post-operative patient evaluations, providing essential recovery guidance and personalized care instructions to ensure optimal healing and neurosurgical recovery.",
+      "date": "2026-08-04",
+      "duration": "2:01",
+      "category": "Patient Stories",
+      "youtube": "https://www.youtube.com/watch?v=BrxD51xBy50"
+    },
     {
       "id": "4E4mu7fb49E",
       "file": "4E4mu7fb49E.mp4",
