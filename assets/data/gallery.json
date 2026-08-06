@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-02",
+  "updated": "2026-08-06",
   "images": [
     {
       "slug": "prof-giv-sharifi-neurosurgery-microscope-operating-room",
@@ -552,6 +552,18 @@
       "featured": false,
       "width": 960,
       "height": 1280
+    },
+    {
+      "slug": "dr-giv-sharifi-patient-appreciation-letter",
+      "file": "assets/images/gallery/dr-giv-sharifi-patient-appreciation-letter.webp",
+      "thumb": "assets/images/gallery/dr-giv-sharifi-patient-appreciation-letter-thumb.webp",
+      "strip": "assets/images/gallery/dr-giv-sharifi-patient-appreciation-letter-strip.webp",
+      "alt": "Prof. Giv Sharifi receiving an appreciation letter from a patient after a successful neurosurgery in Dubai and Tehran",
+      "title": "Patient Appreciation Letter and Successful Neurosurgery Result",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 1280,
+      "height": 960
     }
   ]
 }
