@@ -564,6 +564,18 @@
       "featured": false,
       "width": 1280,
       "height": 960
+    },
+    {
+      "slug": "patient-satisfaction-after-surgery-giv-sharifi",
+      "file": "assets/images/gallery/patient-satisfaction-after-surgery-giv-sharifi.webp",
+      "thumb": "assets/images/gallery/patient-satisfaction-after-surgery-giv-sharifi-thumb.webp",
+      "strip": "assets/images/gallery/patient-satisfaction-after-surgery-giv-sharifi-strip.webp",
+      "alt": "Patient expressing happiness and gratitude after a successful neurosurgery performed by Professor Giv Sharifi",
+      "title": "Patient Satisfaction After Neurosurgery",
+      "category": "Patient Care",
+      "featured": false,
+      "width": 1280,
+      "height": 960
     }
   ]
 }
