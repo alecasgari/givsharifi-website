@@ -1,10 +1,10 @@
 /**
- * Homepage "Patient Feedback & Reviews" strip — reverse auto-scroll below photo gallery.
- * Shows the latest Patient Care photos from the gallery; the strip links to videos/.
+ * Homepage Videos strip — reverse auto-scroll below photo gallery.
+ * Latest gallery photos excluding Patient Care; strip links to videos/.
  */
 (function () {
   const STRIP_LIMIT = 10;
-  const CATEGORY = "Patient Care";
+  const EXCLUDE_CATEGORY = "Patient Care";
   const track = document.getElementById("home-video-strip-track");
   if (!track) return;
 
@@ -39,18 +39,18 @@
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
-      // Latest uploads = last entries in gallery.json
-      const patientCare = (data.images || [])
-        .filter((img) => img.category === CATEGORY)
+      // Newest uploads first; skip Patient Care (those stay in the top gallery strip when recent)
+      const photos = (data.images || [])
+        .filter((img) => img.category !== EXCLUDE_CATEGORY)
         .slice()
         .reverse()
         .slice(0, STRIP_LIMIT);
-      if (!patientCare.length) {
+      if (!photos.length) {
         track.closest(".hp-media-strip")?.remove();
         return;
       }
 
-      const items = patientCare.map((img, i) => renderItem(img, i)).join("");
+      const items = photos.map((img, i) => renderItem(img, i)).join("");
       track.innerHTML = items + items;
       track.classList.add("is-ready");
       const section = document.getElementById("home-video-strip-section");

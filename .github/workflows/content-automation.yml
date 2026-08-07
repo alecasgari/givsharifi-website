@@ -11,16 +11,14 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
   pages: write
   id-token: write
 
 jobs:
   process-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment_retry2.outputs.page_url || steps.deployment_retry1.outputs.page_url || steps.deployment.outputs.page_url }}
-    # Queue Pages deploys (GITHUB_TOKEN pushes do not trigger deploy.yml).
+    # Share the pages queue with deploy.yml — never cancel mid-deploy (that caused gallery 404s).
     concurrency:
       group: pages
       cancel-in-progress: false
@@ -72,6 +70,44 @@ jobs:
           echo "Push failed after retries"
           exit 1
 
+      # GITHUB_TOKEN pushes do not trigger deploy.yml — deploy here, but only after
+      # any previous Pages deployment has finished (avoids 400 "in progress deployment").
+      - name: Wait for clear Pages deployment slot
+        if: steps.commit.outputs.changes_detected == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const maxAttempts = 24; // ~8 minutes
+            for (let i = 1; i <= maxAttempts; i++) {
+              const deploys = await github.rest.repos.listDeployments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                environment: 'github-pages',
+                per_page: 5,
+              });
+              let blocked = false;
+              for (const d of deploys.data) {
+                const statuses = await github.rest.repos.listDeploymentStatuses({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  deployment_id: d.id,
+                  per_page: 1,
+                });
+                const state = statuses.data[0]?.state || 'unknown';
+                if (state === 'in_progress' || state === 'queued' || state === 'pending') {
+                  blocked = true;
+                  console.log(`Attempt ${i}: deployment ${d.id} is ${state}, waiting...`);
+                  break;
+                }
+              }
+              if (!blocked) {
+                console.log('Pages deployment slot is clear.');
+                return;
+              }
+              await new Promise((r) => setTimeout(r, 20000));
+            }
+            core.setFailed('Timed out waiting for an in-progress GitHub Pages deployment to finish.');
+
       - name: Setup Pages
         if: steps.commit.outputs.changes_detected == 'true'
         uses: actions/configure-pages@v5
@@ -88,24 +124,25 @@ jobs:
 
       - name: Wait for artifact
         if: steps.commit.outputs.changes_detected == 'true'
-        run: sleep 30
+        run: sleep 20
 
       - name: Deploy to GitHub Pages
         if: steps.commit.outputs.changes_detected == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
         timeout-minutes: 15
-        continue-on-error: true
 
-      - name: Deploy to GitHub Pages (retry 1)
-        if: steps.commit.outputs.changes_detected == 'true' && steps.deployment.outcome == 'failure'
-        id: deployment_retry1
-        uses: actions/deploy-pages@v4
-        timeout-minutes: 15
-        continue-on-error: true
-
-      - name: Deploy to GitHub Pages (retry 2)
-        if: steps.commit.outputs.changes_detected == 'true' && steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
-        id: deployment_retry2
-        uses: actions/deploy-pages@v4
-        timeout-minutes: 15
+      - name: Verify gallery is live
+        if: steps.commit.outputs.changes_detected == 'true'
+        run: |
+          set -e
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" -A "Mozilla/5.0" "https://www.givsharifi.com/gallery/" || true)
+            echo "Check $i: gallery HTTP $code"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Gallery did not return 200 after deploy"
+          exit 1

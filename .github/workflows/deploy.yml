@@ -13,8 +13,9 @@ permissions:
   id-token: write
 
 concurrency:
+  # Queue deploys — never cancel an in-flight Pages deploy (caused intermittent gallery 404).
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
