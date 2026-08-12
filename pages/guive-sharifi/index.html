@@ -16,26 +16,28 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://www.givsharifi.com/assets/images/home/about-giv.webp">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preload" as="image" href="assets/images/home/about-giv.webp" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/landing-guive.css">
   <link rel="icon" href="assets/images/brand/favicon.svg" type="image/svg+xml">
 </head>
 <body class="gl-page">
   <main class="gl">
-    <img
-      class="gl__photo"
-      src="assets/images/home/about-giv.webp"
-      alt="Dr. Guive Sharifi, neurosurgeon"
-      width="600"
-      height="800"
-      fetchpriority="high"
-    >
+    <div class="gl__slider" id="gl-slider" aria-hidden="true">
+      <img
+        class="gl__slide is-active"
+        src="assets/images/home/about-giv.webp"
+        alt=""
+        width="640"
+        height="480"
+        fetchpriority="high"
+      >
+    </div>
     <p class="gl__kicker">Thank you for visiting</p>
     <h1 class="gl__name">Dr. Guive Sharifi</h1>
     <p class="gl__lead">You are on the official website of Dr. Guive Sharifi — neurosurgeon in Dubai and Tehran.</p>
     <p class="gl__note">Brain, spine, and pituitary surgery.</p>
     <a class="gl__btn" href="./">Enter the website</a>
   </main>
+  <script src="assets/js/landing-guive.js"></script>
 </body>
 </html>
