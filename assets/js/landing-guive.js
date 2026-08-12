@@ -1,11 +1,10 @@
 /**
- * Landing slider — mixed random gallery photos, larger frames.
+ * Landing strip — 5 random landscape gallery photos, infinite horizontal scroll.
  */
 (function () {
-  const SLIDE_COUNT = 12;
-  const INTERVAL_MS = 3500;
-  const slider = document.getElementById("gl-slider");
-  if (!slider) return;
+  const SLIDE_COUNT = 5;
+  const track = document.getElementById("gl-track");
+  if (!track) return;
 
   function u(path) {
     return typeof window.siteUrl === "function" ? window.siteUrl(path) : path;
@@ -22,9 +21,16 @@
     return arr;
   }
 
-  function mixedRandom(images, limit) {
+  function isLandscape(img) {
+    const w = Number(img.width) || 0;
+    const h = Number(img.height) || 0;
+    return w > 0 && h > 0 && w > h;
+  }
+
+  function mixedLandscape(images, limit) {
+    const landscape = images.filter(isLandscape);
     const byCategory = new Map();
-    images.forEach((img) => {
+    landscape.forEach((img) => {
       const cat = img.category || "Other";
       if (!byCategory.has(cat)) byCategory.set(cat, []);
       byCategory.get(cat).push(img);
@@ -41,29 +47,17 @@
         added = true;
       });
     }
-    return shuffle(mixed);
+    return shuffle(mixed).slice(0, limit);
   }
 
-  function renderSlides(images) {
-    slider.innerHTML = images
-      .map((img, i) => {
-        const src = u(img.thumb || img.file);
-        const eager = i === 0 ? "eager" : "lazy";
-        const active = i === 0 ? " is-active" : "";
-        return `<img class="gl__slide${active}" src="${escapeAttr(src)}" alt="" width="640" height="480" decoding="async" loading="${eager}">`;
-      })
-      .join("");
-  }
-
-  function startRotation() {
-    const slides = slider.querySelectorAll(".gl__slide");
-    if (slides.length < 2) return;
-    let index = 0;
-    setInterval(() => {
-      slides[index].classList.remove("is-active");
-      index = (index + 1) % slides.length;
-      slides[index].classList.add("is-active");
-    }, INTERVAL_MS);
+  function renderItem(img, index) {
+    const src = u(img.thumb || img.file);
+    const eager = index < 2 ? "eager" : "lazy";
+    return `
+      <div class="gl__item">
+        <img src="${escapeAttr(src)}" alt="" width="640" height="400" decoding="async" loading="${eager}">
+      </div>
+    `;
   }
 
   function escapeAttr(str) {
@@ -80,12 +74,13 @@
       const res = await fetch(u("assets/data/gallery.json"));
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
-      const picks = mixedRandom(data.images || [], SLIDE_COUNT);
+      const picks = mixedLandscape(data.images || [], SLIDE_COUNT);
       if (!picks.length) return;
-      renderSlides(picks);
-      startRotation();
+      const items = picks.map((img, i) => renderItem(img, i)).join("");
+      track.innerHTML = items + items;
+      track.classList.add("is-ready");
     } catch (e) {
-      // Keep fallback portrait already in HTML.
+      // Leave empty if gallery cannot load.
     }
   }
 
