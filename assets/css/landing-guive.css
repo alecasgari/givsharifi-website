@@ -28,10 +28,107 @@ body {
 }
 
 .gl-page {
+  position: relative;
   min-height: 100dvh;
+  isolation: isolate;
+}
+
+.gl-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gl-bg__gradient {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 45% at 18% 22%, rgba(24, 168, 150, 0.22), transparent 70%),
+    radial-gradient(38% 42% at 86% 18%, rgba(201, 169, 98, 0.2), transparent 68%),
+    radial-gradient(46% 50% at 72% 88%, rgba(24, 168, 150, 0.16), transparent 72%),
+    radial-gradient(50% 55% at 20% 90%, rgba(201, 169, 98, 0.12), transparent 70%),
+    linear-gradient(135deg, #f7f3ec 0%, #e8f4f1 42%, #f4efe4 72%, #eef6f4 100%);
+  background-size: 140% 140%;
+  animation: gl-bg-shift 22s ease-in-out infinite alternate;
+}
+
+.gl-bg__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(18px);
+  opacity: 0.55;
+}
+
+.gl-bg__orb--teal {
+  width: min(48vw, 420px);
+  height: min(48vw, 420px);
+  left: -8%;
+  top: 18%;
+  background: radial-gradient(circle, rgba(24, 168, 150, 0.35), transparent 68%);
+  animation: gl-orb-a 18s ease-in-out infinite alternate;
+}
+
+.gl-bg__orb--gold {
+  width: min(42vw, 360px);
+  height: min(42vw, 360px);
+  right: -6%;
+  bottom: 8%;
+  background: radial-gradient(circle, rgba(201, 169, 98, 0.32), transparent 68%);
+  animation: gl-orb-b 24s ease-in-out infinite alternate;
+}
+
+.gl-bg__net {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  opacity: 0.28;
+  animation: gl-net-drift 36s linear infinite;
+}
+
+.gl-bg__synapses {
+  stroke-opacity: 0.55;
+}
+
+.gl-bg__nodes circle {
+  transform-origin: center;
+  animation: gl-node-pulse 4.8s ease-in-out infinite;
+}
+
+.gl-bg__nodes circle:nth-child(3n) { animation-delay: -1.2s; }
+.gl-bg__nodes circle:nth-child(3n+1) { animation-delay: -2.4s; fill: #c9a962; }
+.gl-bg__nodes circle:nth-child(3n+2) { animation-delay: -3.6s; }
+
+@keyframes gl-bg-shift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.06); }
+}
+
+@keyframes gl-orb-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(12%, -8%, 0) scale(1.18); }
+}
+
+@keyframes gl-orb-b {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-10%, 10%, 0) scale(1.12); }
+}
+
+@keyframes gl-net-drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(-3%, 2%, 0) rotate(4deg); }
+}
+
+@keyframes gl-node-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.95; }
 }
 
 .gl {
+  position: relative;
+  z-index: 1;
   min-height: 100dvh;
   max-height: 100dvh;
   display: flex;
@@ -86,7 +183,11 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gl__track.is-ready {
+  .gl__track.is-ready,
+  .gl-bg__gradient,
+  .gl-bg__orb,
+  .gl-bg__net,
+  .gl-bg__nodes circle {
     animation: none;
   }
 }
