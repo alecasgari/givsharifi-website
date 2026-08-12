@@ -22,6 +22,7 @@ python server.py     # http://localhost:8080
 | `/physiotherapy/` | `pages/physiotherapy/index.html` |
 | `/medical-tourism/` | `pages/medical-tourism/index.html` |
 | `/done/` | `pages/done/index.html` |
+| `/guive-sharifi/` | `pages/guive-sharifi/index.html` |
 | `404` | `pages/404.html` |
 | `/blog/` | `blog/` (root — not in pages/) |
 

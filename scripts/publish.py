@@ -21,6 +21,7 @@ PUBLISH_DIRS = (
     "videos",
     "gallery",
     "done",
+    "guive-sharifi",
 )
 
 
