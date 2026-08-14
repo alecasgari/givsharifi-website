@@ -95,8 +95,10 @@
 
   function showFieldError(form, message, field) {
     const msg = form.querySelector('.form-message');
+    const nameEl = form.querySelector('[name="patient_name"]');
     const phoneWrap = form.querySelector('.phone-field');
     const issueWrap = form.querySelector('.form-textarea-wrap');
+    if (nameEl) nameEl.classList.toggle('is-invalid', field === 'name');
     if (phoneWrap) phoneWrap.classList.toggle('is-invalid', field === 'phone');
     if (issueWrap) issueWrap.classList.toggle('is-invalid', field === 'issue');
     if (msg) {
@@ -107,14 +109,27 @@
 
   function clearFieldError(form) {
     const msg = form.querySelector('.form-message');
+    const nameEl = form.querySelector('[name="patient_name"]');
     const phoneWrap = form.querySelector('.phone-field');
     const issueWrap = form.querySelector('.form-textarea-wrap');
+    if (nameEl) nameEl.classList.remove('is-invalid');
     if (phoneWrap) phoneWrap.classList.remove('is-invalid');
     if (issueWrap) issueWrap.classList.remove('is-invalid');
     if (msg) {
       msg.className = 'form-message';
       msg.textContent = '';
     }
+  }
+
+  function validateName(rawName) {
+    const name = String(rawName || '').trim();
+    if (!name) {
+      return { ok: false, message: 'Please enter your full name.' };
+    }
+    if (name.length < 2) {
+      return { ok: false, message: 'Please enter your full name.' };
+    }
+    return { ok: true, value: name };
   }
 
   function validateIssue(rawIssue) {
@@ -134,6 +149,12 @@
     const phoneEl = form.querySelector('[name="patient_number"]');
     if (!codeEl || !phoneEl || phoneEl.dataset.phoneBound) return;
     phoneEl.dataset.phoneBound = '1';
+
+    const nameEl = form.querySelector('[name="patient_name"]');
+    if (nameEl && !nameEl.dataset.nameBound) {
+      nameEl.dataset.nameBound = '1';
+      nameEl.addEventListener('input', () => clearFieldError(form));
+    }
 
     phoneEl.addEventListener('input', () => {
       clearFieldError(form);
@@ -201,12 +222,22 @@
     if (isHoneypotTripped(form)) return;
 
     const fd = new FormData(form);
+    const nameCheck = validateName(fd.get('patient_name'));
+    if (!nameCheck.ok) {
+      showFieldError(form, nameCheck.message, 'name');
+      const nameEl = form.querySelector('[name="patient_name"]');
+      if (nameEl) nameEl.focus();
+      return;
+    }
+
     const countryCode = fd.get('patient_number_copy_country') || '';
     const phoneRaw = fd.get('patient_number') || '';
     const phoneCheck = validatePhone(countryCode, phoneRaw);
 
     if (!phoneCheck.ok) {
       showFieldError(form, phoneCheck.message, 'phone');
+      const phoneEl = form.querySelector('[name="patient_number"]');
+      if (phoneEl) phoneEl.focus();
       return;
     }
 
@@ -222,7 +253,7 @@
     const phone = phoneCheck.local;
 
     const payload = {
-      patient_name: fd.get('patient_name') || '',
+      patient_name: nameCheck.value,
       patient_number_copy_country: normalizedCountry,
       patient_number: phone,
       issue: issueCheck.value,

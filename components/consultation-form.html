@@ -17,12 +17,12 @@
   </div>
 
   <div class="form-group">
-    <label for="cf-name">Full name</label>
-    <input type="text" id="cf-name" name="patient_name" required autocomplete="name" placeholder="Your full name">
+    <label for="cf-name">Full name <span aria-hidden="true">*</span></label>
+    <input type="text" id="cf-name" name="patient_name" required aria-required="true" autocomplete="name" placeholder="Your full name">
   </div>
 
   <div class="form-group">
-    <label for="cf-phone">WhatsApp number</label>
+    <label for="cf-phone">WhatsApp number <span aria-hidden="true">*</span></label>
     <div class="phone-field">
       <select id="cf-country-code" class="phone-field__code" name="patient_number_copy_country" required autocomplete="tel-country-code" aria-label="Country code">
         <option value="971" selected>+971 🇦🇪</option>
