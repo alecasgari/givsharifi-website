@@ -110,10 +110,10 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Caption (may be Persian or English): {{ $json.caption }}\n\nGenerate SEO gallery metadata for Prof. Giv Sharifi neurosurgery website.\ncategory must be one of: Surgery, Team, Clinic, Patient Care, Diagnostics.\nfeatured: true only if exceptional hero/clinic/team shot.",
+        "text": "=Caption (may be Persian or English): {{ $json.caption }}\n\nGenerate SEO gallery metadata for Prof. Guive Sharifi neurosurgery website.\ncategory must be one of: Surgery, Team, Clinic, Patient Care, Diagnostics.\nfeatured: true only if exceptional hero/clinic/team shot.",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
+          "systemMessage": "You are a medical website content assistant for Prof. Guive Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
       "id": "4e3251fc-da20-4352-ac36-354552238afa",

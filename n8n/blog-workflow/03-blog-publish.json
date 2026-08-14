@@ -89,7 +89,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const p = $('Parse draft').first().json.normalized;\nconst imagePath = `assets/images/blog/${p.slug}.png`;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${imagePath}`,\n};\ndelete post.featuredImagePath;\ndelete post.primaryKeyword;\ndelete post.wordCountEstimate;\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n', slug: p.slug } }];\n"
+        "jsCode": "const p = $('Parse draft').first().json.normalized;\nconst imagePath = `assets/images/blog/${p.slug}.png`;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Guive Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${imagePath}`,\n};\ndelete post.featuredImagePath;\ndelete post.primaryKeyword;\ndelete post.wordCountEstimate;\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n', slug: p.slug } }];\n"
       },
       "id": "7932f629-b71c-44bf-ab0f-fb003a290925",
       "name": "Build post JSON",

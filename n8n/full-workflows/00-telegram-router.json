@@ -174,7 +174,7 @@
     {
       "parameters": {
         "chatId": "={{ $json.message.chat.id }}",
-        "text": "Prof. Giv Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel or YouTube link → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
+        "text": "Prof. Guive Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel or YouTube link → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [

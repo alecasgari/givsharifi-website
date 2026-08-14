@@ -126,7 +126,7 @@ def gemini_stack(
             "promptType": "define",
             "text": prompt,
             "hasOutputParser": True,
-            "options": {"systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."},
+            "options": {"systemMessage": "You are a medical website content assistant for Prof. Guive Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."},
         },
         type_version=1.7,
     )
@@ -259,7 +259,7 @@ BUILD_POST_JSON_CODE = """const p = $('Gemini blog writer').first().json.output;
 const post = {
   ...p,
   author: {
-    name: 'Prof. Giv Sharifi',
+    name: 'Prof. Guive Sharifi',
     title: 'Board-Certified Neurosurgeon',
     url: 'https://www.givsharifi.com/',
   },
@@ -373,7 +373,7 @@ def build_photo_workflow() -> dict:
 
     prompt = (
         "=Caption (may be Persian or English): {{ $json.caption }}\n\n"
-        "Generate SEO gallery metadata for Prof. Giv Sharifi neurosurgery website.\n"
+        "Generate SEO gallery metadata for Prof. Guive Sharifi neurosurgery website.\n"
         "category must be one of: Surgery, Team, Clinic, Patient Care, Diagnostics.\n"
         "featured: true only if exceptional hero/clinic/team shot."
     )
@@ -542,7 +542,7 @@ def build_video_workflow() -> dict:
         "Original URL: {{ $('Set video context').item.json.video_url }}\n"
         "Original title: {{ $json.video_meta.title || '' }}\n"
         "Original description:\n{{ $json.video_meta.description || $json.video_meta.title || '' }}\n\n"
-        "Write English title and description for a neurosurgery patient-education video page on Prof. Giv Sharifi's website. "
+        "Write English title and description for a neurosurgery patient-education video page on Prof. Guive Sharifi's website. "
         "No Persian. Professional SEO tone. category must be one of: Patient Stories, Surgery, Education, Clinic."
     )
     stack, agent, model, parser = gemini_stack(
@@ -678,7 +678,7 @@ def build_blog_workflow() -> dict:
 
     prompt = (
         "=Draft (may be Persian or English):\n{{ $('When called by router').item.json.draft_text }}\n\n"
-        "Create a full blog post JSON for Prof. Giv Sharifi's neurosurgery website.\n"
+        "Create a full blog post JSON for Prof. Guive Sharifi's neurosurgery website.\n"
         "- All text in professional English\n"
         "- slug: lowercase hyphenated, max 60 chars\n"
         "- content: 6-10 blocks (paragraph, heading level 2, optional list)\n"
@@ -948,7 +948,7 @@ def build_router_workflow() -> dict:
         [660, -200],
         {
             "chatId": "={{ $json.message.chat.id }}",
-            "text": "Prof. Giv Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel or YouTube link → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
+            "text": "Prof. Guive Sharifi — Content Bot\n\n📷 Send a photo → gallery\n🎬 Send Instagram reel or YouTube link → videos\n📝 Send /blog then your draft text\n\nImages → GitHub | Videos → Cloudflare R2",
             "replyMarkup": "inlineKeyboard",
             "inlineKeyboard": {
                 "rows": [

@@ -155,7 +155,7 @@ def sticky(content: str, pos: list[int]) -> dict:
 BLOG_SCHEMA = {
     "slug": "brain-tumour-surgery-dubai",
     "title": "Brain Tumour Surgery Dubai: Types, Process and Recovery",
-    "metaDescription": "Considering brain tumour surgery in Dubai? Learn types of surgery, what happens before and after, and when to seek a specialist. Speak with Prof. Giv Sharifi.",
+    "metaDescription": "Considering brain tumour surgery in Dubai? Learn types of surgery, what happens before and after, and when to seek a specialist. Speak with Prof. Guive Sharifi.",
     "excerpt": "A clear guide to brain tumour surgery in Dubai — surgical types, the hospital pathway, and realistic recovery expectations for patients and families.",
     "date": "2026-07-02",
     "category": "Brain Surgery",
@@ -172,7 +172,7 @@ BLOG_SCHEMA = {
     "content": [
         {
             "type": "paragraph",
-            "text": "Brain tumour surgery in Dubai is a major decision that patients and families often face after an MRI or CT scan shows a growth inside the skull. The goal of surgery is to remove all or part of the tumour while protecting healthy brain tissue, nerves, and blood vessels. Prof. Giv Sharifi explains each step in plain language so you know what tests are needed, what happens in the operating room, and how recovery usually progresses. This article covers common tumour types, surgical options, and when a second opinion may help.",
+            "text": "Brain tumour surgery in Dubai is a major decision that patients and families often face after an MRI or CT scan shows a growth inside the skull. The goal of surgery is to remove all or part of the tumour while protecting healthy brain tissue, nerves, and blood vessels. Prof. Guive Sharifi explains each step in plain language so you know what tests are needed, what happens in the operating room, and how recovery usually progresses. This article covers common tumour types, surgical options, and when a second opinion may help.",
         },
         {
             "type": "heading",
@@ -209,7 +209,7 @@ BLOG_SCHEMA = {
         },
         {
             "type": "paragraph",
-            "text": "Most patients stay in hospital for several days after craniotomy, but the exact length depends on the tumour type, surgery complexity, and recovery from anaesthesia. Some people go to a high-dependency unit for closer monitoring. Your team will check speech, movement, and wound healing before discharge. Physiotherapy and follow-up scans are often arranged. Prof. Giv Sharifi discusses expected timelines during your pre-operative consultation so you can plan work and family support.",
+            "text": "Most patients stay in hospital for several days after craniotomy, but the exact length depends on the tumour type, surgery complexity, and recovery from anaesthesia. Some people go to a high-dependency unit for closer monitoring. Your team will check speech, movement, and wound healing before discharge. Physiotherapy and follow-up scans are often arranged. Prof. Guive Sharifi discusses expected timelines during your pre-operative consultation so you can plan work and family support.",
         },
     ],
 }
@@ -466,7 +466,7 @@ BUILD_POST_JSON_CODE = r"""const p = $('Normalize blog output').first().json.nor
 const post = {
   ...p,
   author: {
-    name: 'Prof. Giv Sharifi',
+    name: 'Prof. Guive Sharifi',
     title: 'Board-Certified Neurosurgeon',
     url: 'https://www.givsharifi.com/',
   },
@@ -982,7 +982,7 @@ def build_router() -> dict:
         [880, 120],
         {
             "chatId": "={{ $json.message.chat.id }}",
-            "text": "Prof. Giv Sharifi — Blog Bot\n\n📅 Mon/Wed/Fri: auto draft from Google Sheet\n✅ Approve previews here\n\n/blogstatus — next queued posts\n/blogrun — force today's draft now",
+            "text": "Prof. Guive Sharifi — Blog Bot\n\n📅 Mon/Wed/Fri: auto draft from Google Sheet\n✅ Approve previews here\n\n/blogstatus — next queued posts\n/blogrun — force today's draft now",
             "additionalFields": {"parse_mode": "HTML"},
         },
         type_version=1.2,
@@ -1285,7 +1285,7 @@ def build_draft_preview() -> dict:
         "scheduled_date: {{ $('When called by scheduler').item.json.scheduled_date }}\\n\\n"
         "Already published (avoid duplicate intent):\\n"
         "{{ $('Build existing keywords context').item.json.existing_posts }}\\n\\n"
-        "Write a COMPLETE long-form SEO blog post as a single JSON object for Prof. Giv Sharifi's website.\\n\\n"
+        "Write a COMPLETE long-form SEO blog post as a single JSON object for Prof. Guive Sharifi's website.\\n\\n"
         "CRITICAL — FULL ARTICLE, NOT AN OUTLINE:\\n"
         "- Minimum 1000 words in paragraph + list text combined\\n"
         "- Minimum 12 paragraph blocks; EACH paragraph 70-120 words (4-7 sentences)\\n"
@@ -1317,7 +1317,7 @@ def build_draft_preview() -> dict:
             "hasOutputParser": False,
             "options": {
                 "systemMessage": (
-                    "You are an expert medical SEO writer for Prof. Giv Sharifi, neurosurgeon in Dubai and Tehran. "
+                    "You are an expert medical SEO writer for Prof. Guive Sharifi, neurosurgeon in Dubai and Tehran. "
                     "Return one valid JSON object matching the requested shape. Write FULL prose paragraphs — never "
                     "bullet-point outlines disguised as headings. Simple B2 English. Never use Persian. "
                     "Never add level:0 or level on non-heading blocks. If you cannot reach 1000 words, add more "
@@ -1546,7 +1546,7 @@ const imagePath = `assets/images/blog/${p.slug}.png`;
 const post = {
   ...p,
   author: {
-    name: 'Prof. Giv Sharifi',
+    name: 'Prof. Guive Sharifi',
     title: 'Board-Certified Neurosurgeon',
     url: 'https://www.givsharifi.com/',
   },

@@ -30,7 +30,7 @@
   "category": "Spinal Surgery",
   "tags": ["spinal surgery", "MISS", "neurosurgery Dubai"],
   "author": {
-    "name": "Prof. Giv Sharifi",
+    "name": "Prof. Guive Sharifi",
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },

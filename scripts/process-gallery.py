@@ -159,7 +159,7 @@ def main() -> int:
         alt = (meta.get("alt") or "").strip()
         title = (meta.get("title") or alt or src.stem).strip()
         if not alt:
-            alt = f"Prof. Giv Sharifi neurosurgery — {title}"
+            alt = f"Prof. Guive Sharifi neurosurgery — {title}"
 
         base_slug = slugify(meta.get("slug") or title or src.stem)
         slug = unique_slug(base_slug, existing_slugs)

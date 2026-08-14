@@ -46,7 +46,7 @@
   }
 
   function applyHead(event, pageUrl, imageUrl) {
-    document.title = event.title + ' | Prof. Giv Sharifi — Neurosurgeon';
+    document.title = event.title + ' | Prof. Guive Sharifi — Neurosurgeon';
 
     setMeta('name', 'description', event.metaDescription || event.summary || '');
     if (event.keywords) setMeta('name', 'keywords', event.keywords);
@@ -112,7 +112,7 @@
       })),
       performer: {
         '@type': 'Physician',
-        name: 'Prof. Giv Sharifi',
+        name: 'Prof. Guive Sharifi',
         medicalSpecialty: 'Neurosurgery',
         url: SITE + '/',
       },

@@ -26,7 +26,7 @@ INLINE_IMAGES: dict[str, list[dict[str, str]]] = {
     "brain-tumour-surgery-dubai": [
         {
             "src": "assets/images/services/brain-surgery/team.webp",
-            "alt": "Prof. Giv Sharifi neurosurgical team performing brain surgery in the operating theatre",
+            "alt": "Prof. Guive Sharifi neurosurgical team performing brain surgery in the operating theatre",
         },
         {
             "src": "assets/images/gallery/prof-giv-sharifi-neurosurgery-microscope-operating-room.webp",
@@ -50,11 +50,11 @@ INLINE_IMAGES: dict[str, list[dict[str, str]]] = {
     "lumbar-disc-herniation-treatment": [
         {
             "src": "assets/images/services/spinal-surgery/hero.webp",
-            "alt": "Spinal surgery consultation and care with Prof. Giv Sharifi",
+            "alt": "Spinal surgery consultation and care with Prof. Guive Sharifi",
         },
         {
             "src": "assets/images/gallery/cervical-disc-surgery-sharifi.webp",
-            "alt": "Disc surgery procedure with Prof. Giv Sharifi",
+            "alt": "Disc surgery procedure with Prof. Guive Sharifi",
         },
     ],
     "pituitary-adenoma-symptoms": [
@@ -100,7 +100,7 @@ INLINE_IMAGES: dict[str, list[dict[str, str]]] = {
     "pediatric-neurosurgery": [
         {
             "src": "assets/images/gallery/prof-giv-sharifi-clinic-consultation-office.webp",
-            "alt": "Neurosurgery consultation with Prof. Giv Sharifi",
+            "alt": "Neurosurgery consultation with Prof. Guive Sharifi",
         },
     ],
 }
@@ -109,13 +109,13 @@ CATEGORY_FALLBACK_IMAGES = {
     "Brain Surgery": [
         {
             "src": "assets/images/services/brain-surgery/hero.webp",
-            "alt": "Brain surgery with Prof. Giv Sharifi in Dubai and Tehran",
+            "alt": "Brain surgery with Prof. Guive Sharifi in Dubai and Tehran",
         }
     ],
     "Spinal Surgery": [
         {
             "src": "assets/images/services/spinal-surgery/hero.webp",
-            "alt": "Spinal surgery with Prof. Giv Sharifi",
+            "alt": "Spinal surgery with Prof. Guive Sharifi",
         }
     ],
     "Neurosurgery": [
@@ -302,7 +302,7 @@ def build_article_html(post: dict, recent: list[dict]) -> str:
     category = post.get("category") or ""
     date = post.get("date") or ""
     author = post.get("author") or {
-        "name": "Prof. Giv Sharifi",
+        "name": "Prof. Guive Sharifi",
         "title": "Board-Certified Neurosurgeon",
     }
     tags = post.get("tags") or []
@@ -383,7 +383,7 @@ def build_article_html(post: dict, recent: list[dict]) -> str:
               <span>{reading} min read</span>
               <span class="blog-post__meta-sep" aria-hidden="true">·</span>
               <span itemprop="author" itemscope itemtype="https://schema.org/Person">
-                <span itemprop="name">{esc_text(author.get('name', 'Prof. Giv Sharifi'))}</span>
+                <span itemprop="name">{esc_text(author.get('name', 'Prof. Guive Sharifi'))}</span>
               </span>
             </p>
 
@@ -406,7 +406,7 @@ def build_article_html(post: dict, recent: list[dict]) -> str:
                 <div class="blog-author-card">
                   <div class="blog-author-card__avatar" aria-hidden="true">GS</div>
                   <div>
-                    <p class="blog-author-card__name">{esc_text(author.get('name', 'Prof. Giv Sharifi'))}</p>
+                    <p class="blog-author-card__name">{esc_text(author.get('name', 'Prof. Guive Sharifi'))}</p>
                     <p class="blog-author-card__role">{esc_text(author.get('title') or 'Board-Certified Neurosurgeon')}</p>
                     <p class="blog-author-card__bio">Professor of neurosurgery with 25+ years of experience in brain, spine, and pituitary surgery — Dubai &amp; Tehran.</p>
                   </div>
@@ -458,7 +458,7 @@ def build_page(post: dict, recent: list[dict]) -> str:
     featured = post.get("featuredImage") or "/assets/images/home/og-share.webp"
     page_url = f"{SITE}/blog/{slug}/"
     image_url = abs_url(featured)
-    author = post.get("author") or {"name": "Prof. Giv Sharifi", "url": SITE + "/"}
+    author = post.get("author") or {"name": "Prof. Guive Sharifi", "url": SITE + "/"}
     tags = post.get("tags") or []
 
     article_schema = {
@@ -471,12 +471,12 @@ def build_page(post: dict, recent: list[dict]) -> str:
         "dateModified": post.get("updatedDate") or date,
         "author": {
             "@type": "Person",
-            "name": author.get("name", "Prof. Giv Sharifi"),
+            "name": author.get("name", "Prof. Guive Sharifi"),
             "url": author.get("url") or f"{SITE}/",
         },
         "publisher": {
             "@type": "Organization",
-            "name": "Prof. Giv Sharifi",
+            "name": "Prof. Guive Sharifi",
             "logo": {
                 "@type": "ImageObject",
                 "url": f"{SITE}/assets/images/brand/logo.svg",
@@ -507,11 +507,11 @@ def build_page(post: dict, recent: list[dict]) -> str:
 {BASE_SCRIPT}
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{esc_text(title)} | Prof. Giv Sharifi</title>
+  <title>{esc_text(title)} | Prof. Guive Sharifi</title>
   <meta name="description" content="{esc(meta)}">
   <link rel="canonical" href="{esc(page_url)}">
   <meta property="og:type" content="article">
-  <meta property="og:site_name" content="Prof. Giv Sharifi">
+  <meta property="og:site_name" content="Prof. Guive Sharifi">
   <meta property="og:title" content="{esc(title)}">
   <meta property="og:description" content="{esc(meta)}">
   <meta property="og:url" content="{esc(page_url)}">

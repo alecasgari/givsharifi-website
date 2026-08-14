@@ -153,7 +153,7 @@
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'ItemList',
-      name: 'Prof. Giv Sharifi — Congress & Symposia',
+      name: 'Prof. Guive Sharifi — Congress & Symposia',
       numberOfItems: data.events?.length,
       itemListElement: items,
     });

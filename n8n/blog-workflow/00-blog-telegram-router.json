@@ -353,7 +353,7 @@
     {
       "parameters": {
         "chatId": "={{ $json.message.chat.id }}",
-        "text": "Prof. Giv Sharifi \u2014 Blog Bot\n\n\ud83d\udcc5 Mon/Wed/Fri: auto draft from Google Sheet\n\u2705 Approve previews here\n\n/blogstatus \u2014 next queued posts\n/blogrun \u2014 force today's draft now",
+        "text": "Prof. Guive Sharifi \u2014 Blog Bot\n\n\ud83d\udcc5 Mon/Wed/Fri: auto draft from Google Sheet\n\u2705 Approve previews here\n\n/blogstatus \u2014 next queued posts\n/blogrun \u2014 force today's draft now",
         "additionalFields": {
           "parse_mode": "HTML"
         }

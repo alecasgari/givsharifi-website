@@ -161,7 +161,7 @@
     script.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'ItemList',
-      name: 'Prof. Giv Sharifi — Publications',
+      name: 'Prof. Guive Sharifi — Publications',
       numberOfItems: data.stats?.total || data.publications?.length,
       itemListElement: items,
     });

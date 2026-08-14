@@ -1,4 +1,4 @@
-# Giv Sharifi — n8n Content Workflows
+# Guive Sharifi — n8n Content Workflows
 
 Import these workflows into n8n (`Workflows → Import from File`). Import **sub-workflows first**, then the router.
 

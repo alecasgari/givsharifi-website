@@ -89,10 +89,10 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Draft (may be Persian or English):\n{{ $('When called by router').item.json.draft_text }}\n\nCreate a full blog post JSON for Prof. Giv Sharifi's neurosurgery website.\n- All text in professional English\n- slug: lowercase hyphenated, max 60 chars\n- content: 6-10 blocks (paragraph, heading level 2, optional list)\n- tags: 5-8 SEO keywords\n- date: today ISO\n- featuredImagePath: assets/images/blog/{slug}.webp (use slug in path)",
+        "text": "=Draft (may be Persian or English):\n{{ $('When called by router').item.json.draft_text }}\n\nCreate a full blog post JSON for Prof. Guive Sharifi's neurosurgery website.\n- All text in professional English\n- slug: lowercase hyphenated, max 60 chars\n- content: 6-10 blocks (paragraph, heading level 2, optional list)\n- tags: 5-8 SEO keywords\n- date: today ISO\n- featuredImagePath: assets/images/blog/{slug}.webp (use slug in path)",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "You are a medical website content assistant for Prof. Giv Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
+          "systemMessage": "You are a medical website content assistant for Prof. Guive Sharifi, a neurosurgeon in Dubai and Tehran. Output valid JSON only via the parser. All public text must be professional English suitable for SEO."
         }
       },
       "id": "7d35eb21-8c16-400c-9808-8ec8c68d29d0",
@@ -136,7 +136,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const p = $('Gemini blog writer').first().json.output;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Giv Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n' } }];\n"
+        "jsCode": "const p = $('Gemini blog writer').first().json.output;\nconst post = {\n  ...p,\n  author: {\n    name: 'Prof. Guive Sharifi',\n    title: 'Board-Certified Neurosurgeon',\n    url: 'https://www.givsharifi.com/',\n  },\n  featuredImage: `/${p.featuredImagePath}`,\n};\nreturn [{ json: { post_json: JSON.stringify(post, null, 2) + '\\n' } }];\n"
       },
       "id": "2bbd1cfa-25b0-4452-8bb6-ccb991dffe0d",
       "name": "Build post JSON",

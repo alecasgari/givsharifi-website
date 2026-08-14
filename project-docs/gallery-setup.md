@@ -14,7 +14,7 @@ Optional: edit `manifest.json` in the same folder **before** processing:
 {
   "IMG_4521.jpg": {
     "slug": "neurosurgery-team-operating-room-dubai",
-    "alt": "Neurosurgical team in operating theatre — Prof. Giv Sharifi, Dubai",
+    "alt": "Neurosurgical team in operating theatre — Prof. Guive Sharifi, Dubai",
     "title": "Operating theatre — Dubai",
     "category": "Surgery",
     "featured": true
