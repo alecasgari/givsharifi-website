@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "chiari-malformation-surgery",
+      "title": "Chiari Malformation: Symptoms Diagnosis and Decompression Surgery",
+      "excerpt": "Chiari Malformation is a condition affecting the brain and spinal cord junction. This article covers its symptoms, diagnosis, and the role of decompression surgery in treatment.",
+      "date": "2026-08-24",
+      "category": "Spinal Surgery",
+      "image": "/assets/images/blog/chiari-malformation-surgery.png"
+    },
+    {
       "slug": "cerebral-aneurysm-treatment",
       "title": "Cerebral Aneurysm: Clipping, Coiling and When Surgery Is Needed",
       "excerpt": "Cerebral aneurysms require careful diagnosis and treatment. This article explains clipping, coiling, and when surgery is recommended to manage this condition effectively.",
