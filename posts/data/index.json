@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "pituitary-tumour-vision-loss",
+      "title": "Pituitary Tumours and Vision Loss: Optic Chiasm Compression Explained",
+      "excerpt": "Pituitary tumours can impact vision by compressing the optic chiasm, leading to specific visual field defects. Early diagnosis and treatment are crucial to prevent permanent vision loss.",
+      "date": "2026-08-26",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/pituitary-tumour-vision-loss.png"
+    },
+    {
       "slug": "chiari-malformation-surgery",
       "title": "Chiari Malformation: Symptoms Diagnosis and Decompression Surgery",
       "excerpt": "Chiari Malformation is a condition affecting the brain and spinal cord junction. This article covers its symptoms, diagnosis, and the role of decompression surgery in treatment.",
