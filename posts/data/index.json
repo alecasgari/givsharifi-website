@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "second-opinion-neurosurgery",
+      "title": "Getting a Second Opinion Before Neurosurgery: How and Why",
+      "excerpt": "Considering neurosurgery can be daunting. Getting a second opinion helps you understand your diagnosis, explore treatment options, and feel confident about your care plan.",
+      "date": "2026-08-28",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/second-opinion-neurosurgery.png"
+    },
+    {
       "slug": "pituitary-tumour-vision-loss",
       "title": "Pituitary Tumours and Vision Loss: Optic Chiasm Compression Explained",
       "excerpt": "Pituitary tumours can impact vision by compressing the optic chiasm, leading to specific visual field defects. Early diagnosis and treatment are crucial to prevent permanent vision loss.",
