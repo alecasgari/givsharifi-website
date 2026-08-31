@@ -99,8 +99,17 @@
     el.href = href;
   }
 
+  function displayAuthor(post) {
+    const author = post.author || {};
+    return {
+      name: String(author.name || 'Prof. Guive Sharifi').replace(/\bGiv\b/g, 'Guive'),
+      title: author.title || 'Board-Certified Neurosurgeon',
+      url: author.url || SITE + '/',
+    };
+  }
+
   function injectJsonLd(post, pageUrl, imageUrl) {
-    const author = post.author || { name: 'Prof. Guive Sharifi', url: SITE + '/' };
+    const author = displayAuthor(post);
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -157,7 +166,7 @@
   }
 
   function renderPost(post, pageUrl, recent) {
-    const author = post.author || { name: 'Prof. Guive Sharifi', title: 'Board-Certified Neurosurgeon' };
+    const author = displayAuthor(post);
     const reading = post.readingTimeMinutes || estimateReading(post.content);
     const service = SERVICE_LINKS[post.category] || { href: 'spinal-surgery/', label: 'Our Services' };
     const tags = post.tags || [];

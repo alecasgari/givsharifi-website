@@ -449,6 +449,11 @@ out.date = String(row.scheduled_date || new Date().toISOString().slice(0, 10)).s
 out.readingTimeMinutes = Math.max(8, Math.round(words / 200));
 delete out.primaryKeyword;
 delete out.wordCountEstimate;
+out.author = {
+  name: 'Prof. Guive Sharifi',
+  title: 'Board-Certified Neurosurgeon',
+  url: 'https://www.givsharifi.com/',
+};
 
 return [{
   json: {

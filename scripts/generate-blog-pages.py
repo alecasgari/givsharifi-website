@@ -15,6 +15,16 @@ POSTS_DIR = ROOT / "posts" / "data"
 BLOG_DIR = ROOT / "blog"
 SITE = "https://www.givsharifi.com"
 
+
+def display_author(post: dict) -> dict:
+    raw = post.get("author") or {}
+    name = str(raw.get("name") or "Prof. Guive Sharifi").replace("Giv Sharifi", "Guive Sharifi")
+    return {
+        "name": name,
+        "title": raw.get("title") or "Board-Certified Neurosurgeon",
+        "url": raw.get("url") or f"{SITE}/",
+    }
+
 SERVICE_LINKS = {
     "Spinal Surgery": ("spinal-surgery/", "Spine Surgery Services"),
     "Brain Surgery": ("brain-surgery/", "Brain Tumor Specialist — Dubai & Tehran"),
@@ -301,10 +311,7 @@ def build_article_html(post: dict, recent: list[dict]) -> str:
     excerpt = post.get("excerpt") or ""
     category = post.get("category") or ""
     date = post.get("date") or ""
-    author = post.get("author") or {
-        "name": "Prof. Guive Sharifi",
-        "title": "Board-Certified Neurosurgeon",
-    }
+    author = display_author(post)
     tags = post.get("tags") or []
     featured = post.get("featuredImage") or ""
     page_url = f"{SITE}/blog/{slug}/"
@@ -458,7 +465,7 @@ def build_page(post: dict, recent: list[dict]) -> str:
     featured = post.get("featuredImage") or "/assets/images/home/og-share.webp"
     page_url = f"{SITE}/blog/{slug}/"
     image_url = abs_url(featured)
-    author = post.get("author") or {"name": "Prof. Guive Sharifi", "url": SITE + "/"}
+    author = display_author(post)
     tags = post.get("tags") or []
 
     article_schema = {
