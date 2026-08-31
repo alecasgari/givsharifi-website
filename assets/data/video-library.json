@@ -1,8 +1,19 @@
 {
   "baseUrl": "https://media.givsharifi.com",
   "pathPrefix": "library",
-  "updated": "2026-08-04",
+  "updated": "2026-08-31",
   "videos": [
+    {
+      "id": "X0cBikibviI",
+      "file": "X0cBikibviI.mp4",
+      "poster": "X0cBikibviI.jpg",
+      "title": "National Doctors' Day: A Tribute to Medicine, Dedication, and Humanity with Prof. Guive Sharifi",
+      "description": "On the occasion of National Doctors' Day, Prof. Guive Sharifi and esteemed medical professors share their profound insights, experiences, and inspiring messages regarding the noble profession of medicine. This special tribute honors dedicated physicians who have devoted their professional lives to healing patients, educating future generations, and advancing medical science and neurosurgery. Watch this inspiring video celebrating the dedication, humanity, and relentless commitment of healthcare professionals striving to improve human health.",
+      "date": "2026-08-24",
+      "duration": "10:49",
+      "category": "Education",
+      "youtube": "https://www.youtube.com/watch?v=X0cBikibviI"
+    },
     {
       "id": "lK736CbtosY",
       "file": "lK736CbtosY.mp4",
