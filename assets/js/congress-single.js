@@ -37,6 +37,9 @@
       root.innerHTML = renderEvent(event, pageUrl);
       initSlideshow(event);
       initGalleryLightbox(event);
+      if (window.GivVideoPlayback) {
+        window.GivVideoPlayback.bindSingleVideoPlayback(root);
+      }
     } catch (e) {
       root.innerHTML =
         '<div class="container cong-event__error"><h1>Event not found</h1><p><a href="' +
@@ -208,6 +211,34 @@
     `
         : '';
 
+    const videos =
+      event.videos && event.videos.length
+        ? `
+      <section class="cong-event-videos" aria-label="Event videos">
+        <div class="container">
+          <h2>Congress videos</h2>
+          <div class="cong-event-videos__grid">
+            ${event.videos
+              .map(
+                (v) => `
+              <article class="cong-event-video">
+                <video controls preload="none" playsinline${
+                  v.poster ? ` poster="${escapeAttr(u(v.poster))}"` : ''
+                }>
+                  <source src="${escapeAttr(u(v.file))}" type="video/mp4">
+                </video>
+                ${v.title ? '<h3>' + escapeHtml(v.title) + '</h3>' : ''}
+                ${v.caption ? '<p>' + escapeHtml(v.caption) + '</p>' : ''}
+              </article>
+            `
+              )
+              .join('')}
+          </div>
+        </div>
+      </section>
+    `
+        : '';
+
     const gallery =
       event.gallery && event.gallery.length > 1
         ? `
@@ -267,6 +298,8 @@
           ${organizers}
         </div>
       </section>
+
+      ${videos}
 
       ${gallery}
 

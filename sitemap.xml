@@ -11,11 +11,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.givsharifi.com/guive-sharifi/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.givsharifi.com/brain-surgery/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -64,6 +59,96 @@
     <loc>https://www.givsharifi.com/congress/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/neurosurgeon-tehran-second-opinion/</loc>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/second-opinion-neurosurgery/</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/pituitary-tumour-vision-loss/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/chiari-malformation-surgery/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/cerebral-aneurysm-treatment/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/when-back-pain-needs-surgery/</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/cushing-disease-pituitary-surgery/</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/scoliosis-surgery-adults/</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/awake-brain-surgery-benefits/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/medical-tourism-neurosurgery-dubai/</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/brain-surgery-recovery-timeline/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/prolactinoma-treatment/</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/spinal-stenosis-surgery-options/</loc>
+    <lastmod>2026-07-31</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/meningioma-surgery-recovery/</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/spine-surgeon-tehran-herniated-disc/</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.givsharifi.com/blog/spinal-surgery-recovery-guide/</loc>
@@ -158,6 +243,12 @@
   <url>
     <loc>https://www.givsharifi.com/blog/spinal-cord-injuries/</loc>
     <lastmod>2023-04-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/congress/neurosurgery-spine-congress-urmia-2026/</loc>
+    <lastmod>2026-08-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>

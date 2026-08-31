@@ -27,7 +27,7 @@
   async function init() {
     showSkeleton();
     try {
-      const res = await fetch(u('congress/data/index.json'));
+      const res = await fetch(u('congress/data/index.json'), { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
       allEvents = (data.events || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));

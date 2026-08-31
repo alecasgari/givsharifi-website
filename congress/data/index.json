@@ -1,6 +1,20 @@
 {
-  "updated": "2026-07-04",
+  "updated": "2026-08-31",
   "events": [
+    {
+      "slug": "neurosurgery-spine-congress-urmia-2026",
+      "title": "Congress of Neurosurgery and Spine Surgeons — North-West Iran",
+      "subtitle": "Urmia, 27–29 August 2026 — Vahdat Hall",
+      "date": "2026-08-27",
+      "year": 2026,
+      "city": "Urmia",
+      "country": "Iran",
+      "venue": "Vahdat Hall, Urmia University of Medical Sciences",
+      "type": "Congress",
+      "excerpt": "Prof. Guive Sharifi spoke and presented awards at the Congress of Neurosurgery and Spine Surgeons in Urmia, 27–29 August 2026, hosted at Vahdat Hall.",
+      "coverImage": "congress/neurosurgery-spine-congress-urmia-2026/images/01-congress-cover.webp",
+      "keywords": ["neurosurgery congress", "spine surgery", "Urmia", "IRNESO", "Vahdat Hall", "Guive Sharifi"]
+    },
     {
       "slug": "international-clinical-oncology-congress-2026",
       "title": "20th International Clinical Oncology Congress",

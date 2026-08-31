@@ -40,6 +40,10 @@ class DevHandler(http.server.SimpleHTTPRequestHandler):
         resolved = resolve_file(path)
         return str(resolved.resolve())
 
+    def end_headers(self) -> None:
+        self.send_header("Cache-Control", "no-store, max-age=0")
+        super().end_headers()
+
     def log_message(self, format: str, *args) -> None:
         if args and str(args[0]).startswith("2"):
             super().log_message(format, *args)
