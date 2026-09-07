@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "acromegaly-pituitary-treatment",
+      "title": "Acromegaly: Diagnosis Pituitary Surgery and Long-Term Care",
+      "excerpt": "Acromegaly is a rare hormonal disorder caused by excess growth hormone, often due to a pituitary macroadenoma. Early diagnosis and expert pituitary surgery can improve outcomes. Long-term care involves endocrinology team support and monitoring.",
+      "date": "2026-09-07",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/acromegaly-pituitary-treatment.png"
+    },
+    {
       "slug": "spondylolisthesis-treatment",
       "title": "Spondylolisthesis: Grades Symptoms and Spinal Fusion Options",
       "excerpt": "Spondylolisthesis is a spinal condition where a vertebra slips forward, causing pain and instability. Understanding its grades, symptoms, and treatment options is key to managing it effectively.",
