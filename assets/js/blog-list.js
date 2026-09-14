@@ -12,6 +12,11 @@ async function renderBlogList() {
   const grid = document.getElementById('blog-grid');
   if (!grid) return;
 
+  // Server-rendered cards already include crawlable links.
+  if (grid.getAttribute('data-ssr') === '1' && grid.querySelector('a[href*="blog/"]')) {
+    return;
+  }
+
   showBlogListSkeleton(grid);
   try {
     const res = await fetch(u('posts/data/index.json'));

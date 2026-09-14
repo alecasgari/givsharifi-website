@@ -70,7 +70,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Initial treatment for spondylolisthesis often involves conservative methods such as physical therapy, pain medications, and activity modification. These approaches aim to reduce pain, improve flexibility, and strengthen the muscles supporting the spine. Bracing may also be recommended to limit movement and promote healing in cases with a pars defect. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Initial treatment for spondylolisthesis often involves conservative methods such as physical therapy, pain medications, and activity modification. These approaches aim to reduce pain, improve flexibility, and strengthen the muscles supporting the spine. Bracing may also be recommended to limit movement and promote healing in cases with a pars defect."
     },
     {
       "type": "paragraph",
@@ -110,7 +110,7 @@
     },
     {
       "type": "paragraph",
-      "text": "The pars interarticularis is a small segment of bone connecting parts of the vertebra. A defect or fracture in this area weakens the vertebra’s structural integrity, allowing it to slip forward. This pars defect is a common cause of spondylolisthesis, especially in younger patients or athletes who experience repetitive stress on the spine. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "The pars interarticularis is a small segment of bone connecting parts of the vertebra. A defect or fracture in this area weakens the vertebra’s structural integrity, allowing it to slip forward. This pars defect is a common cause of spondylolisthesis, especially in younger patients or athletes who experience repetitive stress on the spine."
     },
     {
       "type": "heading",
@@ -119,7 +119,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Spinal fusion surgery is usually recommended when conservative treatments fail to relieve symptoms or when there is significant spinal instability causing nerve compression or severe pain. Your neurosurgeon will evaluate your imaging and clinical symptoms to decide if fusion is the best option to stabilize the spine and improve your quality of life. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Spinal fusion surgery is usually recommended when conservative treatments fail to relieve symptoms or when there is significant spinal instability causing nerve compression or severe pain. Your neurosurgeon will evaluate your imaging and clinical symptoms to decide if fusion is the best option to stabilize the spine and improve your quality of life."
     },
     {
       "type": "heading",
@@ -128,7 +128,7 @@
     },
     {
       "type": "paragraph",
-      "text": "If left untreated, severe spondylolisthesis can compress spinal nerves, potentially leading to permanent nerve damage. Early diagnosis and appropriate treatment are important to prevent this outcome. Surgery can relieve nerve pressure and reduce the risk of lasting neurological problems. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "If left untreated, severe spondylolisthesis can compress spinal nerves, potentially leading to permanent nerve damage. Early diagnosis and appropriate treatment are important to prevent this outcome. Surgery can relieve nerve pressure and reduce the risk of lasting neurological problems."
     },
     {
       "type": "heading",
@@ -137,7 +137,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Lifestyle changes such as maintaining a healthy weight, practicing good posture, avoiding heavy lifting, and engaging in low-impact exercises can help manage symptoms. Physical therapy focused on strengthening core muscles also supports spinal stability. These measures complement medical or surgical treatments and may reduce pain and improve function. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Lifestyle changes such as maintaining a healthy weight, practicing good posture, avoiding heavy lifting, and engaging in low-impact exercises can help manage symptoms. Physical therapy focused on strengthening core muscles also supports spinal stability. These measures complement medical or surgical treatments and may reduce pain and improve function."
     }
   ],
   "author": {
@@ -145,5 +145,5 @@
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },
-  "featuredImage": "/assets/images/blog/spondylolisthesis-treatment.png"
+  "featuredImage": "/assets/images/blog/spondylolisthesis-treatment.webp"
 }

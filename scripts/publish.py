@@ -45,31 +45,25 @@ def should_publish(rel: Path) -> bool:
     return True
 
 
-def sync_congress_event_shells() -> int:
-    """Copy _event-shell.html to congress/{slug}/index.html for every event in index.json."""
-    shell_src = ROOT / "congress" / "_event-shell.html"
-    index_path = ROOT / "congress" / "data" / "index.json"
-    if not shell_src.is_file() or not index_path.is_file():
+def sync_congress_event_pages() -> int:
+    """Render full HTML congress event pages (SSR — unique title/canonical/Event schema)."""
+    gen = ROOT / "scripts" / "generate-congress-pages.py"
+    if not gen.is_file():
         return 0
-    shell = shell_src.read_text(encoding="utf-8")
+    import subprocess
+
+    result = subprocess.run([sys.executable, str(gen)], check=False)
+    if result.returncode != 0:
+        print("generate-congress-pages.py failed", file=sys.stderr)
+        return 0
+    index_path = ROOT / "congress" / "data" / "index.json"
+    if not index_path.is_file():
+        return 0
     try:
         index = json.loads(index_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
-        print("congress/data/index.json invalid JSON", file=sys.stderr)
         return 0
-    created = 0
-    for event in index.get("events", []):
-        slug = event.get("slug")
-        if not slug:
-            continue
-        dest = ROOT / "congress" / slug / "index.html"
-        if dest.is_file():
-            continue
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(shell, encoding="utf-8")
-        print(f"  congress shell: {dest.relative_to(ROOT)}")
-        created += 1
-    return created
+    return len({e.get("slug") for e in index.get("events", []) if e.get("slug")})
 
 
 def sync_blog_post_shells() -> int:
@@ -164,9 +158,9 @@ def main() -> int:
     if shells:
         print(f"\nCreated {shells} missing blog post shell(s).")
 
-    cong_shells = sync_congress_event_shells()
-    if cong_shells:
-        print(f"Created {cong_shells} missing congress event shell(s).")
+    cong_pages = sync_congress_event_pages()
+    if cong_pages:
+        print(f"\nRendered {cong_pages} congress event page(s).")
 
     sitemap = ROOT / "scripts" / "generate-sitemap.py"
     if sitemap.is_file():

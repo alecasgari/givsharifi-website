@@ -52,7 +52,7 @@
     },
     {
       "type": "paragraph",
-      "text": "While every patient recovers at a unique pace based on their age, tumor type, and general physiological condition, the brain surgery recovery timeline generally follows a structured progression over twelve weeks and beyond. Clear expectations help patients and family caregivers track progress effectively while remaining realistic about physical limits. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "While every patient recovers at a unique pace based on their age, tumor type, and general physiological condition, the brain surgery recovery timeline generally follows a structured progression over twelve weeks and beyond. Clear expectations help patients and family caregivers track progress effectively while remaining realistic about physical limits."
     },
     {
       "type": "list",
@@ -168,5 +168,5 @@
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },
-  "featuredImage": "/assets/images/blog/brain-surgery-recovery-timeline.png"
+  "featuredImage": "/assets/images/blog/brain-surgery-recovery-timeline.webp"
 }

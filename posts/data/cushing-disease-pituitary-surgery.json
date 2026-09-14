@@ -44,7 +44,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Diagnosing Cushing disease involves rigorous multi-step hormone testing coordinated between endocrinologists and neurosurgeons to establish true hypercortisolemia and confirm its pituitary origin. Clinicians generally use several biochemical tests to confirm cortisol excess before proceeding to high-resolution neuroimaging: In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Diagnosing Cushing disease involves rigorous multi-step hormone testing coordinated between endocrinologists and neurosurgeons to establish true hypercortisolemia and confirm its pituitary origin. Clinicians generally use several biochemical tests to confirm cortisol excess before proceeding to high-resolution neuroimaging:"
     },
     {
       "type": "list",
@@ -150,5 +150,5 @@
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },
-  "featuredImage": "/assets/images/blog/cushing-disease-pituitary-surgery.png"
+  "featuredImage": "/assets/images/blog/cushing-disease-pituitary-surgery.webp"
 }

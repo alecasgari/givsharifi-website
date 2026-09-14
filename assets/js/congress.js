@@ -25,7 +25,10 @@
   }
 
   async function init() {
-    showSkeleton();
+    const hasStaticCards = grid.getAttribute('data-ssr') === '1' && grid.querySelector('[data-event-slug]');
+    if (!hasStaticCards) {
+      showSkeleton();
+    }
     try {
       const res = await fetch(u('congress/data/index.json'), { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to load');

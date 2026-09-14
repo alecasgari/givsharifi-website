@@ -62,7 +62,7 @@
     },
     {
       "type": "paragraph",
-      "text": "In addition to visual field testing, imaging studies such as magnetic resonance imaging (MRI) are essential. MRI scans provide detailed images of the pituitary gland and surrounding structures, allowing your neurosurgeon to determine the size, location, and impact of the tumour. Together, these tests guide the decision-making process for treatment options, including surgery. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "In addition to visual field testing, imaging studies such as magnetic resonance imaging (MRI) are essential. MRI scans provide detailed images of the pituitary gland and surrounding structures, allowing your neurosurgeon to determine the size, location, and impact of the tumour. Together, these tests guide the decision-making process for treatment options, including surgery."
     },
     {
       "type": "heading",
@@ -75,7 +75,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Your neurosurgeon will assess your individual case and may also consider medical therapies or radiation depending on the tumour’s characteristics. Prompt treatment is important to prevent permanent vision loss. After surgery, patients typically undergo follow-up visual field tests and imaging to monitor recovery and detect any tumour recurrence early. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Your neurosurgeon will assess your individual case and may also consider medical therapies or radiation depending on the tumour’s characteristics. Prompt treatment is important to prevent permanent vision loss. After surgery, patients typically undergo follow-up visual field tests and imaging to monitor recovery and detect any tumour recurrence early."
     },
     {
       "type": "heading",
@@ -84,11 +84,11 @@
     },
     {
       "type": "paragraph",
-      "text": "If you experience sudden or progressive vision loss, especially with symptoms like bitemporal hemianopia or severe headaches, it is critical to seek urgent medical evaluation. Early referral to a neurosurgeon or neuro-ophthalmologist can lead to timely diagnosis and treatment, improving the chances of preserving vision. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "If you experience sudden or progressive vision loss, especially with symptoms like bitemporal hemianopia or severe headaches, it is critical to seek urgent medical evaluation. Early referral to a neurosurgeon or neuro-ophthalmologist can lead to timely diagnosis and treatment, improving the chances of preserving vision."
     },
     {
       "type": "paragraph",
-      "text": "Delaying care can result in irreversible damage to the optic nerves and permanent vision impairment. Specialist care in neurosurgery centers with experience in pituitary tumours ensures access to advanced diagnostic tools and surgical techniques. Your healthcare provider will guide you through the process and tailor treatment to your needs. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Delaying care can result in irreversible damage to the optic nerves and permanent vision impairment. Specialist care in neurosurgery centers with experience in pituitary tumours ensures access to advanced diagnostic tools and surgical techniques. Your healthcare provider will guide you through the process and tailor treatment to your needs."
     },
     {
       "type": "list",
@@ -130,7 +130,7 @@
     },
     {
       "type": "paragraph",
-      "text": "While pituitary tumours usually cause gradual vision changes, sudden vision loss can occur if the tumour rapidly enlarges or bleeds, a condition known as pituitary apoplexy. This is a medical emergency requiring immediate treatment to prevent permanent damage. If you experience sudden vision loss with headache or eye pain, seek urgent medical care. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "While pituitary tumours usually cause gradual vision changes, sudden vision loss can occur if the tumour rapidly enlarges or bleeds, a condition known as pituitary apoplexy. This is a medical emergency requiring immediate treatment to prevent permanent damage. If you experience sudden vision loss with headache or eye pain, seek urgent medical care."
     },
     {
       "type": "heading",
@@ -139,7 +139,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Treatment depends on tumour size, type, and symptoms. Surgery, especially endoscopic pituitary surgery, is often used to remove the tumour and relieve optic chiasm pressure. In some cases, medication or radiation therapy may be appropriate. Your neurosurgeon will recommend the best approach based on your condition to maximize vision recovery and overall health. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Treatment depends on tumour size, type, and symptoms. Surgery, especially endoscopic pituitary surgery, is often used to remove the tumour and relieve optic chiasm pressure. In some cases, medication or radiation therapy may be appropriate. Your neurosurgeon will recommend the best approach based on your condition to maximize vision recovery and overall health."
     },
     {
       "type": "heading",
@@ -148,7 +148,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Any new or worsening vision changes should prompt an urgent referral to a specialist. Early diagnosis and treatment are critical to prevent permanent vision loss. Delaying care can lead to irreversible damage to the optic nerves. A neurosurgeon or neuro-ophthalmologist experienced in pituitary tumours can provide the necessary evaluation and treatment plan. In real clinical practice, treatment choice depends on MRI findings, neurological exam, and risk profile . Your neurosurgeon will explain alternatives, expected recovery timeline, and follow-up imaging requirements before final decisions are made. This balanced approach improves safety, aligns expectations for patients and families, and avoids over-promising outcomes."
+      "text": "Any new or worsening vision changes should prompt an urgent referral to a specialist. Early diagnosis and treatment are critical to prevent permanent vision loss. Delaying care can lead to irreversible damage to the optic nerves. A neurosurgeon or neuro-ophthalmologist experienced in pituitary tumours can provide the necessary evaluation and treatment plan."
     }
   ],
   "author": {
@@ -156,5 +156,5 @@
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },
-  "featuredImage": "/assets/images/blog/pituitary-tumour-vision-loss.png"
+  "featuredImage": "/assets/images/blog/pituitary-tumour-vision-loss.webp"
 }

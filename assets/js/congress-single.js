@@ -25,6 +25,20 @@
 
   if (!slug || slug === 'congress') return;
 
+  if (root.getAttribute('data-ssr') === '1') {
+    fetch(u('congress/' + slug + '/data.json'))
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error('Not found'))))
+      .then((event) => {
+        initSlideshow(event);
+        initGalleryLightbox(event);
+        if (window.GivVideoPlayback) {
+          window.GivVideoPlayback.bindSingleVideoPlayback(root);
+        }
+      })
+      .catch(() => {});
+    return;
+  }
+
   async function loadEvent() {
     try {
       const res = await fetch(u('congress/' + slug + '/data.json'));

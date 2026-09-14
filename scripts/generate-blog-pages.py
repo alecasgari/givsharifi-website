@@ -582,8 +582,69 @@ def main() -> int:
         print(f"  blog SSR: {dest.relative_to(ROOT)}")
         count += 1
 
+    inject_blog_index(unique_meta)
     print(f"Rendered {count} blog post page(s) with full HTML content.")
     return 0
+
+
+def inject_blog_index(posts: list[dict]) -> None:
+    """Write static article cards so crawlers see links without /posts/ JSON."""
+    index_html = BLOG_DIR / "index.html"
+    if not index_html.is_file():
+        return
+
+    def card_date(iso: str) -> str:
+        try:
+            return datetime.strptime(iso[:10], "%Y-%m-%d").strftime("%d %b %Y").lstrip("0")
+        except ValueError:
+            return iso
+
+    ordered = sorted(posts, key=lambda p: p.get("date") or "", reverse=True)
+    cards: list[str] = []
+    for post in ordered:
+        slug = post.get("slug") or ""
+        title = post.get("title") or slug
+        excerpt = post.get("excerpt") or ""
+        category = post.get("category") or "Blog"
+        date = post.get("date") or ""
+        image = site_path(post.get("image") or "assets/images/home/og-share.webp")
+        cards.append(
+            f"""          <article class="blog-index-card">
+            <a class="blog-index-card__media" href="blog/{esc(slug)}/" tabindex="-1" aria-hidden="true">
+              <img class="blog-index-card__img" src="{esc(image)}" alt="{esc(title)}" loading="lazy" width="320" height="200">
+            </a>
+            <div class="blog-index-card__body">
+              <p class="blog-index-card__meta">
+                <span class="blog-index-card__cat">{esc_text(category)}</span>
+                <span class="blog-index-card__sep" aria-hidden="true">·</span>
+                <time datetime="{esc(date)}">{esc_text(card_date(date))}</time>
+              </p>
+              <h3 class="blog-index-card__title">
+                <a href="blog/{esc(slug)}/">{esc_text(title)}</a>
+              </h3>
+              <p class="blog-index-card__excerpt">{esc_text(excerpt)}</p>
+              <a class="blog-index-card__link" href="blog/{esc(slug)}/">Read article <span aria-hidden="true">→</span></a>
+            </div>
+          </article>"""
+        )
+
+    inner = "\n".join(cards)
+    replacement = (
+        f'<div class="blog-index-grid" id="blog-grid" data-ssr="1">\n{inner}\n        </div>'
+    )
+    html = index_html.read_text(encoding="utf-8")
+    updated, n = re.subn(
+        r'<div class="blog-index-grid" id="blog-grid"[^>]*>.*?</div>',
+        replacement,
+        html,
+        count=1,
+        flags=re.S,
+    )
+    if n:
+        index_html.write_text(updated, encoding="utf-8")
+        print(f"  blog index SSR: {len(ordered)} cards")
+    else:
+        print("  blog index: #blog-grid not found", file=sys.stderr)
 
 
 if __name__ == "__main__":
