@@ -18,6 +18,9 @@
 /guive-sharifi/
 /404.html
 
+# Local Search Console / Analytics exports — not for GitHub Pages
+/reports/
+
 # Local dev / tooling
 PLAYGROUND/
 __pycache__/
