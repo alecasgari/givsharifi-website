@@ -168,6 +168,16 @@
   max-width: none;
 }
 
+.blog-prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.blog-prose a:hover {
+  color: var(--c-accent, #0f766e);
+}
+
 .blog-prose h2 {
   font-size: clamp(1.375rem, 3.5vw, 1.625rem);
   margin-top: 2.25rem;

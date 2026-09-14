@@ -31,6 +31,201 @@ SERVICE_LINKS = {
     "Neurosurgery": ("brain-surgery/", "Brain Tumor Specialist — Dubai & Tehran"),
 }
 
+TOPIC_SLUGS: dict[str, tuple[str, ...]] = {
+    "pituitary": (
+        "endoscopic-pituitary-surgery-guide",
+        "pituitary-adenoma-symptoms",
+        "pituitary-tumour-vision-loss",
+        "prolactinoma-treatment",
+        "cushing-disease-pituitary-surgery",
+        "acromegaly-pituitary-treatment",
+    ),
+    "spine": (
+        "lumbar-disc-herniation-treatment",
+        "cervical-disc-herniation-surgery",
+        "spinal-stenosis-surgery-options",
+        "spondylolisthesis-treatment",
+        "scoliosis-surgery-adults",
+        "when-back-pain-needs-surgery",
+        "spinal-surgery-recovery-guide",
+        "spine-surgeon-tehran-herniated-disc",
+        "medical-tourism-spine-surgery-tehran",
+        "the-future-of-spinal-surgery",
+        "spinal-cord-injuries",
+    ),
+    "brain": (
+        "glioma-treatment-options",
+        "meningioma-surgery-recovery",
+        "brain-tumour-surgery-dubai",
+        "awake-brain-surgery-benefits",
+        "brain-surgery-recovery-timeline",
+        "cerebral-aneurysm-treatment",
+        "trigeminal-neuralgia-surgery",
+        "neurosurgeon-dubai-brain-tumour",
+        "the-future-of-brain-surgery-advancements-and-innovations",
+        "chiari-malformation-surgery",
+    ),
+    "tourism": (
+        "medical-tourism-spine-surgery-tehran",
+        "medical-tourism-neurosurgery-dubai",
+        "spine-surgeon-tehran-herniated-disc",
+        "neurosurgeon-tehran-second-opinion",
+        "neurosurgeon-dubai-brain-tumour",
+    ),
+    "decision": (
+        "second-opinion-neurosurgery",
+        "neurosurgeon-tehran-second-opinion",
+        "neurosurgery-consultation-expectations",
+        "neurosurgery-risks-benefits",
+    ),
+}
+
+TOPIC_SERVICE = {
+    "pituitary": ("endoscopic-pituitary-surgery/", "Endoscopic Pituitary Surgery"),
+    "spine": ("spinal-surgery/", "Spine Surgery Services"),
+    "brain": ("brain-surgery/", "Brain Tumor Specialist — Dubai & Tehran"),
+    "tourism": ("medical-tourism/", "Medical Tourism — Tehran"),
+}
+
+# Longer phrases first. target_slug None = service page (never self-skip by slug).
+BODY_LINKS: list[tuple[str, str, str | None]] = [
+    ("endoscopic pituitary surgery", "endoscopic-pituitary-surgery/", None),
+    ("microvascular decompression", "blog/trigeminal-neuralgia-surgery/", "trigeminal-neuralgia-surgery"),
+    ("trigeminal neuralgia", "blog/trigeminal-neuralgia-surgery/", "trigeminal-neuralgia-surgery"),
+    ("pituitary adenoma", "blog/pituitary-adenoma-symptoms/", "pituitary-adenoma-symptoms"),
+    ("optic chiasm", "blog/pituitary-tumour-vision-loss/", "pituitary-tumour-vision-loss"),
+    ("Cushing disease", "blog/cushing-disease-pituitary-surgery/", "cushing-disease-pituitary-surgery"),
+    ("Cushing's disease", "blog/cushing-disease-pituitary-surgery/", "cushing-disease-pituitary-surgery"),
+    ("awake craniotomy", "blog/awake-brain-surgery-benefits/", "awake-brain-surgery-benefits"),
+    ("awake brain surgery", "blog/awake-brain-surgery-benefits/", "awake-brain-surgery-benefits"),
+    ("cerebral aneurysm", "blog/cerebral-aneurysm-treatment/", "cerebral-aneurysm-treatment"),
+    ("Chiari malformation", "blog/chiari-malformation-surgery/", "chiari-malformation-surgery"),
+    ("spinal stenosis", "blog/spinal-stenosis-surgery-options/", "spinal-stenosis-surgery-options"),
+    ("spondylolisthesis", "blog/spondylolisthesis-treatment/", "spondylolisthesis-treatment"),
+    ("cervical disc herniation", "blog/cervical-disc-herniation-surgery/", "cervical-disc-herniation-surgery"),
+    ("lumbar disc herniation", "blog/lumbar-disc-herniation-treatment/", "lumbar-disc-herniation-treatment"),
+    ("herniated disc", "blog/lumbar-disc-herniation-treatment/", "lumbar-disc-herniation-treatment"),
+    ("second opinion", "blog/second-opinion-neurosurgery/", "second-opinion-neurosurgery"),
+    ("minimally invasive neurosurgery", "blog/minimally-invasive-neurosurgery/", "minimally-invasive-neurosurgery"),
+    ("neurosurgeon in Dubai", "blog/medical-tourism-neurosurgery-dubai/", "medical-tourism-neurosurgery-dubai"),
+    ("neurosurgeon in Tehran", "blog/neurosurgeon-tehran-second-opinion/", "neurosurgeon-tehran-second-opinion"),
+    ("risks and benefits", "blog/neurosurgery-risks-benefits/", "neurosurgery-risks-benefits"),
+    ("physical therapy", "physiotherapy/", None),
+    ("medical tourism", "medical-tourism/", None),
+    ("pituitary surgery", "endoscopic-pituitary-surgery/", None),
+    ("spine surgery", "spinal-surgery/", None),
+    ("spinal surgery", "spinal-surgery/", None),
+    ("brain tumour surgery", "brain-surgery/", None),
+    ("brain tumor surgery", "brain-surgery/", None),
+    ("brain surgery", "brain-surgery/", None),
+    ("prolactinoma", "blog/prolactinoma-treatment/", "prolactinoma-treatment"),
+    ("acromegaly", "blog/acromegaly-pituitary-treatment/", "acromegaly-pituitary-treatment"),
+    ("meningioma", "blog/meningioma-surgery-recovery/", "meningioma-surgery-recovery"),
+    ("glioma", "blog/glioma-treatment-options/", "glioma-treatment-options"),
+    ("scoliosis", "blog/scoliosis-surgery-adults/", "scoliosis-surgery-adults"),
+]
+
+
+def topics_for(slug: str, category: str) -> list[str]:
+    found = [name for name, slugs in TOPIC_SLUGS.items() if slug in slugs]
+    if found:
+        return found
+    if category == "Spinal Surgery":
+        return ["spine"]
+    if category == "Brain Surgery":
+        return ["brain"]
+    return ["decision"]
+
+
+def service_for(slug: str, category: str) -> tuple[str, str]:
+    for topic in topics_for(slug, category):
+        if topic in TOPIC_SERVICE:
+            return TOPIC_SERVICE[topic]
+    return SERVICE_LINKS.get(category, ("brain-surgery/", "Our Services"))
+
+
+def pick_related(slug: str, category: str, posts: list[dict], limit: int = 4) -> list[dict]:
+    by_slug = {p.get("slug"): p for p in posts if p.get("slug")}
+    seen = {slug}
+    out: list[dict] = []
+
+    def take(candidates: list[dict]) -> None:
+        ranked = sorted(candidates, key=lambda p: p.get("date") or "", reverse=True)
+        for post in ranked:
+            key = post.get("slug")
+            if not key or key in seen:
+                continue
+            out.append(post)
+            seen.add(key)
+            if len(out) >= limit:
+                return
+
+    for topic in topics_for(slug, category):
+        take([by_slug[s] for s in TOPIC_SLUGS.get(topic, ()) if s in by_slug])
+        if len(out) >= limit:
+            return out
+
+    take([p for p in posts if p.get("category") == category])
+    if len(out) >= limit:
+        return out
+    take(list(posts))
+    return out
+
+
+class BodyLinker:
+    """Insert at most three contextual links into article paragraphs."""
+
+    def __init__(self, slug: str, max_links: int = 3):
+        self.slug = slug
+        self.max_links = max_links
+        self.used_hrefs: set[str] = set()
+
+    @property
+    def remaining(self) -> int:
+        return self.max_links - len(self.used_hrefs)
+
+    def apply(self, text: str) -> str:
+        if not text or self.remaining <= 0:
+            return esc_text(text)
+
+        matches: list[tuple[int, int, str, str]] = []
+        for phrase, href, target_slug in BODY_LINKS:
+            if target_slug == self.slug:
+                continue
+            if href.rstrip("/").endswith("/" + self.slug) or href.rstrip("/").endswith(self.slug):
+                continue
+            if href in self.used_hrefs:
+                continue
+            for match in re.finditer(re.escape(phrase), text, flags=re.I):
+                matches.append((match.start(), match.end(), match.group(0), href))
+
+        matches.sort(key=lambda item: (-(item[1] - item[0]), item[0]))
+        chosen: list[tuple[int, int, str, str]] = []
+        spans: list[tuple[int, int]] = []
+        for start, end, raw, href in matches:
+            if len(chosen) >= self.remaining:
+                break
+            if href in self.used_hrefs or any(href == item[3] for item in chosen):
+                continue
+            if any(start < span_end and end > span_start for span_start, span_end in spans):
+                continue
+            spans.append((start, end))
+            chosen.append((start, end, raw, href))
+
+        if not chosen:
+            return esc_text(text)
+
+        chosen.sort(key=lambda item: item[0])
+        parts: list[str] = []
+        cursor = 0
+        for start, end, raw, href in chosen:
+            parts.append(esc_text(text[cursor:start]))
+            parts.append(f'<a href="{esc(href)}">{esc_text(raw)}</a>')
+            self.used_hrefs.add(href)
+            cursor = end
+        parts.append(esc_text(text[cursor:]))
+        return "".join(parts)
+
 # Contextual in-article images (existing site assets)
 INLINE_IMAGES: dict[str, list[dict[str, str]]] = {
     "brain-tumour-surgery-dubai": [
@@ -182,14 +377,16 @@ def abs_url(path: str) -> str:
     return p
 
 
-def render_block(block: dict) -> str:
+def render_block(block: dict, linker: BodyLinker | None = None) -> str:
     t = block.get("type")
     if t == "heading":
         level = int(block.get("level") or 2)
         level = min(max(level, 2), 4)
         return f"<h{level}>{esc_text(block.get('text', ''))}</h{level}>"
     if t == "paragraph":
-        return f"<p>{esc_text(block.get('text', ''))}</p>"
+        raw = block.get("text", "")
+        inner = linker.apply(raw) if linker else esc_text(raw)
+        return f"<p>{inner}</p>"
     if t == "image":
         src = site_path(block.get("src", ""))
         alt = block.get("alt") or ""
@@ -316,12 +513,11 @@ def build_article_html(post: dict, recent: list[dict]) -> str:
     featured = post.get("featuredImage") or ""
     page_url = f"{SITE}/blog/{slug}/"
     reading = post.get("readingTimeMinutes") or estimate_reading(post.get("content") or [])
-    service_href, service_label = SERVICE_LINKS.get(
-        category, ("brain-surgery/", "Our Services")
-    )
+    service_href, service_label = service_for(slug, category)
 
     blocks = inject_images(slug, category, post.get("content") or [])
-    body = "".join(render_block(b) for b in blocks)
+    linker = BodyLinker(slug)
+    body = "".join(render_block(b, linker) for b in blocks)
 
     cover = ""
     if featured:
@@ -343,14 +539,14 @@ def build_article_html(post: dict, recent: list[dict]) -> str:
     more_mobile = ""
     if recent:
         more_mobile = f"""<section class="blog-post__more blog-post__more--mobile" aria-labelledby="more-mobile-heading">
-                <h2 id="more-mobile-heading" class="blog-post__more-title">More articles</h2>
+                <h2 id="more-mobile-heading" class="blog-post__more-title">Related articles</h2>
                 {recent_html}
               </section>"""
 
     sidebar_recent = ""
     if recent:
         sidebar_recent = f"""<div class="blog-sidebar__card blog-sidebar__card--posts">
-                <p class="blog-sidebar__title">More articles</p>
+                <p class="blog-sidebar__title">Related articles</p>
                 {recent_html}
               </div>"""
 
@@ -574,7 +770,7 @@ def main() -> int:
         if not post:
             continue
         post.setdefault("slug", slug)
-        recent = [p for p in unique_meta if p.get("slug") != slug][:4]
+        recent = pick_related(slug, post.get("category") or meta.get("category") or "", unique_meta)
         html_out = build_page(post, recent)
         dest = BLOG_DIR / slug / "index.html"
         dest.parent.mkdir(parents=True, exist_ok=True)
