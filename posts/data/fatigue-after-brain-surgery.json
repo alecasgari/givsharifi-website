@@ -50,7 +50,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Recovery speed depends on factors like the surgery type (for example, tumor removal or aneurysm clipping), patient age, and pre-surgery health. Patients who had minimally invasive procedures may feel better sooner than those with more complex surgeries."
+      "text": "Recovery speed depends on factors like the surgery type (for example, tumor removal or aneurysm clipping), patient age, and pre-surgery health. Patients who had minimally invasive procedures may feel better sooner than those with more complex surgeries. For hospital stay, swelling, and return to work after brain surgery, see our brain surgery recovery timeline."
     },
     {
       "type": "paragraph",
@@ -102,7 +102,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Returning to work depends on your recovery speed and job type. Many patients start with part-time or light duties after 4 to 6 weeks, but full return may take several months. Your surgeon will advise based on your condition."
+      "text": "Returning to work depends on your recovery speed and job type. Many patients start with part-time or light duties after 4 to 6 weeks, but full return may take several months. For hospital stay, swelling, and return to work after brain surgery, see our brain surgery recovery timeline. Your surgeon will advise based on your condition."
     },
     {
       "type": "heading",
@@ -142,9 +142,9 @@
     }
   ],
   "author": {
-    "name": "Prof. Giv Sharifi",
+    "name": "Prof. Guive Sharifi",
     "title": "Board-Certified Neurosurgeon",
     "url": "https://www.givsharifi.com/"
   },
-  "featuredImage": "/assets/images/blog/fatigue-after-brain-surgery.png"
+  "featuredImage": "/assets/images/blog/fatigue-after-brain-surgery.webp"
 }
