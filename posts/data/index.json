@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "flying-after-brain-surgery",
+      "title": "How Long After Brain Surgery Can You Fly?",
+      "excerpt": "You should wait several weeks after brain surgery before flying to ensure proper healing and avoid complications from cabin pressure. Your neurosurgeon will advise when it's safe.",
+      "date": "2026-09-28",
+      "category": "Brain Surgery",
+      "image": "/assets/images/blog/flying-after-brain-surgery.png"
+    },
+    {
       "slug": "fatigue-after-brain-surgery",
       "title": "How Long Does Fatigue Last After Brain Surgery?",
       "excerpt": "Fatigue after brain surgery can last weeks to months depending on the individual and surgery type. Recovery energy varies, but proper care helps manage tiredness.",
