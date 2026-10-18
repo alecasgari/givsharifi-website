@@ -107,14 +107,14 @@
     grid.innerHTML = list
       .map(
         (e) => `
-      <a class="cong-card" href="${u('congress/' + e.slug + '/')}">
+      <a class="cong-card" href="${u('congress/' + e.slug + '/')}" data-event-slug="${escapeAttr(e.slug)}">
         <div class="cong-card__media">
           <img src="${escapeAttr(u(e.coverImage))}" alt="${escapeAttr(e.title)}" loading="lazy" width="640" height="400">
         </div>
         <div class="cong-card__body">
           <div class="cong-card__meta">
             ${e.type ? `<span class="cong-card__type">${escapeHtml(e.type)}</span>` : ''}
-            ${e.date ? `<span>${escapeHtml(formatDate(e.date))}</span>` : ''}
+            ${e.date ? `<span><time datetime="${escapeAttr(String(e.date).slice(0, 10))}">${escapeHtml(e.dateDisplay || formatDate(e.date))}</time></span>` : ''}
             ${e.city ? `<span>${escapeHtml(e.city)}${e.country ? ', ' + escapeHtml(e.country) : ''}</span>` : ''}
           </div>
           <h2 class="cong-card__title">${escapeHtml(e.title)}</h2>
@@ -128,6 +128,8 @@
   }
 
   function injectSchema(data) {
+    if (document.getElementById('congress-listing-schema')) return;
+    const ogShare = 'https://www.givsharifi.com/assets/images/home/og-share.webp';
     const items = (data.events || []).map((e, i) => ({
       '@type': 'ListItem',
       position: i + 1,
@@ -135,6 +137,14 @@
         '@type': 'Event',
         name: e.title,
         startDate: e.date,
+        endDate: e.endDate || e.date,
+        eventStatus:
+          (e.endDate || e.date || '') < new Date().toISOString().slice(0, 10)
+            ? 'https://schema.org/EventCompleted'
+            : 'https://schema.org/EventScheduled',
+        [e.participation === 'attendee' ? 'attendee' : 'performer']: {
+          '@id': 'https://www.givsharifi.com/about/#physician',
+        },
         location: e.city
           ? {
               '@type': 'Place',
@@ -147,7 +157,10 @@
             }
           : undefined,
         url: 'https://www.givsharifi.com/congress/' + e.slug + '/',
-        image: e.coverImage ? 'https://www.givsharifi.com/' + e.coverImage.replace(/^\//, '') : undefined,
+        image: [
+          e.coverImage ? 'https://www.givsharifi.com/' + String(e.coverImage).replace(/^\//, '') : ogShare,
+          ogShare,
+        ],
       },
     }));
 

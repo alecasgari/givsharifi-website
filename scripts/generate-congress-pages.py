@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CONGRESS = ROOT / "congress"
 PAGES_LISTING = ROOT / "pages" / "congress" / "index.html"
 SITE = "https://www.givsharifi.com"
+OG_SHARE = f"{SITE}/assets/images/home/og-share.webp"
+OG_SHARE_ALT = "Prof. Guive Sharifi — neurosurgeon in Dubai and Tehran"
+PHYSICIAN_ID = f"{SITE}/about/#physician"
 
 BASE_SCRIPT = """(function(){var b=document.getElementById('site-base');var r='/';if(/\\.github\\.io$/i.test(location.hostname)){var s=location.pathname.split('/').filter(Boolean)[0];if(s)r='/'+s+'/';b.href=r;}window.__SITE_ROOT__=r;window.siteUrl=function(p){if(p==null||p==='')return r;if(/^https?:\\/\\//i.test(p)||p.startsWith('tel:')||p.startsWith('mailto:'))return p;return r+String(p).replace(/^\\//,'');};})();"""
 
@@ -102,9 +105,10 @@ def render_slideshow(event: dict) -> str:
 def render_event_body(event: dict) -> str:
     facts: list[str] = []
     if event.get("dateDisplay") or event.get("date"):
-        facts.append(
-            f'<li><strong>Date:</strong> {esc_text(event.get("dateDisplay") or format_date(event.get("date", "")))}</li>'
-        )
+        date_iso = (event.get("date") or "")[:10]
+        date_label = event.get("dateDisplay") or format_date(date_iso)
+        time_attr = f' datetime="{esc(date_iso)}"' if date_iso else ""
+        facts.append(f"<li><strong>Date:</strong> <time{time_attr}>{esc_text(date_label)}</time></li>")
     if event.get("city"):
         loc = esc_text(event["city"])
         if event.get("country"):
@@ -142,10 +146,11 @@ def render_event_body(event: dict) -> str:
             poster = f' poster="{esc(site_path(v["poster"]))}"' if v.get("poster") else ""
             title = f"<h3>{esc_text(v['title'])}</h3>" if v.get("title") else ""
             caption = f"<p>{esc_text(v['caption'])}</p>" if v.get("caption") else ""
+            label = v.get("title") or v.get("caption") or "Congress video"
             video_cards.append(
                 f"""
               <article class="cong-event-video">
-                <video controls preload="none" playsinline{poster}>
+                <video controls preload="metadata" playsinline{poster} aria-label="{esc(label)}">
                   <source src="{esc(site_path(v.get("file", "")))}" type="video/mp4">
                 </video>
                 {title}
@@ -253,32 +258,133 @@ def render_event_body(event: dict) -> str:
     """
 
 
-def build_event_page(event: dict) -> str:
+def physician_node() -> dict:
+    return {
+        "@type": "Physician",
+        "@id": PHYSICIAN_ID,
+        "name": "Prof. Guive Sharifi",
+        "alternateName": ["Dr Guive Sharifi", "Guive Sharifi"],
+        "honorificPrefix": "Prof.",
+        "url": f"{SITE}/about/",
+        "medicalSpecialty": "Neurosurgery",
+        "jobTitle": "Professor of Neurosurgery",
+        "image": f"{SITE}/assets/images/home/about-giv.webp",
+    }
+
+
+def event_status_url(event: dict) -> str:
+    raw = (event.get("endDate") or event.get("date") or "")[:10]
+    try:
+        day = datetime.strptime(raw, "%Y-%m-%d").date()
+        name = "EventCompleted" if day < date.today() else "EventScheduled"
+    except ValueError:
+        name = "EventScheduled"
+    return f"https://schema.org/{name}"
+
+
+def attendance_url(event: dict) -> str:
+    mode = str(event.get("attendanceMode") or "offline").lower()
+    name = {
+        "online": "OnlineEventAttendanceMode",
+        "mixed": "MixedEventAttendanceMode",
+        "hybrid": "MixedEventAttendanceMode",
+        "offline": "OfflineEventAttendanceMode",
+    }.get(mode, "OfflineEventAttendanceMode")
+    return f"https://schema.org/{name}"
+
+
+def image_objects(event: dict) -> list[dict]:
+    images: list[dict] = []
+    seen: set[str] = set()
+
+    def add(path: str, caption: str = "", alt: str = "") -> None:
+        if not path:
+            return
+        url = abs_url(path)
+        if url in seen:
+            return
+        seen.add(url)
+        node: dict = {"@type": "ImageObject", "url": url}
+        text = caption or alt
+        if text:
+            node["caption"] = text
+        if alt:
+            node["description"] = alt
+        images.append(node)
+
+    cover = event.get("coverImage") or ""
+    add(cover, event.get("title") or "", event.get("title") or "")
+    for img in event.get("gallery") or []:
+        add(img.get("file") or "", img.get("caption") or "", img.get("alt") or "")
+    images.append(
+        {
+            "@type": "ImageObject",
+            "url": OG_SHARE,
+            "width": 1200,
+            "height": 800,
+            "caption": OG_SHARE_ALT,
+            "description": OG_SHARE_ALT,
+        }
+    )
+    return images
+
+
+def video_nodes(event: dict, page_url: str, event_id: str) -> list[dict]:
+    date_iso = (event.get("date") or "")[:10]
+    upload = f"{date_iso}T00:00:00+04:00" if date_iso else None
+    nodes: list[dict] = []
+    for i, video in enumerate(event.get("videos") or [], start=1):
+        file_url = abs_url(video.get("file") or "")
+        if not file_url:
+            continue
+        node = {
+            "@type": "VideoObject",
+            "@id": f"{page_url}#video-{i}",
+            "name": video.get("title") or event.get("title") or "Congress video",
+            "description": video.get("caption") or event.get("metaDescription") or event.get("summary") or "",
+            "contentUrl": file_url,
+            "encodingFormat": "video/mp4",
+            "inLanguage": "en",
+            "about": {"@id": event_id},
+            "publisher": {
+                "@type": "Organization",
+                "name": "Prof. Guive Sharifi",
+                "logo": {"@type": "ImageObject", "url": f"{SITE}/assets/images/brand/logo.svg"},
+            },
+        }
+        if video.get("poster"):
+            node["thumbnailUrl"] = abs_url(video["poster"])
+        if upload:
+            node["uploadDate"] = upload
+        nodes.append(node)
+    return nodes
+
+
+def build_event_graph(event: dict) -> dict:
     slug = event["slug"]
     title = event.get("title") or slug
     meta = event.get("metaDescription") or event.get("summary") or ""
-    keywords = event.get("keywords") or ""
-    date_iso = event.get("date") or ""
-    cover = event.get("coverImage") or "assets/images/home/og-share.webp"
+    date_iso = (event.get("date") or "")[:10]
+    end_iso = (event.get("endDate") or date_iso)[:10]
     page_url = f"{SITE}/congress/{slug}/"
-    image_url = abs_url(cover)
+    event_id = f"{page_url}#event"
+    crumb_id = f"{page_url}#breadcrumb"
+    images = image_objects(event)
+    videos = video_nodes(event, page_url, event_id)
+    keywords = event.get("keywords") or ""
+    if isinstance(keywords, list):
+        keywords = ", ".join(keywords)
 
-    try:
-        event_day = datetime.strptime(date_iso[:10], "%Y-%m-%d").date()
-        status = "EventCompleted" if event_day < date.today() else "EventScheduled"
-    except ValueError:
-        status = "EventScheduled"
-
-    schema = {
-        "@context": "https://schema.org",
+    event_node: dict = {
         "@type": "Event",
+        "@id": event_id,
         "name": title,
         "description": meta,
-        "startDate": date_iso,
-        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-        "eventStatus": f"https://schema.org/{status}",
-        "image": image_url,
         "url": page_url,
+        "image": images,
+        "eventAttendanceMode": attendance_url(event),
+        "eventStatus": event_status_url(event),
+        "inLanguage": "en",
         "location": {
             "@type": "Place",
             "name": event.get("venue") or event.get("city"),
@@ -289,23 +395,61 @@ def build_event_page(event: dict) -> str:
             },
         },
         "organizer": [{"@type": "Organization", "name": name} for name in (event.get("organizers") or [])],
-        "performer": {
-            "@type": "Physician",
-            "name": "Prof. Guive Sharifi",
-            "medicalSpecialty": "Neurosurgery",
-            "url": f"{SITE}/",
-        },
+        "about": {"@type": "MedicalSpecialty", "name": "Neurosurgery"},
+    }
+    if date_iso:
+        event_node["startDate"] = date_iso
+    if end_iso:
+        event_node["endDate"] = end_iso
+    person = {"@id": PHYSICIAN_ID}
+    if str(event.get("participation") or "speaker").lower() == "attendee":
+        event_node["attendee"] = person
+    else:
+        event_node["performer"] = person
+    if videos:
+        event_node["subjectOf"] = [{"@id": v["@id"]} for v in videos]
+
+    webpage = {
+        "@type": "WebPage",
+        "@id": f"{page_url}#webpage",
+        "url": page_url,
+        "name": title,
+        "description": meta,
+        "inLanguage": "en",
+        "keywords": keywords,
+        "isPartOf": {"@type": "WebSite", "name": "Prof. Guive Sharifi", "url": f"{SITE}/"},
+        "primaryImageOfPage": images[0] if images else {"@type": "ImageObject", "url": OG_SHARE},
+        "mainEntity": {"@id": event_id},
+        "about": {"@id": PHYSICIAN_ID},
+        "breadcrumb": {"@id": crumb_id},
+        "speakable": {"@type": "SpeakableSpecification", "cssSelector": ["h1", ".cong-event-summary"]},
     }
     breadcrumb = {
-        "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "@id": crumb_id,
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{SITE}/"},
             {"@type": "ListItem", "position": 2, "name": "Congress & Symposia", "item": f"{SITE}/congress/"},
             {"@type": "ListItem", "position": 3, "name": title, "item": page_url},
         ],
     }
+    return {"@context": "https://schema.org", "@graph": [webpage, event_node, breadcrumb, physician_node(), *videos]}
+
+
+def build_event_page(event: dict) -> str:
+    slug = event["slug"]
+    title = event.get("title") or slug
+    meta = event.get("metaDescription") or event.get("summary") or ""
+    keywords = event.get("keywords") or ""
+    if isinstance(keywords, list):
+        keywords = ", ".join(keywords)
+    date_iso = (event.get("date") or "")[:10]
+    cover = event.get("coverImage") or "assets/images/home/og-share.webp"
+    page_url = f"{SITE}/congress/{slug}/"
+    image_url = abs_url(cover)
+    graph = build_event_graph(event)
     keywords_tag = f'\n  <meta name="keywords" content="{esc(keywords)}">' if keywords else ""
+    published = f'\n  <meta property="article:published_time" content="{esc(date_iso)}">' if date_iso else ""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -316,25 +460,35 @@ def build_event_page(event: dict) -> str:
 {BASE_SCRIPT}
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <title>{esc_text(title)} | Prof. Guive Sharifi — Neurosurgeon</title>
   <meta name="description" content="{esc(meta)}">{keywords_tag}
   <link rel="canonical" href="{esc(page_url)}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Prof. Guive Sharifi">
   <meta property="og:title" content="{esc(title)}">
   <meta property="og:description" content="{esc(meta)}">
   <meta property="og:url" content="{esc(page_url)}">
   <meta property="og:image" content="{esc(image_url)}">
+  <meta property="og:image:alt" content="{esc(title)}">
+  <meta property="og:image" content="{esc(OG_SHARE)}">
+  <meta property="og:image:alt" content="{esc(OG_SHARE_ALT)}">
+  <meta property="og:image:type" content="image/webp">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="800">{published}
+  <meta property="article:author" content="Prof. Guive Sharifi">
+  <meta property="article:section" content="Congress &amp; Symposia">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{esc(title)}">
   <meta name="twitter:description" content="{esc(meta)}">
   <meta name="twitter:image" content="{esc(image_url)}">
+  <meta name="twitter:image:alt" content="{esc(title)}">
   <link rel="stylesheet" href="assets/css/site.bundle.css">
   <link rel="stylesheet" href="assets/css/pages.css">
   <link rel="stylesheet" href="assets/css/congress.css?v=20260831">
   <link rel="icon" href="assets/images/brand/favicon.svg" type="image/svg+xml">
-  <script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>
-  <script type="application/ld+json">{json.dumps(breadcrumb, ensure_ascii=False)}</script>
+  <script type="application/ld+json">{json.dumps(graph, ensure_ascii=False)}</script>
 </head>
 <body class="site-page cong-event-page">
   <div id="site-header"></div>
@@ -358,7 +512,7 @@ def listing_card(event: dict) -> str:
     title = event.get("title") or slug
     cover = site_path(event.get("coverImage") or "assets/images/home/og-share.webp")
     typ = event.get("type") or ""
-    date_iso = event.get("date") or ""
+    date_iso = (event.get("date") or "")[:10]
     city = event.get("city") or ""
     country = event.get("country") or ""
     excerpt = event.get("excerpt") or ""
@@ -366,7 +520,10 @@ def listing_card(event: dict) -> str:
     if city and country:
         loc += f", {esc_text(country)}"
     type_html = f'<span class="cong-card__type">{esc_text(typ)}</span>' if typ else ""
-    date_html = f"<span>{esc_text(format_date(date_iso))}</span>" if date_iso else ""
+    date_label = event.get("dateDisplay") or (format_date(date_iso) if date_iso else "")
+    date_html = (
+        f'<span><time datetime="{esc(date_iso)}">{esc_text(date_label)}</time></span>' if date_iso else ""
+    )
     city_html = f"<span>{loc}</span>" if city else ""
     excerpt_html = f'<p class="cong-card__excerpt">{esc_text(excerpt)}</p>' if excerpt else ""
     return f"""        <a class="cong-card" href="congress/{esc(slug)}/" data-event-slug="{esc(slug)}">
@@ -386,26 +543,172 @@ def listing_card(event: dict) -> str:
         </a>"""
 
 
+def replace_balanced_div(html_text: str, start_marker: str, replacement: str) -> tuple[str, int]:
+    start = html_text.find(start_marker)
+    if start < 0:
+        return html_text, 0
+    i = start
+    depth = 0
+    while i < len(html_text):
+        next_open = html_text.find("<div", i)
+        next_close = html_text.find("</div>", i)
+        if next_close < 0:
+            return html_text, 0
+        if next_open != -1 and next_open < next_close:
+            depth += 1
+            i = next_open + 4
+        else:
+            depth -= 1
+            i = next_close + len("</div>")
+            if depth == 0:
+                return html_text[:start] + replacement + html_text[i:], 1
+    return html_text, 0
+
+
+def listing_schema_block(events: list[dict]) -> str:
+    list_url = f"{SITE}/congress/"
+    items = []
+    for i, event in enumerate(events, start=1):
+        slug = event.get("slug") or ""
+        url = f"{list_url}{slug}/"
+        date_iso = (event.get("date") or "")[:10]
+        end_iso = (event.get("endDate") or date_iso)[:10]
+        cover = abs_url(event.get("coverImage") or "assets/images/home/og-share.webp")
+        node = {
+            "@type": "Event",
+            "@id": f"{url}#event",
+            "name": event.get("title") or slug,
+            "description": event.get("excerpt") or event.get("metaDescription") or "",
+            "url": url,
+            "image": [cover, OG_SHARE],
+            "eventAttendanceMode": attendance_url(event),
+            "eventStatus": event_status_url(event),
+            "location": {
+                "@type": "Place",
+                "name": event.get("venue") or event.get("city"),
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": event.get("city"),
+                    "addressCountry": event.get("country"),
+                },
+            },
+        }
+        person = {"@id": PHYSICIAN_ID}
+        if str(event.get("participation") or "speaker").lower() == "attendee":
+            node["attendee"] = person
+        else:
+            node["performer"] = person
+        if date_iso:
+            node["startDate"] = date_iso
+        if end_iso:
+            node["endDate"] = end_iso
+        items.append({"@type": "ListItem", "position": i, "url": url, "name": node["name"], "item": node})
+
+    collection = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": f"{list_url}#webpage",
+        "url": list_url,
+        "name": "Congress & Symposia",
+        "description": "International congresses, symposia, and academic events featuring Prof. Guive Sharifi — board-certified neurosurgeon in Dubai and Tehran.",
+        "inLanguage": "en",
+        "isPartOf": {"@type": "WebSite", "name": "Prof. Guive Sharifi", "url": f"{SITE}/"},
+        "about": {"@id": PHYSICIAN_ID},
+        "primaryImageOfPage": {
+            "@type": "ImageObject",
+            "url": OG_SHARE,
+            "width": 1200,
+            "height": 800,
+            "caption": OG_SHARE_ALT,
+        },
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Prof. Guive Sharifi — Congress & Symposia",
+            "itemListOrder": "https://schema.org/ItemListOrderDescending",
+            "numberOfItems": len(items),
+            "itemListElement": items,
+        },
+    }
+    breadcrumb = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "@id": f"{list_url}#breadcrumb",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": f"{SITE}/"},
+            {"@type": "ListItem", "position": 2, "name": "Congress & Symposia", "item": list_url},
+        ],
+    }
+    physician = {"@context": "https://schema.org", **physician_node()}
+    return (
+        "  <!-- congress-seo -->\n"
+        f'  <script id="congress-listing-schema" type="application/ld+json">{json.dumps(collection, ensure_ascii=False)}</script>\n'
+        f'  <script id="congress-breadcrumb-schema" type="application/ld+json">{json.dumps(breadcrumb, ensure_ascii=False)}</script>\n'
+        f'  <script id="congress-physician-schema" type="application/ld+json">{json.dumps(physician, ensure_ascii=False)}</script>\n'
+        "  <!-- /congress-seo -->"
+    )
+
+
+def ensure_listing_meta(html_text: str) -> str:
+    html_text = html_text.replace(
+        '<meta name="twitter:card" content="summary">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        1,
+    )
+    if 'name="robots"' not in html_text:
+        html_text = html_text.replace(
+            '<meta name="viewport"',
+            '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">\n  <meta name="viewport"',
+            1,
+        )
+    if "og:image:width" not in html_text:
+        html_text = html_text.replace(
+            '<meta property="og:image" content="https://www.givsharifi.com/assets/images/home/og-share.webp">',
+            '<meta property="og:locale" content="en_US">\n'
+            '  <meta property="og:image" content="https://www.givsharifi.com/assets/images/home/og-share.webp">\n'
+            f'  <meta property="og:image:alt" content="{esc(OG_SHARE_ALT)}">\n'
+            '  <meta property="og:image:type" content="image/webp">\n'
+            '  <meta property="og:image:width" content="1200">\n'
+            '  <meta property="og:image:height" content="800">',
+            1,
+        )
+    if 'name="twitter:image"' not in html_text:
+        html_text = html_text.replace(
+            '<meta name="twitter:description" content="Academic congresses and symposia featuring Prof. Guive Sharifi.">',
+            '<meta name="twitter:description" content="Academic congresses and symposia featuring Prof. Guive Sharifi.">\n'
+            '  <meta name="twitter:image" content="https://www.givsharifi.com/assets/images/home/og-share.webp">\n'
+            f'  <meta name="twitter:image:alt" content="{esc(OG_SHARE_ALT)}">',
+            1,
+        )
+    return html_text
+
+
+def inject_listing_schema(html_text: str, events: list[dict]) -> str:
+    block = listing_schema_block(events)
+    if "<!-- congress-seo -->" in html_text:
+        return re.sub(r"  <!-- congress-seo -->.*?<!-- /congress-seo -->", block, html_text, count=1, flags=re.S)
+    pattern = r'\s*<script type="application/ld\+json">\s*\{[\s\S]*?"@type": "BreadcrumbList"[\s\S]*?</script>'
+    updated, n = re.subn(pattern, "\n" + block, html_text, count=1)
+    if not n:
+        print("  congress listing: breadcrumb schema not found", file=sys.stderr)
+        return html_text
+    return updated
+
+
 def inject_listing(events: list[dict]) -> None:
     cards = "\n".join(listing_card(e) for e in events)
     replacement = f'<div class="cong-grid" id="cong-grid" data-ssr="1">\n{cards}\n        </div>'
-    pattern = r'<div class="cong-grid" id="cong-grid"[^>]*>.*?</div>'
     for path in (CONGRESS / "index.html", PAGES_LISTING):
         if not path.is_file():
             continue
         html_text = path.read_text(encoding="utf-8")
-        updated, n = re.subn(pattern, replacement, html_text, count=1, flags=re.S)
-        if n:
-            if 'property="og:image"' not in updated:
-                updated = updated.replace(
-                    '<meta name="twitter:card" content="summary">',
-                    '<meta property="og:image" content="https://www.givsharifi.com/assets/images/home/og-share.webp">\n  <meta name="twitter:card" content="summary">',
-                    1,
-                )
-            path.write_text(updated, encoding="utf-8")
-            print(f"  congress listing SSR: {path.relative_to(ROOT)}")
-        else:
+        updated, n = replace_balanced_div(html_text, '<div class="cong-grid" id="cong-grid"', replacement)
+        if not n:
             print(f"  congress listing: #cong-grid not found in {path}", file=sys.stderr)
+            continue
+        updated = ensure_listing_meta(updated)
+        updated = inject_listing_schema(updated, events)
+        path.write_text(updated, encoding="utf-8")
+        print(f"  congress listing SSR: {path.relative_to(ROOT)}")
 
 
 def main() -> int:
@@ -418,17 +721,23 @@ def main() -> int:
     events = sorted(events, key=lambda e: e.get("date") or "", reverse=True)
 
     count = 0
+    rendered: list[dict] = []
     for meta in events:
         slug = meta["slug"]
-        event = load_json(CONGRESS / slug / "data.json") or dict(meta)
-        event.setdefault("slug", slug)
+        event = dict(meta)
+        detail = load_json(CONGRESS / slug / "data.json") or {}
+        event.update({k: v for k, v in detail.items() if v not in (None, "", [])})
+        if meta.get("excerpt"):
+            event["excerpt"] = meta["excerpt"]
+        event["slug"] = slug
         dest = CONGRESS / slug / "index.html"
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(build_event_page(event), encoding="utf-8")
         print(f"  congress SSR: {dest.relative_to(ROOT)}")
+        rendered.append(event)
         count += 1
 
-    inject_listing(events)
+    inject_listing(rendered)
     print(f"Rendered {count} congress event page(s).")
     return 0
 

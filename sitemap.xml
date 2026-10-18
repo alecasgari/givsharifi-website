@@ -61,6 +61,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.givsharifi.com/blog/vision-recovery-pituitary-surgery/</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/wash-hair-after-craniotomy/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/blog/flying-after-brain-surgery/</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.givsharifi.com/blog/fatigue-after-brain-surgery/</loc>
     <lastmod>2026-09-21</lastmod>
     <changefreq>yearly</changefreq>
@@ -279,6 +297,12 @@
   <url>
     <loc>https://www.givsharifi.com/blog/spinal-cord-injuries/</loc>
     <lastmod>2023-04-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.givsharifi.com/congress/interim-neurosurgery-spine-congress-rasht-2026/</loc>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
