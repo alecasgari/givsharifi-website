@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18",
+  "updated": "2026-10-19",
   "events": [
     {
       "slug": "interim-neurosurgery-spine-congress-rasht-2026",
@@ -17,6 +17,22 @@
       "excerpt": "Prof. Guive Sharifi lectured on endoscopic transsphenoidal surgery for acromegaly at the interim neurosurgery and spine congress in Rasht, 20–22 October 2026.",
       "coverImage": "congress/interim-neurosurgery-spine-congress-rasht-2026/images/03-team-official-banner.webp",
       "keywords": ["Rasht", "neurosurgery congress", "acromegaly", "endoscopic transsphenoidal", "Gilan", "Guive Sharifi"]
+    },
+    {
+      "slug": "pulmonary-diseases-congress-tehran-2026",
+      "title": "12th International Congress on Pulmonary Diseases, Intensive Care and Tuberculosis",
+      "subtitle": "Tehran, 6–9 October 2026",
+      "date": "2026-10-06",
+      "endDate": "2026-10-09",
+      "dateDisplay": "6–9 October 2026",
+      "participation": "speaker",
+      "year": 2026,
+      "city": "Tehran",
+      "country": "Iran",
+      "type": "Congress",
+      "excerpt": "Prof. Guive Sharifi joined the panel on the lung and the nervous system at the 12th International Congress on Pulmonary Diseases, Intensive Care and Tuberculosis in Tehran, 6–9 October 2026.",
+      "coverImage": "congress/pulmonary-diseases-congress-tehran-2026/images/01-congress-stage.webp",
+      "keywords": ["pulmonary congress", "NRITLD", "intensive care", "tuberculosis", "Tehran", "Guive Sharifi"]
     },
     {
       "slug": "neurosurgery-spine-congress-urmia-2026",
