@@ -1,6 +1,14 @@
 {
   "posts": [
     {
+      "slug": "endoscopic-tss-recovery",
+      "title": "What Is Recovery Like After Endoscopic Transsphenoidal Surgery?",
+      "excerpt": "Recovery after endoscopic transsphenoidal surgery involves a short hospital stay, careful nasal care, and monitoring for complications like CSF leaks. Here's what to expect.",
+      "date": "2026-10-19",
+      "category": "Neurosurgery",
+      "image": "/assets/images/blog/endoscopic-tss-recovery.png"
+    },
+    {
       "slug": "vision-recovery-pituitary-surgery",
       "title": "What Is Vision Recovery Like After Pituitary Surgery?",
       "excerpt": "Vision recovery after pituitary surgery varies but often improves as pressure on the optic nerves is relieved. Learn what to expect and how recovery progresses.",
