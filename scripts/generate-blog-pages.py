@@ -33,6 +33,8 @@ SERVICE_LINKS = {
 
 TOPIC_SLUGS: dict[str, tuple[str, ...]] = {
     "pituitary": (
+        "endoscopic-tss-recovery",
+        "vision-recovery-pituitary-surgery",
         "endoscopic-pituitary-surgery-guide",
         "pituitary-adenoma-symptoms",
         "pituitary-tumour-vision-loss",
@@ -90,6 +92,7 @@ TOPIC_SERVICE = {
 
 # Longer phrases first. target_slug None = service page (never self-skip by slug).
 BODY_LINKS: list[tuple[str, str, str | None]] = [
+    ("vision recovery after pituitary surgery", "blog/vision-recovery-pituitary-surgery/", "vision-recovery-pituitary-surgery"),
     ("endoscopic pituitary surgery", "endoscopic-pituitary-surgery/", None),
     ("microvascular decompression", "blog/trigeminal-neuralgia-surgery/", "trigeminal-neuralgia-surgery"),
     ("trigeminal neuralgia", "blog/trigeminal-neuralgia-surgery/", "trigeminal-neuralgia-surgery"),
